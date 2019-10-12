@@ -1,0 +1,281 @@
+<html lang="en"><head>
+	<meta charset="UTF-8">
+	<link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+	<link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111">
+	<title>CodePen - HTML5 Editable Table</title>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<style>
+		    .table-editable {
+		  position: relative;
+		}
+		.table-editable .glyphicon {
+		  font-size: 20px;
+		}
+		
+		.table-remove {
+		  color: #700;
+		  cursor: pointer;
+		}
+		.table-remove:hover {
+		  color: #f00;
+		}
+		
+		.table-up, .table-down {
+		  color: #007;
+		  cursor: pointer;
+		}
+		.table-up:hover, .table-down:hover {
+		  color: #00f;
+		}
+		
+		.table-add {
+		  color: #070;
+		  cursor: pointer;
+		  position: absolute;
+		  top: 8px;
+		  right: 0;
+		}
+		.table-add:hover {
+		  color: #0b0;
+		}
+		
+	  </style>
+	<script>
+	  window.console = window.console || function(t) {};
+	</script>
+	<script>
+	  if (document.location.search.match(/type=embed/gi)) {
+	    window.parent.postMessage("resize", "*");
+	  }
+	</script>
+</head>
+<body translate="no">
+
+<div class="container">
+<h1>HTML5 Editable Table</h1>
+<p>Through the powers of <strong>contenteditable</strong> and some simple jQuery you can easily create a custom editable table. No need for a robust JavaScript library anymore these days.</p>
+<ul>
+<li>An editable table that exports a hash array. Dynamically compiles rows from headers</li>
+<li>Simple / powerful features such as add row, remove row, move row up/down.</li>
+</ul>
+<div id="table" class="table-editable">
+<span class="table-add glyphicon glyphicon-plus"></span>
+<table class="table">
+<tbody>
+	<tr>
+		<th>Impegno</th>
+		<th>Articolo</th>
+		<th>Q.tà Articolo</th>
+		<th>Componente</th>
+		<th>Q.tà Componente</th>
+		<th>Stato</th>
+		<th></th>
+		<th></th>
+	</tr>
+	<tr>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td>
+			<span class="table-remove glyphicon glyphicon-remove"></span>
+		</td>
+		<td>
+			<span class="table-up glyphicon glyphicon-arrow-up"></span>
+			<span class="table-down glyphicon glyphicon-arrow-down"></span>
+		</td>
+	</tr>
+	<tr class="hide">
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td contenteditable="true">-</td>
+		<td>
+			<span class="table-remove glyphicon glyphicon-remove"></span>
+		</td>
+		<td>
+			<span class="table-up glyphicon glyphicon-arrow-up"></span>
+			<span class="table-down glyphicon glyphicon-arrow-down"></span>
+		</td>
+	</tr>
+</tbody></table>
+</div>
+<button id="export-btn" class="btn btn-primary">Export Data</button>
+<button id="import-btn" class="btn btn-primary">Import Data</button>
+<p id="export"></p>
+</div>
+<script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-de7e2ef6bfefd24b79a3f68b414b87b8db5b08439cac3f1012092b2290c719cd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+<script id="rendered-js">
+	var $TABLE = $('#table');
+	var $BTN = $('#export-btn');
+	var $BTN2 = $('#import-btn');
+	var $EXPORT = $('#export');
+	
+	$('.table-add').click(function () {
+	  var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+	  $TABLE.find('table').append($clone);
+	});
+	
+	$('.table-remove').click(function () {
+	  $(this).parents('tr').detach();
+	});
+	
+	$('.table-up').click(function () {
+	  var $row = $(this).parents('tr');
+	  if ($row.index() === 1) return; // Don't go above the header
+	  $row.prev().before($row.get(0));
+	});
+	
+	$('.table-down').click(function () {
+	  var $row = $(this).parents('tr');
+	  $row.next().after($row.get(0));
+	});
+	
+	// A few jQuery helpers for exporting only
+	jQuery.fn.pop = [].pop;
+	jQuery.fn.shift = [].shift;
+	
+	function validate_input(value, column){
+		var impegnoRGEX = /^[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}[-\s\/]{1}[0-9]{2}$/;
+		var articoloRGEX = /^[0-9]{1}[A-Z]{3}[0-9]{5}/;
+		
+		// validate Impegno format
+		if(column==0){
+			var checkResult = impegnoRGEX.test(value);
+			if(!checkResult){
+				return false;
+			}
+		}
+		// validate Articolo format
+		if(column==1){
+			var checkResult = articoloRGEX.test(value);
+			if(!checkResult){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	$BTN.click(function () {
+		var $rows = $TABLE.find('tr:not(:hidden)');
+		var headers = [];
+		var data = [];
+		
+		//var phoneResult = phoneRGEX.test(phoneNumber);
+		//var postalResult = postalRGEX.test(postalCode);
+		// Get the headers (add special header logic here)
+		$($rows.shift()).find('th:not(:empty)').each(function () {
+			headers.push($(this).text()/*.toLowerCase()*/);
+		});
+	
+		// Turn all existing rows into a loopable array
+		$rows.each(function (row,x) {
+			var $td = $(this).find('td');
+			var h = {};
+
+			// Use the headers from earlier to name our hash keys
+			headers.forEach(function (header, i) {
+				h[header] = $td.eq(i).text();
+				if(!validate_input(header,i)){
+					alert("Formato sbagliato " + header + " riga " + x.rowIndex);
+				}
+			});
+	
+		data.push(h);
+		});
+	
+		// Output the result
+		$EXPORT.text(JSON.stringify(data));
+	});
+	      //# sourceURL=pen.js
+	
+	// Import from json
+	test_arr = [{"Impegno":"1","Articolo":"2","Q.tà Articolo":"3","Componente":"4","Q.tà Componente":"5","Stato":"6"},{"Impegno":"a","Articolo":"b","Q.tà Articolo":"c","Componente":"d","Q.tà Componente":"e","Stato":"f"}];
+	// Import button
+	$BTN2.click(function(){
+		var $rows = $TABLE.find('tr:not(:hidden)');
+		var headers = [];
+		var data = [];
+		
+		// Check JSON length and add rows
+		if($rows.length == test_arr.length){
+		for (var i = 1; i < test_arr.length; i++){
+			var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+			$TABLE.find('table').append($clone);
+		}}
+
+		$rows = $TABLE.find('tr:not(:hidden)');
+		
+		// Get the headers (add special header logic here)
+		$($rows.shift()).find('th:not(:empty)').each(function () {
+			headers.push($(this).text()/*.toLowerCase()*/);
+		});
+		
+		// Turn all existing rows into a loopable array
+		$rows.each(function (index) {
+			var $td = $(this).find('td');
+		    var h = {};
+			var obj = test_arr[index];
+
+			// Use the headers from earlier to name our hash keys
+			headers.forEach(function (header, i) {
+				$td.eq(i).text(obj[header]);
+			});
+		
+		data.push(h);
+		});
+	  
+		$EXPORT.text($rows.length);
+		/*
+		// Create one new row for every array row
+		for (var i = 0; i < test_arr.length; i++){
+			var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
+			$TABLE.find('table').append($clone);
+			var obj = test_arr[i];
+			for (var key in obj){
+				var value = obj[key];
+				//headers.push(key);
+				data.push(value);
+				//$TABLE.rows[i+1].cells[1].innerHTML = value;
+			}
+		}
+		
+		var $rows = $TABLE.find('tr:not(:hidden)');
+		
+		// Get the headers (add special header logic here)
+		$($rows.shift()).find('th:not(:empty)').each(function () {
+			headers.push($(this).text().toLowerCase());
+		});
+		
+		// Turn all existing rows into a loopable array
+		
+		$rows.each(function () {
+			var $td = $(this).find('td');
+			var h = {};
+	
+		    // Use the headers from earlier to name our hash keys
+		    //data.forEach(function (element,x) {
+		    	//$td.text()="1";
+				//headers.push(element);
+		    //});
+		
+		    //data.push(h);
+		});*/
+
+		
+		
+		$EXPORT.text(JSON.stringify(test_arr));
+	});
+    </script>
+
+
+</body></html>
