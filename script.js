@@ -5,22 +5,26 @@ var $EXPORT = $('#export');
 var $CHECK = $('#myCheck');
 var $TEXT = $('#text');
 
+// Add new row on click
 $('.table-add').click(function(){
   var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
   $TABLE.find('table').append($clone);
   f_checkbox();
 });
 
+// Remove row on click
 $('.table-remove').click(function () {
   $(this).parents('tr').detach();
 });
 
+// Move row up
 $('.table-up').click(function () {
   var $row = $(this).parents('tr');
   if ($row.index() === 1) return; // Don't go above the header
   $row.prev().before($row.get(0));
 });
 
+// move row down
 $('.table-down').click(function () {
   var $row = $(this).parents('tr');
   $row.next().after($row.get(0));
@@ -30,20 +34,29 @@ $('.table-down').click(function () {
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
 
+// Check input format
 function f_validateinput(value, column){
   var impegnoRGEX = /^[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}[-\s\/]{1}[0-9]{2}$/;
   var articoloRGEX = /^[0-9]{1}[A-Z]{3}[0-9]{5}/;
+  var quantitaRGEX = /^[0-9]{1}[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}$/;
 
-  // validate Impegno format
+  // Validate Impegno format
   if(column==0){
     var checkResult = impegnoRGEX.test(value);
     if(!checkResult){
       return false;
     }
   }
-  // validate Articolo format
+  // Validate Articolo format
   if(column==1){
     var checkResult = articoloRGEX.test(value);
+    if(!checkResult){
+      return false;
+    }
+  }
+  // Validate Quantità Formato
+  if (column==2 || column==4) {
+    var checkResult = quantitaRGEX.test(value);
     if(!checkResult){
       return false;
     }
@@ -51,13 +64,12 @@ function f_validateinput(value, column){
   return true;
 }
 
+// Export commant
 $BTN.click(function () {
   var $rows = $TABLE.find('tr:not(:hidden)');
   var headers = [];
   var data = [];
 
-  //var phoneResult = phoneRGEX.test(phoneNumber);
-  //var postalResult = postalRGEX.test(postalCode);
   // Get the headers (add special header logic here)
   $($rows.shift()).find('th:not(:empty)').each(function () {
     headers.push($(this).text()/*.toLowerCase()*/);
@@ -71,6 +83,7 @@ $BTN.click(function () {
     // Use the headers from earlier to name our hash keys
     headers.forEach(function (header, i) {
       h[header] = $td.eq(i).text();
+      // Check input format
       if(!f_validateinput(h[header],i)){
         alert("Formato sbagliato " + header + " riga " + x.rowIndex);
       }
@@ -89,18 +102,25 @@ test_arr = [
   {"Impegno":"1","Articolo":"2","Q.tà Articolo":"3","Componente":"4","Q.tà Componente":"5","Stato":"6"},
   {"Impegno":"a","Articolo":"b","Q.tà Articolo":"c","Componente":"d","Q.tà Componente":"e","Stato":"f"}
 ];
-// Import button
+
+// Import command
 $BTN2.click(function(){
   var $rows = $TABLE.find('tr:not(:hidden)');
   var headers = [];
   var data = [];
 
   // Check JSON length and add rows
-  if($rows.length == test_arr.length){
+  if($rows.length <= test_arr.length){
   for (var i = 1; i < test_arr.length; i++){
     var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
     $TABLE.find('table').append($clone);
-  }}
+  }}else{
+    $rows.each(function(index){
+      if(index > test_arr.length){
+        $(this).detach();
+      }
+    });
+  }
 
   $rows = $TABLE.find('tr:not(:hidden)');
 
