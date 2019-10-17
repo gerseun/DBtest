@@ -26,6 +26,20 @@
 <li>Simple / powerful features such as add row, remove row, move row up/down.</li>
 </ul>
 
+<!--  Popup window -->
+<button class="open-button" onclick="openForm()">Open Form</button>
+<div class="form-popup" id="myForm">
+  <form action="/action_page.php" class="form-container">
+
+    <label for="textfield"><b>textfield</b></label>
+    <input type="text" placeholder="Inserisci testo" name="textfield" required>
+
+    <button type="submit" class="btn5">Login</button>
+    <button type="button" class="btn5 cancel" onclick="closeForm()">Close</button>
+  </form>
+</div>
+
+<br>
 <input type="checkbox" id="myCheck"  onclick="f_checkbox()" checked>Editable</input>
 <p id="text" contenteditable="true" style="display:block">Checkbox is CHECKED!</p>
 

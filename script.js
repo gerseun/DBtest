@@ -41,6 +41,7 @@ function f_validateinput(value, column){
   var quantitaRGEX = /^[0-9]{1}[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}$/;
 
   // Validate Impegno format
+  // Accepted format (1111-11) (1111 11) (1111/11)
   if(column==0){
     var checkResult = impegnoRGEX.test(value);
     if(!checkResult){
@@ -48,13 +49,15 @@ function f_validateinput(value, column){
     }
   }
   // Validate Articolo format
+  // Accepted format (1AAA11111...)
   if(column==1){
     var checkResult = articoloRGEX.test(value);
     if(!checkResult){
       return false;
     }
   }
-  // Validate Quantità Formato
+  // Validate Quantità format
+  // Accepted format (1111)
   if (column==2 || column==4) {
     var checkResult = quantitaRGEX.test(value);
     if(!checkResult){
@@ -148,22 +151,33 @@ $BTN2.click(function(){
   $EXPORT.text(JSON.stringify(test_arr));
 });
 
+// Checkbox for table editability
 function f_checkbox(){
   var checkBox = document.getElementById("myCheck");
   var text = document.getElementById("text");
   $rows = $TABLE.find('tr:not(:hidden)');
   if (checkBox.checked == true){
-    //text.style.display = "block";
-    //text.contentEditable = "true";
     $rows.each(function(){
-      $(this).find('td').attr('contenteditable','true');
+      var cell = $(this).find('td');
+
+
+      if($(this).find('td').hasClass('table-remove')){
+        //cell.attr('contenteditable','true');
+        alert("suka");
+      }
     });
 
   } else {
-     //text.style.display = "none";
-     //text.contentEditable = "false";
      $rows.each(function(){
        $(this).find('td').attr('contenteditable','false');
      });
   }
+}
+
+function openForm() {
+  document.getElementById("myForm").style.display = "block";
+}
+
+function closeForm() {
+  document.getElementById("myForm").style.display = "none";
 }
