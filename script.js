@@ -158,13 +158,13 @@ function f_checkbox(){
   $rows = $TABLE.find('tr:not(:hidden)');
   if (checkBox.checked == true){
     $rows.each(function(){
-      var cell = $(this).find('td');
-
-
-      if($(this).find('td').hasClass('table-remove')){
-        //cell.attr('contenteditable','true');
-        alert("suka");
-      }
+      $(this).find('td').attr('contenteditable','true');
+      $cell = $(this).find('td');
+      $cell.each(function(i){
+        if(i>5){
+          $(this).attr('contenteditable','false');
+        }
+      });
     });
 
   } else {
