@@ -156,7 +156,7 @@ function f_checkbox(){
   var checkBox = document.getElementById("myCheck");
   var text = document.getElementById("text");
   $rows = $TABLE.find('tr:not(:hidden)');
-  if (checkBox.checked == true){
+  /*if (checkBox.checked == true){
     $rows.each(function(){
       $(this).find('td').attr('contenteditable','true');
       $cell = $(this).find('td');
@@ -166,11 +166,15 @@ function f_checkbox(){
         }
       });
     });
-
   } else {
      $rows.each(function(){
        $(this).find('td').attr('contenteditable','false');
      });
+  }*/
+  if (checkBox.checked == true){
+    $('[contenteditable]').attr('contenteditable','true');
+  } else {
+    $('[contenteditable]').attr('contenteditable','false');
   }
 }
 
