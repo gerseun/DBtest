@@ -8,7 +8,6 @@
 
   </script>
 <style>
-
   table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
@@ -24,25 +23,10 @@
   tr:nth-child(even) {
     background-color: #dddddd;
   }
-/*
-  .table-add {
-    color: #070;
-    cursor: pointer;
-    position: absolute;
-    top: 8px;
-    right: 0;
-  }
-
   .table-add:hover {
     color: #0b0;
+    cursor: pointer;
   }
-
-  .table-editable .glyphicon {
-  font-size: 20px;
-  }
-  .table-editable {
-  position: relative;
-  }*/
 </style>
   </head>
   <body>
@@ -56,41 +40,44 @@
       <div id="table" class="table-editable">
         <table class="table">
           <thead>
-            <tr>
-              <th>Impegno</th>
-          		<th>Articolo</th>
-          		<th>Q.tà Articolo</th>
-          		<th>Componente</th>
-          		<th>Q.tà Componente</th>
-          		<th>Stato</th>
-              <th></th>
-              <th><span class="table-add glyphicon glyphicon-plus"></span></th>
-            </tr>
-            <tbody>
-              <tr>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-              </tr>
-              <tr class="hide">
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-              </tr>
-            </tbody>
+            <th>Impegno</th>
+            <th>Articolo</th>
+            <th>Q.tà Articolo</th>
+            <th>Componente</th>
+            <th>Q.tà Componente</th>
+            <th>Stato</th>
+            <th></th>
+            <th><span class="table-add glyphicon glyphicon-plus"></span></th>
           </thead>
+          <tbody id="tbody">
+            <tr>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td>*</td>
+              <td>*</td>
+            </tr>
+            <tr class="hide">
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td>*</td>
+              <td>*</td>
+            </tr>
+          </tbody>
         </table>
       </div>
+      <button id="export-btn" class="btn btn-primary">Export Data</button>
+      <button id="import-btn" class="btn btn-primary">Import Data</button>
+      <button id="update-btn" class="btn btn-primary">Update Data</button>
+      <br>
+      <input type="checkbox" id="myCheck"  onclick="f_checkbox()" checked>Editable</input>
     </div>
   </body>
 </html>
