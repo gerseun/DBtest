@@ -13,19 +13,24 @@
     border-collapse: collapse;
     width: 100%;
   }
-
   td, th {
     border: 1px solid #dddddd;
     text-align: left;
     padding: 8px;
   }
-
-  tr:nth-child(even) {
-    background-color: #dddddd;
+  .table-add {
+    color: #070;
+    cursor: pointer;
   }
   .table-add:hover {
     color: #0b0;
-    cursor: pointer;
+  }
+  .table-remove {
+  color: #700;
+  cursor: pointer;
+  }
+  .table-remove:hover {
+  color: #f00;
   }
 </style>
   </head>
@@ -34,20 +39,18 @@
       <h1>TABELLA</h1>
       <p>Test creazione tabella da zero</p>
       <input id="input" name="myInput" type="text" placeholder="Cerca..">
-
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-      <script src="script2.js"></script>
       <div id="table" class="table-editable">
         <table class="table">
-          <thead>
+          <thead class="header">
+
             <th>Impegno</th>
             <th>Articolo</th>
             <th>Q.tà Articolo</th>
             <th>Componente</th>
             <th>Q.tà Componente</th>
             <th>Stato</th>
-            <th></th>
-            <th><span class="table-add glyphicon glyphicon-plus"></span></th>
+            <th class="control"><span class="table-add glyphicon glyphicon-plus"></span></th>
+
           </thead>
           <tbody id="tbody">
             <tr>
@@ -57,8 +60,7 @@
               <td contenteditable="true">-</td>
               <td contenteditable="true">-</td>
               <td contenteditable="true">-</td>
-              <td>*</td>
-              <td>*</td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
             <tr class="hide">
               <td contenteditable="true">-</td>
@@ -67,8 +69,7 @@
               <td contenteditable="true">-</td>
               <td contenteditable="true">-</td>
               <td contenteditable="true">-</td>
-              <td>*</td>
-              <td>*</td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
           </tbody>
         </table>
@@ -78,6 +79,9 @@
       <button id="update-btn" class="btn btn-primary">Update Data</button>
       <br>
       <input type="checkbox" id="myCheck"  onclick="f_checkbox()" checked>Editable</input>
+      <p id="output"></p>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="script2.js"></script>
   </body>
 </html>
