@@ -11,7 +11,7 @@ $('.table-add').click(function(){
   $TABLE.find('table').append($clone);
   f_checkbox();
 });
-
+//password
 // Remove row on click
 $('.table-remove').click(function () {
   $(this).parents('tr').detach();
