@@ -71,17 +71,17 @@ $('#export-btn').click(function(event) {
   //$('#output').text(JSON.stringify(data));
   //$('#output').text('export');
   // Posting to server
-  //$.post('https://ptsv2.com/t/jde4z-1571982762/post', data, function(msg){
+  $.post( './ricezioneTest.PHP', { pacchetto:JSON.stringify(data)}, function(msg){
     // Printing reply
-    //$('#output').html(msg);
-  //});
+    $('#output').html(msg);
+  });
 
   // Send the data using post
-  var posting = $.post( 'https://ptsv2.com/t/jde4z-1571982762/post', data );
+  //var posting = $.post( './config.PHP', { pacchetto:JSON.stringify(data)});
   // Put the results in a div
-  posting.done(function( data ) {
-    $('#output').html(data);
-  });
+  //posting.done(function( data ) {
+  //  $('#output').html(data);
+  //});
 });
 
 // Import from json
