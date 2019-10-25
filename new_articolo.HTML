@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Inserimento articolo</title>
+    <!--
+      CONNESSIONE AI FILE DI Style for Diego
+    -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      .table-add {
+        color: #070;
+        cursor: pointer;
+      }
+      .table-add:hover {
+        color: #0b0;
+      }
+      .table-remove {
+        color: #700;
+        cursor: pointer;
+      }
+      .table-remove:hover {
+        color: #f00;
+      }
+      .page-home {
+        color: #070;
+        cursor: pointer;
+        font-size: 40px;
+      }
+
+      .page-home:hover {
+        color: #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!--
+      RITORNO ALLA HOME PAGE ed inizio pagina
+      -->
+      <br><br>
+      <img src="logo.png">
+      <span class="page-home glyphicon glyphicon-home" onclick="window.close()"></span>
+      <br><br>
+
+      <h1>CREAZIONE ARTICOLO - CILINDRO</h1>
+      <p>Compilare correttamente la tabella per inserire un nuovo cilindro.</p>
+      <div id="table" class="table-editable">
+        <!--
+          COSTRUZIONE TABELLA INSERIMENTO
+        -->
+        <table class="table">
+          <thead class="header">
+            <!--
+              HEADER TABELLA
+            -->
+            <th>Codice Articolo</th>
+            <th>Descrizione</th>
+            <th>Cliente</th>
+            <th>Codice Cliente</th>
+            <th class="control"><span class="table-add glyphicon glyphicon-plus"></span></th>
+          </thead>
+          <tbody id="tbody">
+            <!--
+              PRIMA RIGA - EDITABILE
+            -->
+            <tr>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+            </tr>
+            <tr class="hide">
+              <!--
+                SECONDA RIGA - NASCOSTA
+              -->
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td contenteditable="true">-</td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--
+        BUTTONI (GRANDI BUTT) PER I CONTROLLI
+        EXPORT -> INVIA DATI A CONFIG.PHP
+      -->
+      <button id="export-btn" class="btn btn-primary">Export Data</button>
+      <button id="import-btn" class="btn btn-primary">Import Data</button>
+      <button id="update-btn" class="btn btn-primary">Update Data</button>
+
+      <!--
+      <br><br>
+      <input type="checkbox" id="myCheck"  onclick="checkBox()" checked>Editable</input>
+      
+        OUTPUT A VIDEO
+      -->
+      <p id="output"></p>
+
+    </div>
+    <!--
+      INCLUSIONE FILE DI SCRIPT
+    -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="script2.js"></script>
+  </body>
+</html>
