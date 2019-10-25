@@ -54,11 +54,12 @@
       <br><br>
 
       <h1>CREAZIONE ARTICOLO - CILINDRO</h1>
-      <p>Compilare correttamente la tabella per inserire un nuovo cilindro.</p>
-      <div id="table" class="table-editable">
-        <!--
-          COSTRUZIONE TABELLA INSERIMENTO
-        -->
+      <p>Inserire i dati relativi al cilindro.</p>
+
+      <!--
+        COSTRUZIONE TABELLA PER L' ARTICOLO
+      -->
+      <div id="tableArticolo" class="table-editable">
         <table class="table">
           <thead class="header">
             <!--
@@ -68,6 +69,36 @@
             <th>Descrizione</th>
             <th>Cliente</th>
             <th>Codice Cliente</th>
+          </thead>
+          <tbody id="tbody">
+            <!--
+              PRIMA RIGA - EDITABILE
+            -->
+            <tr>
+              <td contenteditable="true" id="firtsCell"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+        COSTRUZIONE TABELLA PER I COMPONENTI
+      -->
+      <br>
+      <p>Compilare le righe dei componenti.</p>
+      <div id="table" class="table-editable">
+        <table class="table">
+          <thead class="header">
+            <!--
+              HEADER TABELLA
+            -->
+            <th>Codice Componente</th>
+            <th>Descrizione</th>
+            <th>Dimensione</th>
+            <th>Materiale</th>
             <th class="control"><span class="table-add glyphicon glyphicon-plus"></span></th>
           </thead>
           <tbody id="tbody">
@@ -75,20 +106,20 @@
               PRIMA RIGA - EDITABILE
             -->
             <tr>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
               <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
             <tr class="hide">
               <!--
                 SECONDA RIGA - NASCOSTA
               -->
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
               <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
           </tbody>
@@ -105,7 +136,7 @@
       <!--
       <br><br>
       <input type="checkbox" id="myCheck"  onclick="checkBox()" checked>Editable</input>
-      
+
         OUTPUT A VIDEO
       -->
       <p id="output"></p>
@@ -116,5 +147,13 @@
     -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="script2.js"></script>
+
+    <!--
+    setto il focus alla tabella
+    -->
+    <script type="text/javascript">
+        $('#firtsCell').focus();
+    </script>
+
   </body>
 </html>
