@@ -11,13 +11,15 @@ $(document).ready(function(){
 });
 
 // Checkbox for table editability
-function f_checkbox(){
+function checkBox(){
   if ($("#myCheck").prop('checked')){
     $('[contenteditable]').attr('contenteditable','true');
-    $('#update-btn').removeClass('hide')
+    //$('#update-btn').removeClass('hide')
+    $('#update-btn').show();
   } else {
     $('[contenteditable]').attr('contenteditable','false');
-    $('#update-btn').addClass('hide','true');
+    //$('#update-btn').addClass('hide','true');
+    $('#update-btn').hide();
   }
 }
 
@@ -25,7 +27,7 @@ function f_checkbox(){
 $('.table-add').click(function(){
   var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
   $('#table').find('table').append($clone);
-  //f_checkbox();
+  //checkBox();
 });
 
 // Remove row on click
@@ -57,7 +59,7 @@ $('#export-btn').click(function(event) {
     headers.forEach(function (header, i) {
       h[header] = $td.eq(i).text();
       // Check input format
-      if(!f_validateinput(h[header],i)){
+      if(!validateInput(h[header],i)){
         alert("Formato sbagliato " + header + " riga " + x.rowIndex);
       }
     });
@@ -66,8 +68,13 @@ $('#export-btn').click(function(event) {
   });
 
   // Output the result
-  $('#output').text(JSON.stringify(data));
+  //$('#output').text(JSON.stringify(data));
   //$('#output').text('export');
+  // Posting to server
+  $.post('https://ptsv2.com/t/jde4z-1571982762/post', data, function(msg){
+    // Printing reply
+    $('#output').html(msg);
+  });
 });
 
 // Import from json
@@ -125,7 +132,7 @@ $('#update-btn').click(function(event) {
 });
 
 // Check input format
-function f_validateinput(value, column){
+function validateInput(value, column){
   /*
   var impegnoRGEX = /^[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}[0-9]{0,1}[-\s\/]{1}[0-9]{2}$/;
   var articoloRGEX = /^[0-9]{1}[A-Z]{3}[0-9]{5}/;
