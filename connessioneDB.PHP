@@ -35,13 +35,13 @@
             echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br>";
           }
           else {
-            echo "Error creating table: " . $connessione->error;
+            echo "Error creating table: " . $connessione->error."<br>";
             mysqli_close($connessione);
             return false;
           }
         }
         else {
-          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!";
+          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!<br>";
           mysqli_close($connessione);
           return false;
         }
@@ -61,18 +61,21 @@
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //ciclo tutti i componenti
+        $cont = 0;
         foreach($codComponenti as $componente){
-          $codComp = $componente[0];
-          $desc = $componente[1];
-          $dim = $componente[2];
-          $mat = $componente[3];
+          echo "<br>".$cont."<br>";
+          $codComp = $componente["Codice Componente"];
+          $desc = $componente["Descrizione"];
+          $dim = $componente["Dimensione"];
+          $mat = $componente["Materiale"];
 
           //query per inserire il componente nella tabella cilindro
-          $istruzione = "INSERT INTO ".$cil." (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          $istruzione = "INSERT INTO ".$codArt." (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
           if (mysqli_query($connessione,$istruzione)) {
             echo $codComp." INSERITO CORRETTAMENTE <br>";
           }
           else {
+            echo "Error creating table: " . $connessione->error."<br>";
             echo "err 2 -> Componente già inserito nel cilindro - Vedere cod. componente: ".$codComp." <br>";
           }
 
@@ -82,8 +85,11 @@
             //echo "COMPONENTE INSERITO CORRETTAMENTE <br>";
           }
           else {
+            echo "Error creating table: " . $connessione->error."<br>";
             echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
           }
+
+          $cont = $cont +1;
 
         }
 
@@ -110,15 +116,16 @@
     $articolo = $assieme[0];
     $componenti = $assieme[1];
     //variabili del cilindro per settarlo
-    $codArticolo = $articolo[0];
-    $descrizione = $articolo[1];
-    $cliente = $articolo[2];
-    $codCliente = $articolo[3];
+    $codArticolo = $articolo["ca"];
+    $descrizione = $articolo["desc"];
+    $cliente = $articolo["cli"];
+    $codCliente = $articolo["cc"];
+    //setto l' articolo
     $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
     //vado a salvare le componenti del cilindro
     $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
-  else(isset($_POST['getArticolo'])){
+  elseif(isset($_POST['getArticolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
 
   }

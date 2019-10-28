@@ -78,10 +78,11 @@ $('#export-btn').click(function(event) {
   $('#output').text(JSON.stringify(arr));
   //$('#output').text('export');
   // Posting to server
-  //$.post( './ricezioneTest.PHP', { pacchetto:JSON.stringify(data)}, function(msg){
-    // Printing reply
-  //  $('#output').html(msg);
-  //});
+
+  $.post( './connessioneDB.PHP', { newAarticolo:JSON.stringify(arr)}, function(msg){
+     // Printing reply
+    $('#output').html(msg);
+  });
 
   // Send the data using post
   //var posting = $.post( './config.PHP', { pacchetto:JSON.stringify(data)});
