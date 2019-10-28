@@ -21,22 +21,106 @@
       }
     }
 
-    function stampa($var){
-      $this->connetti();
-      echo $var['test1']['a']." - ".$var['test1']['b']." - ".$var['test1']['c']."<br>";
-      echo $var['test2']['a']." - ".$var['test2']['b']." - ".$var['test2']['c']."<br>";
-      echo $var['test3']['a']." - ".$var['test3']['b']." - ".$var['test3']['c']."<br>";
-      return true;
+    //CREAZIONE ARTICOLO (CILINDRO)
+    public function setArticolo($codArt,$desc,$cli,$codCli){
+      if(isset($this->attiva)){
+        //connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "INSERT INTO `articolo` (`cod_articolo`, `descrizione`, `cliente`, `cod_cliente`, `data`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."',null);";
+        if (mysqli_query($connessione,$istruzione)) {
+          echo "ARTICOLO INSERITO CORRETTAMENTE <br>";
+          //creo la tabella relativa all' articolo
+          $istruzione = "CREATE TABLE ".$codArt." ( `cod_componente` VARCHAR(50) NOT NULL , `descrizione` VARCHAR(50) NULL , `dimensione` VARCHAR(50) NULL , `materiale` VARCHAR(50) NULL , PRIMARY KEY (`cod_componente`));";
+          if (mysqli_query($connessione,$istruzione)) {
+            echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br>";
+          }
+          else {
+            echo "Error creating table: " . $connessione->error;
+            mysqli_close($connessione);
+            return false;
+          }
+        }
+        else {
+          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!";
+          mysqli_close($connessione);
+          return false;
+        }
+        //disconnessione
+        mysqli_close($connessione);
+        return true;
+      }
+      else{
+        mysqli_close($connessione);
+        return false;
+      }
     }
-  }
-///////////////////////////////
-//FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
 
-  if (isset($_POST['pacchetto'])){
+    //INSERISCO I COMPONENTI NELLA TABELLA DELL' ARTICOLO
+    public function setComponenteInArticolo($codArt, $codComponenti){
+      if(isset($this->attiva)){
+        //connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //ciclo tutti i componenti
+        foreach($codComponenti as $componente){
+          $codComp = $componente[0];
+          $desc = $componente[1];
+          $dim = $componente[2];
+          $mat = $componente[3];
+
+          //query per inserire il componente nella tabella cilindro
+          $istruzione = "INSERT INTO ".$cil." (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          if (mysqli_query($connessione,$istruzione)) {
+            echo $codComp." INSERITO CORRETTAMENTE <br>";
+          }
+          else {
+            echo "err 2 -> Componente già inserito nel cilindro - Vedere cod. componente: ".$codComp." <br>";
+          }
+
+          //query per inserire il componente nella tabella componenti
+          $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          if (mysqli_query($connessione,$istruzione)) {
+            //echo "COMPONENTE INSERITO CORRETTAMENTE <br>";
+          }
+          else {
+            echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
+          }
+
+        }
+
+        //disconnessione
+        mysqli_close($connessione);
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+
+  }
+
+//////////////////////////////////////////////////////////////////////////
+
+//FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
+  if (isset($_POST['newAarticolo'])){
+    //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
     echo "<br>ingresso<br>";
-    $arr = json_decode($_POST['pacchetto'],true);
-    $varDB->stampa($arr);
+    $assieme = json_decode($_POST['newAarticolo'],true);
+    //setArticolo -> cilindro - componenti
+    $articolo = $assieme[0];
+    $componenti = $assieme[1];
+    //variabili del cilindro per settarlo
+    $codArticolo = $articolo[0];
+    $descrizione = $articolo[1];
+    $cliente = $articolo[2];
+    $codCliente = $articolo[3];
+    $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
+    //vado a salvare le componenti del cilindro
+    $varDB->setComponenteInArticolo($codArticolo, $componenti);
+  }
+  else(isset($_POST['getArticolo'])){
+    //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
+    
   }
 
 ?>
