@@ -102,6 +102,21 @@
       }
     }
 
+    //RICERCA COMPONENTE INSERITO
+    public function getComponente($ricCompo){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "SELECT * FROM componente WHERE cod_componente='".$ricCompo."';";
+        $result=mysqli_query($connessione,$istruzione);
+        if (mysqli_num_rows($result)>0) {
+          $row = mysqli_fetch_assoc($result)
+          //componente gia inserito -> stampo il componente e lo inserisco nel cilindro
+          $arrRisultato = {$row["cod_componente"],$row["descrizione"],$row["dimensione"],$row["materiale"]}
+          echo json_encode($arrRisultato);
+        }
+      }
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,7 +125,7 @@
   if (isset($_POST['newAarticolo'])){
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
-    echo "<br>ingresso<br>";
+    echo "<br>REPORT NEW ARTICOLO:<br>";
     $assieme = json_decode($_POST['newAarticolo'],true);
     //setArticolo -> cilindro - componenti
     $articolo = $assieme[0];
@@ -125,9 +140,12 @@
     //vado a salvare le componenti del cilindro
     $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
-  elseif(isset($_POST['getArticolo'])){
+  elseif(isset($_POST['getComponente'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
-
+    $varDB = new conn_DB();
+    echo "<br>REPORT NEW ARTICOLO:<br>";
+    $ricercaComponente = $_POST['getComponente'];
+    $varDB->getComponente($ricercaComponente);
   }
 
 ?>
