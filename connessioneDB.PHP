@@ -120,7 +120,7 @@
   }
   else(isset($_POST['getArticolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
-    
+
   }
 
 ?>
