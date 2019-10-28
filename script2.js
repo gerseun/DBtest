@@ -1,3 +1,5 @@
+// POST testing:   https://ptsv2.com/t/jde4z-1571982762/post
+
 $("p").css('border', '1px solid red');
 
 // Filter table from input
@@ -6,6 +8,14 @@ $(document).ready(function(){
     var value = $(this).val().toLowerCase();
     $("#tbody tr").filter(function() {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  $('#codArticolo').focusout(function(event) {
+    var art = $('#codArticolo').text();
+    $.post( './connessioneDB.PHP', {articolo : art}, function(msg){
+       // Printing reply
+      $('#output').html(msg);
     });
   });
 });
