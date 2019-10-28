@@ -45,6 +45,7 @@ $('#export-btn').click(function(event) {
   var $rows = $('#table').find('tr:not(:hidden)');
   var headers = [];
   var data = [];
+  var arr = [];
   // Get the headers (add special header logic here)
   $('.header').find('th:not(.control)').each(function (index) {
     headers.push($(this).text()/*.toLowerCase()*/);
@@ -66,15 +67,21 @@ $('#export-btn').click(function(event) {
 
   data.push(h);
   });
-
+  var ca =$('#codArticolo').text();
+  var desc=$('#descrizione').text();
+  var cli=$('#cliente').text();
+  var cc=$('#codCliente').text();
+  var art = {ca,desc,cli,cc};
+  arr.push(art);
+  arr.push(data);
   // Output the result
-  //$('#output').text(JSON.stringify(data));
+  $('#output').text(JSON.stringify(arr));
   //$('#output').text('export');
   // Posting to server
-  $.post( './ricezioneTest.PHP', { pacchetto:JSON.stringify(data)}, function(msg){
+  //$.post( './ricezioneTest.PHP', { pacchetto:JSON.stringify(data)}, function(msg){
     // Printing reply
-    $('#output').html(msg);
-  });
+  //  $('#output').html(msg);
+  //});
 
   // Send the data using post
   //var posting = $.post( './config.PHP', { pacchetto:JSON.stringify(data)});
