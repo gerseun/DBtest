@@ -32,22 +32,17 @@
           //creo la tabella relativa all' articolo
           $istruzione = "CREATE TABLE ".$codArt." ( `cod_componente` VARCHAR(50) NOT NULL , `descrizione` VARCHAR(50) NULL , `dimensione` VARCHAR(50) NULL , `materiale` VARCHAR(50) NULL , PRIMARY KEY (`cod_componente`));";
           if (mysqli_query($connessione,$istruzione)) {
-            echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br>";
+            echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br><br>";
           }
           else {
-            echo "Error creating table: " . $connessione->error."<br>";
-            mysqli_close($connessione);
-            return false;
+            echo "Error creating table: " . $connessione->error."<br><br>";
           }
         }
         else {
-          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!<br>";
-          mysqli_close($connessione);
-          return false;
+          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!<br><br>";
         }
         //disconnessione
         mysqli_close($connessione);
-        return true;
       }
       else{
         mysqli_close($connessione);
@@ -102,7 +97,7 @@
       }
     }
 
-    //RICERCA COMPONENTE INSERITO
+    //RICERCA ARTICOLO INSERITO CON TUTTI I SUOI COMPONENTI
     public function getArticolo($ricArticolo){
       if(isset($this->attiva)){
         //apro la connessione al DB
@@ -118,8 +113,8 @@
           $descrizione = $row["descrizione"];
           $cliente = $row["cliente"];
           $cod_cliente = $row["cod_cliente"];
-
-          $arr_Articolo = [$cod_articolo,$descrizione,$cliente,$cod_cliente];
+          //creo array dell' articolo
+          $arr_Articolo = array("ca"=>$cod_articolo,"d"=>$descrizione,"c"=>$cliente,"cc"=>$cod_cliente);
 
           //prendo la tabella articolo e stampo i componenti già salvati
           $istruzione = "SELECT * FROM ".$ricArticolo.";";
@@ -127,23 +122,23 @@
             $i = 0;
             while($row = mysqli_fetch_assoc($result)) {
               //salvo le righe dei componenti inseriti nell' articolo cercato
-              $arr_Componente[$i] = [$row["cod_componente"],$row["descrizione"],$row["dimensione"],$row["materiale"]];
+              //array di componenti
+              $arr_Componente[$i] = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
               $i = $i+1;
             }
           }
           else {
             echo "Error creating table: " . $connessione->error."<br>";
           }
-
-          $arrRisultato = [$arr_Articolo,$arr_Componente];
+          //concateno gli array e li passo codificati
+          $arrRisultato = array("aa"=>$arr_Articolo,"ac"=>$arr_Componente);
           echo json_encode($arrRisultato);
-
+          return true;
         }
         else{
           //non ancora inserito
           return false;
         }
-
       }
     }
 
@@ -175,7 +170,7 @@
   elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
     $varDB = new conn_DB();
-    echo "<br>REPORT GET ARTICOLO:<br>";
+    //echo "<br>REPORT GET ARTICOLO:<br>";
     $ricercaArticolo = $_POST['articolo'];
     $varDB->getArticolo($ricercaArticolo);
   }

@@ -14,9 +14,49 @@ $(document).ready(function(){
   $('#codArticolo').focusout(function(event) {
     var art = $('#codArticolo').text();
     $.post( './connessioneDB.PHP', {articolo : art}, function(msg){
-       // Printing reply
-      $('#output').html(msg);
-    });
+      $('#output').text(JSON.stringify(msg));
+
+      var art = [];
+      var comp = [];
+      art = msg.aa;
+      comp = msg.ac;
+
+      $('#codArticolo').text(art.ca);
+      $('#descrizione').text(art.d);
+      $('#cliente').text(art.c);
+      $('#codCliente').text(art.cc);
+
+      var $rows = $('#table').find('tr:not(:hidden)');
+      var headers = [];
+      if($rows.length <= comp.length){
+      for (var i = 1; i < comp.length; i++){
+        var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
+        $('#table').find('table').append($clone);
+      }}else{
+        $rows.each(function(index){
+          if(index > comp.length){
+            $(this).detach();
+          }
+        });
+      }
+      $rows = $('#table').find('tr:not(:hidden)');
+      $('.header').find('th:not(.control)').each(function (index) {
+        headers.push($(this).text());
+      });
+      $rows.shift();
+      // Turn all existing rows into a loopable array
+      $rows.each(function (index) {
+        var $td = $(this).find('td');
+        var h = {};
+        var obj = comp[index];
+        $('#output').text(JSON.stringify(obj));
+        headers = ["c1","c2","c3","c4"];
+        // Use the headers from earlier to name our hash keys
+        headers.forEach(function (header, i) {
+          $td.eq(i).text(obj[header]);
+        });
+      });
+    },"json");
   });
 });
 
@@ -85,49 +125,12 @@ $('#export-btn').click(function(event) {
   arr.push(art);
   arr.push(data);
   // Output the result
-  $('#output').text(JSON.stringify(arr));
+  //$('#output').text(JSON.stringify(arr));
   //$('#output').text('export');
   // Posting to server
 
   $.post( './connessioneDB.PHP', { newAarticolo:JSON.stringify(arr)}, function(msg){
-    var art = [];
-    var comp = [];
-    art = msg[0];
-    comp = masg[1];
-    $('#codArticolo').text(art[0]);
-    $('#descrizione').text(art[1]);
-    $('#cliente').text(art[2]);
-    $('#codCliente').text(art[3]);
-
-    var $rows = $('#table').find('tr:not(:hidden)');
-    var headers = [];
-    if($rows.length <= comp.length){
-    for (var i = 1; i < comp.length; i++){
-      var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
-      $('#table').find('table').append($clone);
-    }}else{
-      $rows.each(function(index){
-        if(index > comp.length){
-          $(this).detach();
-        }
-      });
-    }
-    $rows = $('#table').find('tr:not(:hidden)');
-    $('.header').find('th:not(.control)').each(function (index) {
-      headers.push($(this).text()/*.toLowerCase()*/);
-    });
-    $rows.shift();
-    // Turn all existing rows into a loopable array
-    $rows.each(function (index) {
-      var $td = $(this).find('td');
-      var h = {};
-      var obj = comp[index];
-
-      // Use the headers from earlier to name our hash keys
-      headers.forEach(function (header, i) {
-        $td.eq(i).text(obj[header]);
-      });
-    });
+    $('#output').html(msg);
   });
 
   // Send the data using post
