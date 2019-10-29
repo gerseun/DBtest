@@ -91,7 +91,8 @@ jQuery.fn.shift = [].shift;
 jQuery.fn.reverse = [].reverse;
 
 // Export table data
-$('#export-btn-na').click(function(event) {
+$('#export-btn-ncs').click(function(event) {
+  /*
   var $rows = $('#table').find('tr:not(:hidden)');
   var headers = [];
   var data = [];
@@ -99,7 +100,8 @@ $('#export-btn-na').click(function(event) {
   // Get the headers (add special header logic here)
   $('.header').find('th:not(.control)').each(function (index) {
     headers.push($(this).text());
-  });
+
+  });*/
   $rows.shift();
   // Turn all existing rows into a loopable array
   $rows.each(function (row,x) {
