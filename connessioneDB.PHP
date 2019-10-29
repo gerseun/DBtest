@@ -142,7 +142,24 @@
       }
     }
 
-
+    //SALVO I COMPONENTI SINGOLI AL DI FUORI DELL' ASSIEME
+    public function setCompSingolo($codComponenti){
+      if(isset($this->attiva)){
+        //connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+        if (mysqli_query($connessione,$istruzione)) {
+          echo "COMPONENTE INSERITO CORRETTAMENTE <br>";
+        }
+        else {
+          echo "err 3 Componente già inserito - Vedere cod. componente";
+          return false;
+        }
+      }
+      else{
+        return false;
+      }
+    }
 
   }
 
@@ -153,6 +170,7 @@
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
     echo "<br>REPORT NEW ARTICOLO:<br>";
+    //prendo l' array
     $assieme = json_decode($_POST['newAarticolo'],true);
     //setArticolo -> cilindro - componenti
     $articolo = $assieme[0];
@@ -167,6 +185,7 @@
     //vado a salvare le componenti del cilindro
     $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
+
   elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
     $varDB = new conn_DB();
@@ -174,4 +193,14 @@
     $ricercaArticolo = $_POST['articolo'];
     $varDB->getArticolo($ricercaArticolo);
   }
+
+  elseif (isset($_POST['setCompSingolo'])) {
+    //INSERISCO I COMPONENTI SINGOLI
+    $varDB = new conn_DB();
+    echo "<br>REPORT NEW COMPONENTE:<br>";
+    //prendo l' array
+    $assieme = json_decode($_POST['setCompSingolo'],true);
+    $varDB->setCompSingolo($assieme);
+  }
+
 ?>

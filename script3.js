@@ -90,10 +90,15 @@ jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
 jQuery.fn.reverse = [].reverse;
 
+
+
+
+
 // Export table data
-$('#export-btn-ncs').click(function(event) {
-  /*
-  var $rows = $('#table').find('tr:not(:hidden)');
+//QUESTA FUNZIONE SERVE PER NEW_COMP_SINGOLO
+$('#export-btn-NCS').click(function(event) {
+
+  var $rows = $('#table-NCS').find('tr:not(:hidden)');
   var headers = [];
   var data = [];
   var arr = [];
@@ -101,7 +106,7 @@ $('#export-btn-ncs').click(function(event) {
   $('.header').find('th:not(.control)').each(function (index) {
     headers.push($(this).text());
 
-  });*/
+  });
   $rows.shift();
   // Turn all existing rows into a loopable array
   $rows.each(function (row,x) {
@@ -119,29 +124,15 @@ $('#export-btn-ncs').click(function(event) {
 
   data.push(h);
   });
-  var ca =$('#codArticolo').text();
-  var desc=$('#descrizione').text();
-  var cli=$('#cliente').text();
-  var cc=$('#codCliente').text();
-  var art = {ca,desc,cli,cc};
-  arr.push(art);
-  arr.push(data);
-  // Output the result
-  //$('#output').text(JSON.stringify(arr));
-  //$('#output').text('export');
-  // Posting to server
 
-  $.post( './connessioneDB.PHP', { newAarticolo:JSON.stringify(arr)}, function(msg){
+  $.post( './connessioneDB.PHP', { setCompSingolo:JSON.stringify(data)}, function(msg){
     $('#output').html(msg);
   });
-
-  // Send the data using post
-  //var posting = $.post( './config.PHP', { pacchetto:JSON.stringify(data)});
-  // Put the results in a div
-  //posting.done(function( data ) {
-  //  $('#output').html(data);
-  //});
 });
+
+
+
+
 
 // Import from json
 test_arr = [
