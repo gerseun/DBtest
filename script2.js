@@ -90,8 +90,44 @@ $('#export-btn').click(function(event) {
   // Posting to server
 
   $.post( './connessioneDB.PHP', { newAarticolo:JSON.stringify(arr)}, function(msg){
-     // Printing reply
-    $('#output').html(msg);
+    var art = [];
+    var comp = [];
+    art = msg[0];
+    comp = masg[1];
+    $('#codArticolo').text(art[0]);
+    $('#descrizione').text(art[1]);
+    $('#cliente').text(art[2]);
+    $('#codCliente').text(art[3]);
+
+    var $rows = $('#table').find('tr:not(:hidden)');
+    var headers = [];
+    if($rows.length <= comp.length){
+    for (var i = 1; i < comp.length; i++){
+      var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
+      $('#table').find('table').append($clone);
+    }}else{
+      $rows.each(function(index){
+        if(index > comp.length){
+          $(this).detach();
+        }
+      });
+    }
+    $rows = $('#table').find('tr:not(:hidden)');
+    $('.header').find('th:not(.control)').each(function (index) {
+      headers.push($(this).text()/*.toLowerCase()*/);
+    });
+    $rows.shift();
+    // Turn all existing rows into a loopable array
+    $rows.each(function (index) {
+      var $td = $(this).find('td');
+      var h = {};
+      var obj = comp[index];
+
+      // Use the headers from earlier to name our hash keys
+      headers.forEach(function (header, i) {
+        $td.eq(i).text(obj[header]);
+      });
+    });
   });
 
   // Send the data using post
