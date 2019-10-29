@@ -103,20 +103,52 @@
     }
 
     //RICERCA COMPONENTE INSERITO
-    public function getComponente($ricCompo){
+    public function getArticolo($ricArticolo){
       if(isset($this->attiva)){
         //apro la connessione al DB
+        $cod_articolo = $descrizione = $cliente = $cod_cliente = "";
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        $istruzione = "SELECT * FROM componente WHERE cod_componente='".$ricCompo."';";
+        $istruzione = "SELECT * FROM articolo WHERE cod_articolo='".$ricArticolo."';";
         $result=mysqli_query($connessione,$istruzione);
+        //controllo se articolo già salvato
         if (mysqli_num_rows($result)>0) {
-          $row = mysqli_fetch_assoc($result)
-          //componente gia inserito -> stampo il componente e lo inserisco nel cilindro
-          $arrRisultato = {$row["cod_componente"],$row["descrizione"],$row["dimensione"],$row["materiale"]}
+          $row = mysqli_fetch_assoc($result);
+          //articolo gia inserito -> salvo i dati articolo
+          $cod_articolo = $row["cod_articolo"];
+          $descrizione = $row["descrizione"];
+          $cliente = $row["cliente"];
+          $cod_cliente = $row["cod_cliente"];
+
+          $arr_Articolo = [$cod_articolo,$descrizione,$cliente,$cod_cliente];
+
+          //prendo la tabella articolo e stampo i componenti già salvati
+          $istruzione = "SELECT * FROM ".$ricArticolo.";";
+          if($result=mysqli_query($connessione,$istruzione)){
+            $i = 0;
+            while($row = mysqli_fetch_assoc($result)) {
+              //salvo le righe dei componenti inseriti nell' articolo cercato
+              $arr_Componente[$i] = [$row["cod_componente"],$row["descrizione"],$row["dimensione"],$row["materiale"]];
+              $i = $i+1;
+            }
+          }
+          else {
+            echo "Error creating table: " . $connessione->error."<br>";
+          }
+
+          $arrRisultato = [$arr_Articolo,$arr_Componente];
           echo json_encode($arrRisultato);
+
         }
+        else{
+          //non ancora inserito
+          return false;
+        }
+
       }
     }
+
+
+
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,12 +172,11 @@
     //vado a salvare le componenti del cilindro
     $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
-  elseif(isset($_POST['getComponente'])){
+  elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
     $varDB = new conn_DB();
-    echo "<br>REPORT NEW ARTICOLO:<br>";
-    $ricercaComponente = $_POST['getComponente'];
-    $varDB->getComponente($ricercaComponente);
+    echo "<br>REPORT GET ARTICOLO:<br>";
+    $ricercaArticolo = $_POST['articolo'];
+    $varDB->getArticolo($ricercaArticolo);
   }
-
 ?>
