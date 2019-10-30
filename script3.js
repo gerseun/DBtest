@@ -26,12 +26,12 @@ $(document).ready(function(){
       $('#cliente').text(art.c);
       $('#codCliente').text(art.cc);
 
-      var $rows = $('#table').find('tr:not(:hidden)');
+      var $rows = $('#table-NCS').find('tr:not(:hidden)');
       var headers = [];
       if($rows.length <= comp.length){
       for (var i = 1; i < comp.length; i++){
-        var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
-        $('#table').find('table').append($clone);
+        var $clone = $('#table-NCS').find('tr.hide').clone(true).removeClass('hide table-line');
+        $('#table-NCS').find('table').append($clone);
       }}else{
         $rows.each(function(index){
           if(index > comp.length){
@@ -39,7 +39,7 @@ $(document).ready(function(){
           }
         });
       }
-      $rows = $('#table').find('tr:not(:hidden)');
+      $rows = $('#table-NCS').find('tr:not(:hidden)');
       $('.header').find('th:not(.control)').each(function (index) {
         headers.push($(this).text());
       });
@@ -75,8 +75,8 @@ function checkBox(){
 
 // Add new row on click
 $('.table-add').click(function(){
-  var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
-  $('#table').find('table').append($clone);
+  var $clone = $('#table-NCS').find('tr.hide').clone(true).removeClass('hide table-line');
+  $('#table-NCS').find('table').append($clone);
   //checkBox();
 });
 

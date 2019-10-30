@@ -144,15 +144,54 @@
 
     //SALVO I COMPONENTI SINGOLI AL DI FUORI DELL' ASSIEME
     public function setCompSingolo($codComponenti){
+      //ricevo un array di componenti, devo ciclarli ed inserirli uno alla volta
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
-        if (mysqli_query($connessione,$istruzione)) {
-          echo "COMPONENTE INSERITO CORRETTAMENTE <br>";
+        $cont = 0;
+        foreach($codComponenti as $componente){
+          echo "<br>".$cont." -> ";
+          $codComp = $componente["Codice Componente"];
+          $desc = $componente["Descrizione"];
+          $dim = $componente["Dimensione"];
+          $mat = $componente["Materiale"];
+          //query per inserire il componente nella tabella componenti
+          $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          if (mysqli_query($connessione,$istruzione)) {
+            echo $codComp." - COMPONENTE INSERITO CORRETTAMENTE <br>";
+          }
+          else {
+            echo "<br>Error creating table: " . $connessione->error."<br>";
+            echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
+          }
+          $cont = $cont +1;
+        }
+      }
+      else{
+        return false;
+      }
+      //fine funzione
+      return true;
+    }
+
+    //RICERCA COMPONENTE INSERITO
+    public function getComponente($ricComponente){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "SELECT * FROM componente WHERE cod_componente='".$ricComponente."';";
+        $result=mysqli_query($connessione,$istruzione);
+        //controllo se componente già salvato
+        if (mysqli_num_rows($result)>0) {
+          $row = mysqli_fetch_assoc($result);
+          //articolo gia inserito -> salvo i dati articolo
+          $arr_Componente = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
+          //passo l'array codificato
+          echo json_encode($arr_Componente);
+          return true;
         }
         else {
-          echo "err 3 Componente già inserito - Vedere cod. componente";
+          //non ancora inserito
           return false;
         }
       }
@@ -160,6 +199,8 @@
         return false;
       }
     }
+
+
 
   }
 
@@ -189,9 +230,15 @@
   elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
     $varDB = new conn_DB();
-    //echo "<br>REPORT GET ARTICOLO:<br>";
     $ricercaArticolo = $_POST['articolo'];
     $varDB->getArticolo($ricercaArticolo);
+  }
+
+  elseif(isset($_POST['componente'])){
+    //RICERCA SE E' GIA' STATO INSERITO IL CODICE COMPONENTE ED INVIO I DATI
+    $varDB = new conn_DB();
+    $ricercaComponente = $_POST['componente'];
+    $varDB->getComponente($ricercaComponente);
   }
 
   elseif (isset($_POST['setCompSingolo'])) {
