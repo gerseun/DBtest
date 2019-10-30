@@ -58,8 +58,7 @@ $(document).ready(function(){
         });
       });
     },"json");
-  });
-  */
+  });*/
 });
 
 
@@ -91,7 +90,7 @@ $('#export-btn-ni').click(function(event) {
   // Creo array Impegno
   var i1 = $('#codImpegno').text();
   var i2 = $('#cliente').text();
-  var i3 = $('#dataCons').text();
+  var i3 = $('#date').val();
   var i4 = $('#ordine').text();
   var imp = {i1,i2,i3,i4};
 
@@ -136,56 +135,6 @@ $('#export-btn-ni').click(function(event) {
   $.post( './connessioneDB.PHP', { newImpegno:JSON.stringify(arr)}, function(msg){
     $('#output').html(msg);
   });
-
-  /*
-  var $rows = $('#table').find('tr:not(:hidden)');
-  var headers = [];
-  var data = [];
-  var arr = [];
-  // Get the headers (add special header logic here)
-  $('.header').find('th:not(.control)').each(function (index) {
-    headers.push($(this).text());
-  });
-  $rows.shift();
-  // Turn all existing rows into a loopable array
-  $rows.each(function (row,x) {
-    var $td = $(this).find('td');
-    var h = {};
-
-    // Use the headers from earlier to name our hash keys
-    headers.forEach(function (header, i) {
-      h[header] = $td.eq(i).text();
-      // Check input format
-      if(!validateInput(h[header],i)){
-        alert("Formato sbagliato " + header + " riga " + x.rowIndex);
-      }
-    });
-
-    data.push(h);
-  });
-  var ca =$('#codArticolo').text();
-  var desc=$('#descrizione').text();
-  var cli=$('#cliente').text();
-  var cc=$('#codCliente').text();
-  var art = {ca,desc,cli,cc};
-  arr.push(art);
-  arr.push(data);
-  // Output the result
-  //$('#output').text(JSON.stringify(arr));
-  //$('#output').text('export');
-  // Posting to server
-
-  $.post( './connessioneDB.PHP', { newAarticolo:JSON.stringify(arr)}, function(msg){
-    $('#output').html(msg);
-  });
-
-  // Send the data using post
-  //var posting = $.post( './config.PHP', { pacchetto:JSON.stringify(data)});
-  // Put the results in a div
-  //posting.done(function( data ) {
-  //  $('#output').html(data);
-  //});
-  */
 });
 
 
