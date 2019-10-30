@@ -10,7 +10,7 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
-/*
+
   $('#codImpegno').focusout(function(event) {
     var imp = $('#codImpegno').text();
     $.post( './connessioneDB.PHP', {impegno : imp}, function(msg){
@@ -18,58 +18,58 @@ $(document).ready(function(){
       var tImp = msg.imp;
       var tArt = msg.art;
       var tComp = msg.comp;
-
+      // Completamento tabella Impegno
       $('#cliente').text(tImp.i2);
-      $('#date').val(tImp.i3);
+      $('#datepicker').val(tImp.i3);
       $('#ordine').val(tImp.i4);
-
+      // Completamento tabella Articoli
       var $rowsArt = $('#tableArt').find('tr:not(:hidden)');
       var headersArt = ["ca", "d", "c", "cc","q"];
-      var colonArt = $('#headerAr').find('th:not(.control)');
-
-
-
-
-      var art = [];
-      var comp = [];
-      art = msg.aa;
-      comp = msg.ac;
-
-      $('#codArticolo').text(art.ca);
-      $('#descrizione').text(art.d);
-      $('#cliente').text(art.c);
-      $('#codCliente').text(art.cc);
-
-      var $rows = $('#table').find('tr:not(:hidden)');
-      var headers = [];
-      if($rows.length <= comp.length){
-      for (var i = 1; i < comp.length; i++){
-        var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
-        $('#table').find('table').append($clone);
-      }}else{
-        $rows.each(function(index){
-          if(index > comp.length){
+      if($rowsArt.length <= tArt.length){
+        for(var i = 1;i < tArt.length; i++){
+          var $clone = $('#tableArticolo').find('tr.hide').clone(true).removeClass('hide table-line');
+          $('#tableArticolo').find('table').append($clone);
+        }
+      }else{
+        $rowsArt.each(function(index, el) {
+          if(index > tArt.length){
             $(this).detach();
           }
         });
       }
-      $rows = $('#table').find('tr:not(:hidden)');
-      $('.header').find('th:not(.control)').each(function (index) {
-        headers.push($(this).text());
-      });
-      $rows.shift();
-      // Turn all existing rows into a loopable array
-      $rows.each(function (index) {
+      var $rowsArt = $('#tableArt').find('tr:not(:hidden)');
+      $rowsArt.shift();
+      $rowsArt.each(function(index, el) {
         var $td = $(this).find('td');
-        var h = {};
-        var obj = comp[index];
-        $('#output').text(JSON.stringify(obj));
-        headers = ["c1","c2","c3","c4"];
-        // Use the headers from earlier to name our hash keys
-        headers.forEach(function (header, i) {
+        var obj = tArt[index];
+        headersArt.forEach(function(header, i){
           $td.eq(i).text(obj[header]);
         });
-      });*/
+      });
+      // Completamento tabella Componenti
+      var $rowsComp = $('#tableComp').find('tr:not(:hidden)');
+      var headersComp = ["ca", "d", "c", "cc","q"];
+      if($rowsComp.length <= tComp.length){
+        for(var i = 1;i < tComp.length; i++){
+          var $clone = $('#tableComponente').find('tr.hide').clone(true).removeClass('hide table-line');
+          $('#tableComponente').find('table').append($clone);
+        }
+      }else{
+        $rowsComp.each(function(index, el) {
+          if(index > tComp.length){
+            $(this).detach();
+          }
+        });
+      }
+      var $rowsComp = $('#tableArt').find('tr:not(:hidden)');
+      $rowsComp.shift();
+      $rowsComp.each(function(index, el) {
+        var $td = $(this).find('td');
+        var obj = tComp[index];
+        headersComp.forEach(function(header, i){
+          $td.eq(i).text(obj[header]);
+        });
+      });
     },"json");
   });
 });
@@ -103,7 +103,7 @@ $('#export-btn-ni').click(function(event) {
   // Creo array Impegno
   var i1 = $('#codImpegno').text();
   var i2 = $('#cliente').text();
-  var i3 = $('#date').val();
+  var i3 = $('#datepicker').val();
   var i4 = $('#ordine').text();
   var imp = {i1,i2,i3,i4};
 
