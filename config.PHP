@@ -271,8 +271,9 @@
                 $x=$index-1;
                 for($i=$x;$i>=0;--$i){
                     //mi collego alla MEGATABELLA LAVORAZIONE
-                    $istruzione = "INSERT INTO produzione (`cod_impegno`, `cod_articolo`, `qt_articolo`, `cod_componente`,`qt_componente`, `descrizione`, `dimensione`, `materiale`, `stato`)
+                  /*  $istruzione = "INSERT INTO produzione (`cod_impegno`, `cod_articolo`, `qt_articolo`, `cod_componente`,`qt_componente`, `descrizione`, `dimensione`, `materiale`, `stato`)
                                     VALUES ('".$data[$i][1]."','".$data[$i][2]."','".$data[$i][3]."','".$data[$i][4]."','".$data[$i][5]."','".$data[$i][6]."','".$data[$i][7]."','".$data[$i][8]."','".$data[$i][9]."')";
+*/
                     if($query = mysqli_query($connessione, $istruzione)){
                     }
                     else{

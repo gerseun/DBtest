@@ -216,17 +216,11 @@
     public function setImpegno($assImp){
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
-        $englishDate = $assImp["i3"]; //data consegna
-        echo $englishDate." - ";
-        $data_cons = strtotime($englishDate);
-        echo $data_cons." - ";
-        $data_cons = date('Y-m-d', $data_cons);
-        echo $data_cons;
         $dataOra = date("Y-m-d"); //data odierna
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         $istruzione = "INSERT INTO `impegno` (`cod_impegno`, `cliente`, `data_consegna`, `ordine`, `stato`, `data_creazione`)
-                       VALUES ('".$assImp["i1"]."','".$assImp["i2"]."','".$data_cons."','".$assImp["i4"]."','0','".$dataOra."');";
+                       VALUES ('".$assImp["i1"]."','".$assImp["i2"]."','".$assImp["i3"]."','".$assImp["i4"]."','0','".$dataOra."');";
         if (mysqli_query($connessione,$istruzione)) {
           echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["i1"]."<br>";
           //disconnessione
