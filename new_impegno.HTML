@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Inserimento articolo</title>
+    <!--
+      CONNESSIONE AI FILE DI Style for Diego
+    -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      .table-add1, .table-add2 {
+        color: #070;
+        cursor: pointer;
+      }
+      .table-add1:hover, .table-add2:hover {
+        color: #0b0;
+      }
+      .table-remove {
+        color: #700;
+        cursor: pointer;
+      }
+      .table-remove:hover {
+        color: #f00;
+      }
+      .page-home {
+        color: #070;
+        cursor: pointer;
+        font-size: 40px;
+      }
+
+      .page-home:hover {
+        color: #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!--
+      RITORNO ALLA HOME PAGE ed inizio pagina
+      -->
+      <br><br>
+      <img src="logo.png">
+      <span class="page-home glyphicon glyphicon-home" onclick="window.close()"></span>
+      <br><br>
+
+      <h1>CREAZIONE IMPEGNO </h1>
+      <p>Inserire i dati relativi all'ordine.</p>
+
+      <!--
+        COSTRUZIONE TABELLA PER L' IMPEGNO
+      -->
+      <div id="tableImpegno" class="table-editable">
+        <table class="tableImp">
+          <thead class="headerImp">
+            <!--
+              HEADER TABELLA
+            -->
+            <th>Codice Impegno</th>
+            <th>Cliente</th>
+            <th>Data consegna</th>
+            <th>Ordine</th>
+          </thead>
+          <tbody id="tbodyImp">
+            <!--
+              PRIMA RIGA - EDITABILE
+            -->
+            <tr>
+              <td contenteditable="true" id="codImpegno"></td>
+              <td contenteditable="true" id="cliente"></td>
+              <td contenteditable="true"id="dataCons"></td>
+              <td contenteditable="true"id="ordine"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+        COSTRUZIONE TABELLA PER GLI ARTICOLI
+      -->
+      <br>
+      <p>Compilare le righe degli ARTICOLI.</p>
+      <div id="tableArticolo" class="table-editable">
+        <table class="tableArt">
+          <thead id = "headerAr" class="headerAr">
+            <!--
+              HEADER TABELLA
+            -->
+            <th>Codice Articolo</th>
+            <th>Descrizione</th>
+            <th>Cliente</th>
+            <th>Codice Cliente</th>
+            <th class="control"><span class="table-add1 glyphicon glyphicon-plus"></span></th>
+          </thead>
+          <tbody id="tbody">
+            <!--
+              PRIMA RIGA - EDITABILE
+            -->
+            <tr>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+            </tr>
+            <tr class="hide">
+              <!--
+                SECONDA RIGA - NASCOSTA
+              -->
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+        COSTRUZIONE TABELLA PER I COMPONENTI
+      -->
+      <br>
+      <p>Compilare le righe dei COMPONENTI o KIT per la produzione.</p>
+      <div id="tableComponente" class="table-editable">
+        <table class="tableComp">
+          <thead class="headerComp">
+            <!--
+              HEADER TABELLA
+            -->
+            <th>Codice Componente</th>
+            <th>Descrizione</th>
+            <th>Dimensione</th>
+            <th>Materiale</th>
+            <th class="control"><span class="table-add2 glyphicon glyphicon-plus"></span></th>
+          </thead>
+          <tbody id="tbody">
+            <!--
+              PRIMA RIGA - EDITABILE
+            -->
+            <tr>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+            </tr>
+            <tr class="hide">
+              <!--
+                SECONDA RIGA - NASCOSTA
+              -->
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+        BUTTONI (GRANDI BUTT) PER I CONTROLLI
+        EXPORT -> INVIA DATI A CONFIG.PHP
+      -->
+      <button id="export-btn-ni" class="btn btn-primary">Export Data</button>
+      <!--
+      <br><br>
+      <input type="checkbox" id="myCheck"  onclick="checkBox()" checked>Editable</input>
+
+        OUTPUT A VIDEO
+      -->
+      <p id="output"></p>
+
+    </div>
+    <!--
+      INCLUSIONE FILE DI SCRIPT
+    -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="script4.js"></script>
+
+    <!--
+    setto il focus alla tabella
+    -->
+    <script type="text/javascript">
+        $('#firtsCell').focus();
+    </script>
+
+  </body>
+</html>

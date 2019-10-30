@@ -133,9 +133,13 @@
           //concateno gli array e li passo codificati
           $arrRisultato = array("aa"=>$arr_Articolo,"ac"=>$arr_Componente);
           echo json_encode($arrRisultato);
+          //disconnessione
+          mysqli_close($connessione);
           return true;
         }
         else{
+          //disconnessione
+          mysqli_close($connessione);
           //non ancora inserito
           return false;
         }
@@ -166,8 +170,12 @@
           }
           $cont = $cont +1;
         }
+        //disconnessione
+        mysqli_close($connessione);
       }
       else{
+        //disconnessione
+        mysqli_close($connessione);
         return false;
       }
       //fine funzione
@@ -188,9 +196,13 @@
           $arr_Componente = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
           //passo l'array codificato
           echo json_encode($arr_Componente);
+          //disconnessione
+          mysqli_close($connessione);
           return true;
         }
         else {
+          //disconnessione
+          mysqli_close($connessione);
           //non ancora inserito
           return false;
         }
@@ -200,6 +212,38 @@
       }
     }
 
+    //CREO LA RIGA IMPEGNO
+    public function setImpegno($assImp){
+      if(isset($this->attiva)){
+        //variabili per la formattazione delle DATE da salvare
+        $englishDate = $assImp["i3"]; //data consegna
+        echo $englishDate." - ";
+        $data_cons = strtotime($englishDate);
+        echo $data_cons." - ";
+        $data_cons = date('Y-m-d', $data_cons);
+        echo $data_cons;
+        $dataOra = date("Y-m-d"); //data odierna
+        //connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "INSERT INTO `impegno` (`cod_impegno`, `cliente`, `data_consegna`, `ordine`, `stato`, `data_creazione`)
+                       VALUES ('".$assImp["i1"]."','".$assImp["i2"]."','".$data_cons."','".$assImp["i4"]."','0','".$dataOra."');";
+        if (mysqli_query($connessione,$istruzione)) {
+          echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["i1"]."<br>";
+          //disconnessione
+          mysqli_close($connessione);
+          return true;
+        }
+        else {
+          echo "Error: ".$assImp["i1"]." -> " . $istruzione . "<br>" . $connessione->error;
+          //disconnessione
+          mysqli_close($connessione);
+          return false;
+        }
+      }
+      else{
+          return false;
+      }
+    }
 
 
   }
@@ -248,6 +292,21 @@
     //prendo l' array
     $assieme = json_decode($_POST['setCompSingolo'],true);
     $varDB->setCompSingolo($assieme);
+  }
+
+  elseif (isset($_POST['newImpegno'])) {
+    //CREAZIONE NUOVO IMPEGNO
+    $varDB = new conn_DB();
+    echo "<br>REPORT NEW IMPEGNO:<br>";
+    //prendo l' array
+    $assieme = json_decode($_POST['newImpegno'],true);
+    //separo le 3 componenti principali
+    $impegno = $assieme["imp"];
+    $articoli = $assieme["art"];
+    $componenti = $assieme["comp"];
+    //1-> CREO LA RIGA IMPEGNO
+    $varDB->setImpegno($impegno);
+
   }
 
 ?>
