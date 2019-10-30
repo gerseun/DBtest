@@ -239,7 +239,95 @@
       }
     }
 
+    //COMPILO LA TABELLA PRODUZIONE PER LA MESSA IN PRODUZIONE
+    public function setProduzione($imp,$art,$comp){
+      $index=0;
+      //attivo la connessione
+      if(isset($this->attiva)){
+          $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+          //CICLO per tutti gli articoli inseriti
+          //CONTROLLO SE RIGA VUOTA??
+          foreach($art as $articolo){
+            $istruzione = "SELECT * FROM ".$articolo["ca"];
+            $query = mysqli_query($connessione, $istruzione);
+            if($query) {
+              //se la query va a buon fine
+              while($row = mysqli_fetch_assoc($query)){
+                //$data[$index][0] = ID autoincrementale
+                $data[$index][1] = $imp["i1"];                //impegno
+                $data[$index][2] = $articolo["ca"];           //cod articolo
+                $data[$index][3] = $articolo["q"];            //qt. articolo
+                $data[$index][4] = $row['cod_componente'];    //codice del componente
+                $data[$index][5] = '0';                       //qt. componente
+                $data[$index][6] = $row['descrizione'];       //descrizione del componente
+                $data[$index][7] = $row['dimensione'];        //dimensione del componente
+                $data[$index][8] = $row['materiale'];         //materiale del componente
+                $data[$index][9] = '0';                       //avanzamento del componente - 0 messa in produzione
+                //incremento
+                $index++;
+              }
+            }
+            else{
+              //TABELLA ARTICOLO NON TROVATA
+              echo "<br> ARTICOLO: ".$articolo["ca"]." - non è stata trovata la tabella. Prego inserire il codice articolo.";
+            }
+          //fine ciclo articoli
+          }
+          //CICLO per tutti i componenti inseriti
+          //CONTROLLO SE RIGA VUOTA??
+          foreach($comp as $componente){
+            $istruzione = "SELECT * FROM `componente` WHERE `cod_componente` = ".$componente["c1"];
+            $query = mysqli_query($connessione, $istruzione);
+            if($query) {
+              //se la query va a buon fine
+              $row = mysqli_fetch_assoc($query);
+              //$data[$index][0] = ID autoincrementale
+              $data[$index][1] = $imp["i1"];                //impegno
+              $data[$index][2] = "-";                       //cod articolo
+              $data[$index][3] = "-";                       //qt. articolo
+              $data[$index][4] = $row['cod_componente'];    //codice del componente
+              $data[$index][5] = '0';                       //qt. componente
+              $data[$index][6] = $row['descrizione'];       //descrizione del componente
+              $data[$index][7] = $row['dimensione'];        //dimensione del componente
+              $data[$index][8] = $row['materiale'];         //materiale del componente
+              $data[$index][9] = '0';                       //avanzamento del componente - 0 messa in produzione
+              //incremento
+              $index++;
+            }
+            else{
+              //TABELLA ARTICOLO NON TROVATA
+              echo "<br> COMPONENTE: ".$componente["c1"]." - non è stata trovata la riga. Prego inserire il codice componente.";
+            }
+          //fine ciclo componenti
+          }
+          //VADO A SALVARE LE INDEX RIGHE NELLA TABELLA PRODUZIONE
+          //inserisco quante righe son state lette -> index to 0
+          $x=$index-1;
+          for($i=$x;$i>=0;--$i){
+            //mi collego alla MEGATABELLA LAVORAZIONE
+            $campi = "(cod_impegno, cod_articolo, qt_articolo, cod_componente, qt_componente, descrizione, dimensione, materiale, stato)";
+            $valori = "('".$data[$i][1]."','".$data[$i][2]."','".$data[$i][3]."','".$data[$i][4]."','".$data[$i][5]."','".$data[$i][6]."',";
+            $valori = $valori."'".$data[$i][7]."','".$data[$i][8]."','".$data[$i][9]."');";
+            $istruzione = "INSERT INTO produzione ".$campi."  VALUES ".$valori;
 
+            if($query = mysqli_query($connessione, $istruzione)){
+              echo "<br>PRODUZIONE INSERITA CORRETTAMENTE: ".$data[$i][2]." - ".$data[$i][4];
+            }
+            else{
+              echo "<br> Error: " . $istruzione . "<br>" . $connessione->error."<br>";
+            }
+          }
+          //fine ciclo salvataggio
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+
+
+
+  //FINE CLASSE conn_DB
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -300,7 +388,8 @@
     $componenti = $assieme["comp"];
     //1-> CREO LA RIGA IMPEGNO
     $varDB->setImpegno($impegno);
-
+    //2-> COMPILO LA TABELLA PRODUZIONE
+    $varDB->setProduzione($impegno,$articoli,$componenti);
   }
 
 ?>
