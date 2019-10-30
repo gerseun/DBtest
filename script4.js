@@ -10,12 +10,25 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
-
 /*
-  $('#codArticolo').focusout(function(event) {
-    var art = $('#codArticolo').text();
-    $.post( './connessioneDB.PHP', {articolo : art}, function(msg){
+  $('#codImpegno').focusout(function(event) {
+    var imp = $('#codImpegno').text();
+    $.post( './connessioneDB.PHP', {impegno : imp}, function(msg){
       $('#output').text(JSON.stringify(msg));
+      var tImp = msg.imp;
+      var tArt = msg.art;
+      var tComp = msg.comp;
+
+      $('#cliente').text(tImp.i2);
+      $('#date').val(tImp.i3);
+      $('#ordine').val(tImp.i4);
+
+      var $rowsArt = $('#tableArt').find('tr:not(:hidden)');
+      var headersArt = ["ca", "d", "c", "cc","q"];
+      var colonArt = $('#headerAr').find('th:not(.control)');
+
+
+
 
       var art = [];
       var comp = [];
@@ -56,9 +69,9 @@ $(document).ready(function(){
         headers.forEach(function (header, i) {
           $td.eq(i).text(obj[header]);
         });
-      });
+      });*/
     },"json");
-  });*/
+  });
 });
 
 
@@ -98,8 +111,8 @@ $('#export-btn-ni').click(function(event) {
   var $rowsArt = $('#tableArticolo').find('tr:not(:hidden)');
   var art = [];
 
-  var headersArt = ["ca", "d", "c", "cc"];
-  var colonArt = $('#headerAr').find('th:not(.control)')
+  var headersArt = ["ca", "d", "c", "cc","q"];
+  var colonArt = $('#headerAr').find('th:not(.control)');
   if (colonArt.length != headersArt.length){
     console.log("Numero Header tabella Articoli sbagliato");
     return false;
@@ -118,7 +131,7 @@ $('#export-btn-ni').click(function(event) {
   var $rowsComp = $('#tableComponente').find('tr:not(:hidden)');
   var comp = [];
 
-  var headersComp = ["c1", "c2", "c3", "c4"];
+  var headersComp = ["c1", "c2", "c3", "c4","c5"];
   $rowsComp.shift();
   $rowsComp.each(function(row,x) {
     var $td = $(this).find('td');
