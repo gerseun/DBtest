@@ -1,42 +1,68 @@
 var $BTN = $('#export-btn');
 var $OUTPUT = $('#output');
-var headerImp = [
-  'i1', // Impegno
-  'i2', // Cliente
-  'i3', // Data consegna
-  'i4'  // Numero ordine
-];
-var headerArt = [
-  'a1', // Codice Articolo
-  'a2', // Descrizione
-  'a3', // Cliente
-  'a4', // Codice Cliente
-  'a5'  // Quantità
-];
-var headerComp = [
-  'c1', // Codice Componente
-  'c2', // Descrizione
-  'c3', // Dimensione
-  'c4', // Materiale
-  'c5'  // Quantità
-];
-var tablesNames =[
-  'tableImp',
-  'tableArt',
-  'tableComp'
-];
+var possibleTables = {
+  'tableImp': { 'name':   'imp',
+                'headers': {'Impegno' :             'i1',
+                            'Cliente':              'i2',
+                            'Data consegna':        'i3',
+                            'Numero ordine':        'i4'}},
+  'tableArt': { 'name':     'art',
+                'headers': {'Codice Articolo':      'a1',
+                            'Descrizione':          'a2',
+                            'Cliente':              'a3',
+                            'Codice Cliente':       'a4',
+                            'Quantità':             'a5'}},
+  'tableArtImp': { 'name':     'art',
+                'headers': {'Codice Articolo':      'a1',
+                            'Descrizione':          'a2',
+                            'Quantità':             'a5'}},
+  'tableComp': { 'name':    'comp',
+                'headers': {'Codice Componente':    'c1',
+                            'Descrizione':          'c2',
+                            'Dimensione':           'c3',
+                            'Materiale':            'c4',
+                            'Quantità':             'c5'}};
+
+jQuery.fn.pop = [].pop;
+jQuery.fn.shift = [].shift;
 
 $BTN.click(function(event) {
   var exportArr = {};
   // Check tables number
   var tables = $('.container').find('table');
-  console.log('Number of tables: '+ tables.length);
 
   tables.each(function(index, el) {
-    var val = $(this).attr('class');
-    var attrName = tablesNames[index];
-    console.log("Valore: "+val+" Nome: "+attrName);
-    exportArr[attrName] = val;
+    var val = getTable($(this));
+    var tableClass = $(this).attr('class');
+    exportArr[possibleTables[tableClass].name] = val;
+    //var val = $(this).attr('class');
+    //var attrName = tablesNames[val];
+    //console.log("Valore: "+index+" Nome: "+attrName);
+    //exportArr[attrName] = index;
   });
   $OUTPUT.text(JSON.stringify(exportArr));
 });
+
+function getTable($table){
+  var arr = [];
+  var tableClass = $table.attr('class');
+  var tableRows = $table.find('tr:not(:hidden)');
+  var tableHeaders = possibleTables[tableClass].headers;
+  console.log("1 - " + tableClass);
+  console.log("2 - " + possibleTables);
+  console.log("3 - " + possibleTables[tableClass]);
+  console.log("4 - " + tableHeaders.length);
+  console.log("5 - " + $table.find('th:not(.control)').length);
+
+  tableRows.shift();
+  tableRows.each(function(index, el) {
+    var $td = $(this).eq(index).text();
+    var val = {};
+    tableHeaders.forEach(function (header, i){
+      val[header] = $td.eq(i).text();
+    });
+    arr.push(val);
+  });
+
+  return (arr);
+};
