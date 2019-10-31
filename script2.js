@@ -129,7 +129,7 @@ $('#export-btn-na').click(function(event) {
   //$('#output').text('export');
   // Posting to server
 
-  $.post( './connessioneDB.PHP', { newAarticolo:JSON.stringify(arr)}, function(msg){
+  $.post( './connessioneDB.PHP', { newArticolo:JSON.stringify(arr)}, function(msg){
     $('#output').html(msg);
   });
 
