@@ -50,7 +50,7 @@ $(document).ready(function(){
         var h = {};
         var obj = comp[index];
         $('#output').text(JSON.stringify(obj));
-        headers = ["c1","c2","c3","c4"];
+        headers = ["c1","c2","c3","c4","c5"];
         // Use the headers from earlier to name our hash keys
         headers.forEach(function (header, i) {
           $td.eq(i).text(obj[header]);
