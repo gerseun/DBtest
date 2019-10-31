@@ -70,10 +70,12 @@
           $desc = $componente["Descrizione"];
           $dim = $componente["Dimensione"];
           $mat = $componente["Materiale"];
+          $qt = $componente["Qt Componente"];
+
 
           //query per inserire il componente nella tabella cilindro
-          //la tabella cilindro sarà sempre vuota
-          $istruzione = "INSERT INTO ".$codArt." (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          //la tabella cilindro sarà sempre vuota -> cod comp e qt.
+          $istruzione = "INSERT INTO ".$codArt." (`cod_componente`, `qt_componente`)VALUES ('".$codComp."','".$qt."');";
           if (mysqli_query($connessione,$istruzione)) {
             echo $codComp." INSERITO CORRETTAMENTE <br>";
           }
@@ -83,7 +85,8 @@
           }
 
           //cancello la riga componente e vado così ad aggiornare eventuali modifiche
-
+          $istruzione = "DELETE FROM componente WHERE cod_componente = '".$codComp."'";
+          mysqli_query($connessione,$istruzione);
           //query per inserire il componente nella tabella componenti
           $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
           if (mysqli_query($connessione,$istruzione)) {
