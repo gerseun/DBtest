@@ -326,6 +326,48 @@
       }
 
 
+      //RICERCA ARTICOLO INSERITO CON TUTTI I SUOI COMPONENTI
+      public function getImpegno($ricImp){
+        if(isset($this->attiva)){
+          //apro la connessione al DB
+          $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+          $istruzione = "SELECT * FROM impegno WHERE cod_impegno='".$ricImp."';";
+          $result=mysqli_query($connessione,$istruzione);
+          //controllo se impegno già salvato
+          if (mysqli_num_rows($result)>0) {
+            $row = mysqli_fetch_assoc($result);
+            //impegno gia inserito -> salvo i dati dell' impegno
+            //creo array dell' impegno
+            $arr_Impegno = array("i1"=>$row["cod_impegno"],"i2"=>$row["cliente"],"i3"=>$row["data_consegna"],"i4"=>$row["ordine"]);
+            //prendo la tabella produzione e stampo gli articoli collegati all' impegno
+            $istruzione = "SELECT DISTINCT cod_articolo FROM prodotti ;";
+            if($result=mysqli_query($connessione,$istruzione)){
+              $i = 0;
+              while($row = mysqli_fetch_assoc($result)) {
+                //salvo le righe dei componenti inseriti nell' articolo cercato
+                //array di componenti
+                $arr_Componente[$i] = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
+                $i = $i+1;
+              }
+            }
+            else {
+              echo "Error creating table: " . $connessione->error."<br>";
+            }
+            //concateno gli array e li passo codificati
+            $arrRisultato = array("aa"=>$arr_Articolo,"ac"=>$arr_Componente);
+            echo json_encode($arrRisultato);
+            //disconnessione
+            mysqli_close($connessione);
+            return true;
+          }
+          else{
+            //disconnessione
+            mysqli_close($connessione);
+            //non ancora inserito
+            return false;
+          }
+        }
+      }
 
   //FINE CLASSE conn_DB
   }
@@ -390,6 +432,13 @@
     $varDB->setImpegno($impegno);
     //2-> COMPILO LA TABELLA PRODUZIONE
     $varDB->setProduzione($impegno,$articoli,$componenti);
+  }
+
+  elseif (isset($_POST['impegno'])) {
+    //AUTOCOMPILAZIONE TABELLA IMPEGNO
+    $varDB = new conn_DB();
+    $ricercaImpegno = $_POST['impegno'];
+    $varDB->getImpegno($ricercaImpegno);
   }
 
 ?>

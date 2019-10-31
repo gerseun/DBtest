@@ -15,6 +15,7 @@ $(document).ready(function(){
     var imp = $('#codImpegno').text();
     $.post( './connessioneDB.PHP', {impegno : imp}, function(msg){
       $('#output').text(JSON.stringify(msg));
+
       var tImp = msg.imp;
       var tArt = msg.art;
       var tComp = msg.comp;
