@@ -25,7 +25,7 @@ $(document).ready(function(){
       $('#ordine').val(tImp.i4);
       // Completamento tabella Articoli
       var $rowsArt = $('#tableArt').find('tr:not(:hidden)');
-      var headersArt = ["ca", "d", "c", "cc","q"];
+      var headersArt = ["ca", "d", "q"];
       if($rowsArt.length <= tArt.length){
         for(var i = 1;i < tArt.length; i++){
           var $clone = $('#tableArticolo').find('tr.hide').clone(true).removeClass('hide table-line');
@@ -49,7 +49,7 @@ $(document).ready(function(){
       });
       // Completamento tabella Componenti
       var $rowsComp = $('#tableComp').find('tr:not(:hidden)');
-      var headersComp = ["ca", "d", "c", "cc","q"];
+      var headersComp = ["c1", "c2", "c3", "c4","c5"];
       if($rowsComp.length <= tComp.length){
         for(var i = 1;i < tComp.length; i++){
           var $clone = $('#tableComponente').find('tr.hide').clone(true).removeClass('hide table-line');
@@ -112,7 +112,7 @@ $('#export-btn-ni').click(function(event) {
   var $rowsArt = $('#tableArticolo').find('tr:not(:hidden)');
   var art = [];
 
-  var headersArt = ["ca", "d", "c", "cc","q"];
+  var headersArt = ["ca", "d", "q"];
   var colonArt = $('#headerAr').find('th:not(.control)');
   if (colonArt.length != headersArt.length){
     console.log("Numero Header tabella Articoli sbagliato");
