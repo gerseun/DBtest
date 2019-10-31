@@ -22,9 +22,10 @@ $(document).ready(function(){
       // Completamento tabella Impegno
       $('#cliente').text(tImp.i2);
       $('#datepicker').val(tImp.i3);
-      $('#ordine').val(tImp.i4);
+      $('#ordine').text(tImp.i4);
+
       // Completamento tabella Articoli
-      var $rowsArt = $('#tableArt').find('tr:not(:hidden)');
+      var $rowsArt = $('#tableArticolo').find('tr:not(:hidden)');
       var headersArt = ["ca", "d", "q"];
       if($rowsArt.length <= tArt.length){
         for(var i = 1;i < tArt.length; i++){
@@ -38,7 +39,7 @@ $(document).ready(function(){
           }
         });
       }
-      var $rowsArt = $('#tableArt').find('tr:not(:hidden)');
+      var $rowsArt = $('#tableArticolo').find('tr:not(:hidden)');
       $rowsArt.shift();
       $rowsArt.each(function(index, el) {
         var $td = $(this).find('td');
@@ -47,8 +48,9 @@ $(document).ready(function(){
           $td.eq(i).text(obj[header]);
         });
       });
+
       // Completamento tabella Componenti
-      var $rowsComp = $('#tableComp').find('tr:not(:hidden)');
+      var $rowsComp = $('#tableComponente').find('tr:not(:hidden)');
       var headersComp = ["c1", "c2", "c3", "c4","c5"];
       if($rowsComp.length <= tComp.length){
         for(var i = 1;i < tComp.length; i++){
@@ -62,7 +64,7 @@ $(document).ready(function(){
           }
         });
       }
-      var $rowsComp = $('#tableArt').find('tr:not(:hidden)');
+      var $rowsComp = $('#tableComponente').find('tr:not(:hidden)');
       $rowsComp.shift();
       $rowsComp.each(function(index, el) {
         var $td = $(this).find('td');
@@ -71,7 +73,7 @@ $(document).ready(function(){
           $td.eq(i).text(obj[header]);
         });
       });
-    },"json");
+    },'json');
   });
 });
 

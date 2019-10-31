@@ -256,13 +256,14 @@
                 //$data[$index][0] = ID autoincrementale
                 $data[$index][1] = $imp["i1"];                //impegno
                 $data[$index][2] = $articolo["ca"];           //cod articolo
-                $data[$index][3] = $articolo["q"];            //qt. articolo
-                $data[$index][4] = $row['cod_componente'];    //codice del componente
-                $data[$index][5] = '0';                       //qt. componente
-                $data[$index][6] = $row['descrizione'];       //descrizione del componente
-                $data[$index][7] = $row['dimensione'];        //dimensione del componente
-                $data[$index][8] = $row['materiale'];         //materiale del componente
-                $data[$index][9] = '0';                       //avanzamento del componente - 0 messa in produzione
+                $data[$index][3] = $articolo["d"];            //descrizione articolo
+                $data[$index][4] = $articolo["q"];            //qt. articolo
+                $data[$index][5] = $row['cod_componente'];    //codice del componente
+                $data[$index][6] = '0';                       //qt. componente
+                $data[$index][7] = $row['descrizione'];       //descrizione del componente
+                $data[$index][8] = $row['dimensione'];        //dimensione del componente
+                $data[$index][9] = $row['materiale'];         //materiale del componente
+                $data[$index][10] = '0';                      //avanzamento del componente - 0 messa in produzione
                 //incremento
                 $index++;
               }
@@ -284,13 +285,14 @@
               //$data[$index][0] = ID autoincrementale
               $data[$index][1] = $imp["i1"];                //impegno
               $data[$index][2] = "-";                       //cod articolo
-              $data[$index][3] = "-";                       //qt. articolo
-              $data[$index][4] = $row['cod_componente'];    //codice del componente
-              $data[$index][5] = '0';                       //qt. componente
-              $data[$index][6] = $row['descrizione'];       //descrizione del componente
-              $data[$index][7] = $row['dimensione'];        //dimensione del componente
-              $data[$index][8] = $row['materiale'];         //materiale del componente
-              $data[$index][9] = '0';                       //avanzamento del componente - 0 messa in produzione
+              $data[$index][3] = "-";                       //desc articolo
+              $data[$index][4] = "-";                       //qt. articolo
+              $data[$index][5] = $row['cod_componente'];    //codice del componente
+              $data[$index][6] = '0';                       //qt. componente
+              $data[$index][7] = $row['descrizione'];       //descrizione del componente
+              $data[$index][8] = $row['dimensione'];        //dimensione del componente
+              $data[$index][9] = $row['materiale'];         //materiale del componente
+              $data[$index][10] = '0';                       //avanzamento del componente - 0 messa in produzione
               //incremento
               $index++;
             }
@@ -305,9 +307,9 @@
           $x=$index-1;
           for($i=$x;$i>=0;--$i){
             //mi collego alla MEGATABELLA LAVORAZIONE
-            $campi = "(cod_impegno, cod_articolo, qt_articolo, cod_componente, qt_componente, descrizione, dimensione, materiale, stato)";
+            $campi = "(cod_impegno, cod_articolo, desc_articolo, qt_articolo, cod_componente, qt_componente, descrizione, dimensione, materiale, stato)";
             $valori = "('".$data[$i][1]."','".$data[$i][2]."','".$data[$i][3]."','".$data[$i][4]."','".$data[$i][5]."','".$data[$i][6]."',";
-            $valori = $valori."'".$data[$i][7]."','".$data[$i][8]."','".$data[$i][9]."');";
+            $valori = $valori."'".$data[$i][7]."','".$data[$i][8]."','".$data[$i][9]."','".$data[$i][10]."');";
             $istruzione = "INSERT INTO produzione ".$campi."  VALUES ".$valori;
 
             if($query = mysqli_query($connessione, $istruzione)){
@@ -329,6 +331,9 @@
       //RICERCA ARTICOLO INSERITO CON TUTTI I SUOI COMPONENTI
       public function getImpegno($ricImp){
         if(isset($this->attiva)){
+          $arr_Articolo[0] = array("ca"=>"","d"=>"","q"=>"");
+          $arr_Componente[0] = array("c1"=>"","c2"=>"","c3"=>"","c4"=>"","c5"=>"");
+
           //apro la connessione al DB
           $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
           $istruzione = "SELECT * FROM impegno WHERE cod_impegno='".$ricImp."';";
@@ -340,25 +345,43 @@
             //creo array dell' impegno
             $arr_Impegno = array("i1"=>$row["cod_impegno"],"i2"=>$row["cliente"],"i3"=>$row["data_consegna"],"i4"=>$row["ordine"]);
             //prendo la tabella produzione e stampo gli articoli collegati all' impegno
-            $istruzione = "SELECT DISTINCT cod_articolo FROM prodotti ;";
+            $istruzione = "SELECT DISTINCT cod_articolo, desc_articolo, qt_articolo FROM produzione WHERE cod_impegno = '".$ricImp."';";
             if($result=mysqli_query($connessione,$istruzione)){
               $i = 0;
               while($row = mysqli_fetch_assoc($result)) {
-                //salvo le righe dei componenti inseriti nell' articolo cercato
-                //array di componenti
-                $arr_Componente[$i] = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
-                $i = $i+1;
+                //salvo le righe degli articoli trovati nell' impegno
+                if($row["cod_articolo"]!= "-"){
+                  //se diversa da "-" allora è un codice cilindro
+                  //array di articoli
+                  $arr_Articolo[$i] = array("ca"=>$row["cod_articolo"],"d"=>$row["desc_articolo"],"q"=>$row["qt_articolo"]);
+                  $i = $i+1;
+                }
               }
             }
             else {
-              echo "Error creating table: " . $connessione->error."<br>";
+              echo "<br>Error creating table: " . $connessione->error."<br>";
             }
-            //concateno gli array e li passo codificati
-            $arrRisultato = array("aa"=>$arr_Articolo,"ac"=>$arr_Componente);
-            echo json_encode($arrRisultato);
-            //disconnessione
-            mysqli_close($connessione);
-            return true;
+            //prendo la tabella produzione e stampo i componenti singoli collegati all' impegno
+            $istruzione = "SELECT FROM produzione WHERE cod_impegno = '".$ricImp."' AND cod_articolo = '-' ;";
+            if($result=mysqli_query($connessione,$istruzione)){
+              $i = 0;
+              while($row = mysqli_fetch_assoc($result)) {
+                //salvo le righe degli articoli trovati nell' impegno
+                $arr_Articolo[$i] = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"],"c4"=>$row["qt_componente"]);
+                $i = $i+1;
+              }
+            }
+          }
+          else {
+            echo "<br>Error creating table: " . $connessione->error."<br>";
+          }
+
+          //concateno gli array e li passo codificati
+          $arrRisultato = array("imp"=>$arr_Impegno,"art"=>$arr_Articolo,"comp"=>$arr_Componente);
+          echo json_encode($arrRisultato);
+          //disconnessione
+          mysqli_close($connessione);
+          return true;
           }
           else{
             //disconnessione
@@ -367,7 +390,7 @@
             return false;
           }
         }
-      }
+
 
   //FINE CLASSE conn_DB
   }
