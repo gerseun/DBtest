@@ -26,11 +26,18 @@
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //cancello la riga con la vecchia impostazione
+        $istruzione = "DELETE FROM articolo WHERE cod_articolo = '".$codArt."';";
+        mysqli_query($connessione,$istruzione);
+        //inserisco l' articolo
         $istruzione = "INSERT INTO `articolo` (`cod_articolo`, `descrizione`, `cliente`, `cod_cliente`, `data`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."',null);";
         if (mysqli_query($connessione,$istruzione)) {
           echo "ARTICOLO INSERITO CORRETTAMENTE <br>";
+          //cancello la tabella dell' articolo e la creo nuova aggiornata
+          $istruzione = "DROP TABLE ".$codArt;
+          mysqli_query($connessione,$istruzione);
           //creo la tabella relativa all' articolo
-          $istruzione = "CREATE TABLE ".$codArt." ( `cod_componente` VARCHAR(50) NOT NULL , `descrizione` VARCHAR(50) NULL , `dimensione` VARCHAR(50) NULL , `materiale` VARCHAR(50) NULL , PRIMARY KEY (`cod_componente`));";
+          $istruzione = "CREATE TABLE ".$codArt." ( `cod_componente` VARCHAR(50) NOT NULL , `qt_componente` INT(4) NULL , PRIMARY KEY (`cod_componente`));";
           if (mysqli_query($connessione,$istruzione)) {
             echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br><br>";
           }
@@ -65,6 +72,7 @@
           $mat = $componente["Materiale"];
 
           //query per inserire il componente nella tabella cilindro
+          //la tabella cilindro sarà sempre vuota
           $istruzione = "INSERT INTO ".$codArt." (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
           if (mysqli_query($connessione,$istruzione)) {
             echo $codComp." INSERITO CORRETTAMENTE <br>";
@@ -73,6 +81,8 @@
             echo "Error creating table: " . $connessione->error."<br>";
             echo "err 2 -> Componente già inserito nel cilindro - Vedere cod. componente: ".$codComp." <br>";
           }
+
+          //cancello la riga componente e vado così ad aggiornare eventuali modifiche
 
           //query per inserire il componente nella tabella componenti
           $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
@@ -219,6 +229,10 @@
         $dataOra = date("Y-m-d"); //data odierna
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //cancello la riga precedente per aggiornare
+        $istruzione = "DELETE FROM impegno WHERE cod_impegno = ".$assImp["i1"];
+        mysqli_query($connessione,$istruzione);
+        //inserisco la riga nuovo impegno
         $istruzione = "INSERT INTO `impegno` (`cod_impegno`, `cliente`, `data_consegna`, `ordine`, `stato`, `data_creazione`)
                        VALUES ('".$assImp["i1"]."','".$assImp["i2"]."','".$assImp["i3"]."','".$assImp["i4"]."','0','".$dataOra."');";
         if (mysqli_query($connessione,$istruzione)) {
@@ -245,6 +259,9 @@
       //attivo la connessione
       if(isset($this->attiva)){
           $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+          //cancello tutte le righe relative all' impegno INSERITO
+          $istruzione = "DELETE FROM produzione WHERE cod_impegno = ".$imp["i1"];
+          $query = mysqli_query($connessione, $istruzione);
           //CICLO per tutti gli articoli inseriti
           //CONTROLLO SE RIGA VUOTA??
           foreach($art as $articolo){
@@ -398,12 +415,12 @@
 //////////////////////////////////////////////////////////////////////////
 
 //FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
-  if (isset($_POST['newAarticolo'])){
+  if (isset($_POST['newArticolo'])){
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
     echo "<br>REPORT NEW ARTICOLO:<br>";
     //prendo l' array
-    $assieme = json_decode($_POST['newAarticolo'],true);
+    $assieme = json_decode($_POST['newArticolo'],true);
     //setArticolo -> cilindro - componenti
     $articolo = $assieme[0];
     $componenti = $assieme[1];
