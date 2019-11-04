@@ -27,17 +27,17 @@
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //cancello la riga con la vecchia impostazione
-        $istruzione = "DELETE FROM articolo WHERE cod_articolo = '".$codArt."';";
+        $istruzione = "DELETE FROM articolo WHERE cod_art = '".$codArt."';";
         mysqli_query($connessione,$istruzione);
         //inserisco l' articolo
-        $istruzione = "INSERT INTO `articolo` (`cod_articolo`, `descrizione`, `cliente`, `cod_cliente`, `data`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."',null);";
+        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `data_art`, `kit_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."',null ,'0');";
         if (mysqli_query($connessione,$istruzione)) {
           echo "ARTICOLO INSERITO CORRETTAMENTE <br>";
           //cancello la tabella dell' articolo e la creo nuova aggiornata
           $istruzione = "DROP TABLE ".$codArt;
           mysqli_query($connessione,$istruzione);
           //creo la tabella relativa all' articolo
-          $istruzione = "CREATE TABLE ".$codArt." ( `cod_componente` VARCHAR(50) NOT NULL , `qt_componente` INT(4) NULL , PRIMARY KEY (`cod_componente`));";
+          $istruzione = "CREATE TABLE ".$codArt." ( `cod_comp` VARCHAR(50) NOT NULL , `qt_comp` INT(4) NULL , PRIMARY KEY (`cod_comp`));";
           if (mysqli_query($connessione,$istruzione)) {
             echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br><br>";
           }
@@ -66,16 +66,16 @@
         $cont = 0;
         foreach($codComponenti as $componente){
           echo "<br>".$cont."<br>";
-          $codComp = $componente["Codice Componente"];
-          $desc = $componente["Descrizione"];
-          $dim = $componente["Dimensione"];
-          $mat = $componente["Materiale"];
-          $qt = $componente["Qt Componente"];
+          $codComp = $componente["cod_comp"];
+          $desc = $componente["desc_comp"];
+          $dim = $componente["dim_comp"];
+          $mat = $componente["mat_comp"];
+          $qt = $componente["qt_comp"];
 
 
           //query per inserire il componente nella tabella cilindro
           //la tabella cilindro sarà sempre vuota -> cod comp e qt.
-          $istruzione = "INSERT INTO ".$codArt." (`cod_componente`, `qt_componente`)VALUES ('".$codComp."','".$qt."');";
+          $istruzione = "INSERT INTO ".$codArt." (`cod_comp`, `qt_comp`)VALUES ('".$codComp."','".$qt."');";
           if (mysqli_query($connessione,$istruzione)) {
             echo $codComp." INSERITO CORRETTAMENTE <br>";
           }
@@ -85,10 +85,10 @@
           }
 
           //cancello la riga componente e vado così ad aggiornare eventuali modifiche
-          $istruzione = "DELETE FROM componente WHERE cod_componente = '".$codComp."'";
+          $istruzione = "DELETE FROM componente WHERE cod_comp = '".$codComp."'";
           mysqli_query($connessione,$istruzione);
           //query per inserire il componente nella tabella componenti
-          $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
           if (mysqli_query($connessione,$istruzione)) {
             //echo "COMPONENTE INSERITO CORRETTAMENTE <br>";
           }
@@ -116,16 +116,16 @@
         //apro la connessione al DB
         $cod_articolo = $descrizione = $cliente = $cod_cliente = "";
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        $istruzione = "SELECT * FROM articolo WHERE cod_articolo='".$ricArticolo."';";
+        $istruzione = "SELECT * FROM articolo WHERE cod_art='".$ricArticolo."';";
         $result=mysqli_query($connessione,$istruzione);
         //controllo se articolo già salvato
         if (mysqli_num_rows($result)>0) {
           $row = mysqli_fetch_assoc($result);
           //articolo gia inserito -> salvo i dati articolo
-          $cod_articolo = $row["cod_articolo"];
-          $descrizione = $row["descrizione"];
-          $cliente = $row["cliente"];
-          $cod_cliente = $row["cod_cliente"];
+          $cod_articolo = $row["cod_art"];
+          $descrizione = $row["desc_art"];
+          $cliente = $row["cli_art"];
+          $cod_cliente = $row["cod_cli_art"];
           //creo array dell' articolo
           $arr_Articolo = array("ca"=>$cod_articolo,"d"=>$descrizione,"c"=>$cliente,"cc"=>$cod_cliente);
 
@@ -136,7 +136,7 @@
             while($row = mysqli_fetch_assoc($result)) {
               //salvo le righe dei componenti inseriti nell' articolo cercato
               //array di componenti
-              $arr_Componente[$i] = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
+              $arr_Componente[$i] = array("c1"=>$row["cod_comp"],"c2"=>$row["desc_comp"],"c3"=>$row["dim_comp"],"c4"=>$row["mat_comp"]);
               $i = $i+1;
             }
           }
@@ -168,12 +168,12 @@
         $cont = 0;
         foreach($codComponenti as $componente){
           echo "<br>".$cont." -> ";
-          $codComp = $componente["Codice Componente"];
-          $desc = $componente["Descrizione"];
-          $dim = $componente["Dimensione"];
-          $mat = $componente["Materiale"];
+          $codComp = $componente["cod_comp"];
+          $desc = $componente["desc_comp"];
+          $dim = $componente["dim_comp"];
+          $mat = $componente["mat_comp"];
           //query per inserire il componente nella tabella componenti
-          $istruzione = "INSERT INTO `componente` (`cod_componente`, `descrizione`, `dimensione`, `materiale`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
           if (mysqli_query($connessione,$istruzione)) {
             echo $codComp." - COMPONENTE INSERITO CORRETTAMENTE <br>";
           }
@@ -200,13 +200,13 @@
       if(isset($this->attiva)){
         //apro la connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        $istruzione = "SELECT * FROM componente WHERE cod_componente='".$ricComponente."';";
+        $istruzione = "SELECT * FROM componente WHERE cod_comp='".$ricComponente."';";
         $result=mysqli_query($connessione,$istruzione);
         //controllo se componente già salvato
         if (mysqli_num_rows($result)>0) {
           $row = mysqli_fetch_assoc($result);
           //articolo gia inserito -> salvo i dati articolo
-          $arr_Componente = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"]);
+          $arr_Componente = array("c1"=>$row["cod_comp"],"c2"=>$row["desc_comp"],"c3"=>$row["dim_comp"],"c4"=>$row["mat_comp"]);
           //passo l'array codificato
           echo json_encode($arr_Componente);
           //disconnessione
@@ -233,19 +233,19 @@
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //cancello la riga precedente per aggiornare
-        $istruzione = "DELETE FROM impegno WHERE cod_impegno = ".$assImp["i1"];
+        $istruzione = "DELETE FROM impegno WHERE cod_imp = ".$assImp["cod_imp"];
         mysqli_query($connessione,$istruzione);
         //inserisco la riga nuovo impegno
-        $istruzione = "INSERT INTO `impegno` (`cod_impegno`, `cliente`, `data_consegna`, `ordine`, `stato`, `data_creazione`)
-                       VALUES ('".$assImp["i1"]."','".$assImp["i2"]."','".$assImp["i3"]."','".$assImp["i4"]."','0','".$dataOra."');";
+        $istruzione = "INSERT INTO `impegno` (`cod_imp`, `cli_imp`, `cons_imp`, `ord_imp`, `stato_imp`, `creazione_imp`)
+                       VALUES ('".$assImp["cod_imp"]."','".$assImp["cli_imp"]."','".$assImp["cons_imp"]."','".$assImp["ord_imp"]."','0','".$dataOra."');";
         if (mysqli_query($connessione,$istruzione)) {
-          echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["i1"]."<br>";
+          echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["cod_imp"]."<br>";
           //disconnessione
           mysqli_close($connessione);
           return true;
         }
         else {
-          echo "Error: ".$assImp["i1"]." -> " . $istruzione . "<br>" . $connessione->error;
+          echo "Error: ".$assImp["cod_imp"]." -> " . $istruzione . "<br>" . $connessione->error;
           //disconnessione
           mysqli_close($connessione);
           return false;
@@ -263,26 +263,26 @@
       if(isset($this->attiva)){
           $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
           //cancello tutte le righe relative all' impegno INSERITO
-          $istruzione = "DELETE FROM produzione WHERE cod_impegno = ".$imp["i1"];
+          $istruzione = "DELETE FROM produzione WHERE imp_prod = ".$imp["cod_imp"];
           $query = mysqli_query($connessione, $istruzione);
           //CICLO per tutti gli articoli inseriti
           //CONTROLLO SE RIGA VUOTA??
           foreach($art as $articolo){
-            $istruzione = "SELECT * FROM ".$articolo["ca"];
+            $istruzione = "SELECT * FROM ".$articolo["cod_art"];
             $query = mysqli_query($connessione, $istruzione);
             if($query) {
               //se la query va a buon fine
               while($row = mysqli_fetch_assoc($query)){
                 //$data[$index][0] = ID autoincrementale
-                $data[$index][1] = $imp["i1"];                //impegno
-                $data[$index][2] = $articolo["ca"];           //cod articolo
-                $data[$index][3] = $articolo["d"];            //descrizione articolo
-                $data[$index][4] = $articolo["q"];            //qt. articolo
-                $data[$index][5] = $row['cod_componente'];    //codice del componente
+                $data[$index][1] = $imp["cod_imp"];                //impegno
+                $data[$index][2] = $articolo["cod_art"];           //cod articolo
+                $data[$index][3] = $articolo["desc_art"];            //descrizione articolo
+                $data[$index][4] = $articolo["qt_art_prod"];            //qt. articolo
+                $data[$index][5] = $row['cod_comp'];    //codice del componente
                 $data[$index][6] = '0';                       //qt. componente
-                $data[$index][7] = $row['descrizione'];       //descrizione del componente
-                $data[$index][8] = $row['dimensione'];        //dimensione del componente
-                $data[$index][9] = $row['materiale'];         //materiale del componente
+                $data[$index][7] = $row['desc_comp'];       //descrizione del componente
+                $data[$index][8] = $row['dim_comp'];        //dimensione del componente
+                $data[$index][9] = $row['mat_comp'];         //materiale del componente
                 $data[$index][10] = '0';                      //avanzamento del componente - 0 messa in produzione
                 //incremento
                 $index++;
@@ -290,35 +290,35 @@
             }
             else{
               //TABELLA ARTICOLO NON TROVATA
-              echo "<br> ARTICOLO: ".$articolo["ca"]." - non è stata trovata la tabella. Prego inserire il codice articolo.";
+              echo "<br> ARTICOLO: ".$articolo["cod_art"]." - non è stata trovata la tabella. Prego inserire il codice articolo.";
             }
           //fine ciclo articoli
           }
           //CICLO per tutti i componenti inseriti
           //CONTROLLO SE RIGA VUOTA??
           foreach($comp as $componente){
-            $istruzione = "SELECT * FROM `componente` WHERE `cod_componente` = ".$componente["c1"];
+            $istruzione = "SELECT * FROM `componente` WHERE `cod_comp` = ".$componente["cod_comp"];
             $query = mysqli_query($connessione, $istruzione);
             if($query) {
               //se la query va a buon fine
               $row = mysqli_fetch_assoc($query);
               //$data[$index][0] = ID autoincrementale
-              $data[$index][1] = $imp["i1"];                //impegno
+              $data[$index][1] = $imp["cod_imp"];                //impegno
               $data[$index][2] = "-";                       //cod articolo
               $data[$index][3] = "-";                       //desc articolo
               $data[$index][4] = "-";                       //qt. articolo
-              $data[$index][5] = $row['cod_componente'];    //codice del componente
-              $data[$index][6] = '0';                       //qt. componente
-              $data[$index][7] = $row['descrizione'];       //descrizione del componente
-              $data[$index][8] = $row['dimensione'];        //dimensione del componente
-              $data[$index][9] = $row['materiale'];         //materiale del componente
+              $data[$index][5] = $row['cod_comp'];    //codice del componente
+              $data[$index][6] = $row['desc_comp'];       //descrizione del componente
+              $data[$index][7] = $row['dim_comp'];        //dimensione del componente
+              $data[$index][8] = $row['mat_comp'];         //materiale del componente
+              $data[$index][9] = '0';                       //qt. componente
               $data[$index][10] = '0';                       //avanzamento del componente - 0 messa in produzione
               //incremento
               $index++;
             }
             else{
               //TABELLA ARTICOLO NON TROVATA
-              echo "<br> COMPONENTE: ".$componente["c1"]." - non è stata trovata la riga. Prego inserire il codice componente.";
+              echo "<br> COMPONENTE: ".$componente["cod_comp"]." - non è stata trovata la riga. Prego inserire il codice componente.";
             }
           //fine ciclo componenti
           }
@@ -327,7 +327,7 @@
           $x=$index-1;
           for($i=$x;$i>=0;--$i){
             //mi collego alla MEGATABELLA LAVORAZIONE
-            $campi = "(cod_impegno, cod_articolo, desc_articolo, qt_articolo, cod_componente, qt_componente, descrizione, dimensione, materiale, stato)";
+            $campi = "(imp_prod, art_prod, desc_art_prod, qt_art_prod, comp_prod, desc_comp_prod, dim_comp_prod, dim_comp_prod, mat_comp_prod, qt_comp_prod, stato_prod)";
             $valori = "('".$data[$i][1]."','".$data[$i][2]."','".$data[$i][3]."','".$data[$i][4]."','".$data[$i][5]."','".$data[$i][6]."',";
             $valori = $valori."'".$data[$i][7]."','".$data[$i][8]."','".$data[$i][9]."','".$data[$i][10]."');";
             $istruzione = "INSERT INTO produzione ".$campi."  VALUES ".$valori;
