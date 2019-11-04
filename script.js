@@ -1,18 +1,18 @@
 var $BTN = $('#export-btn');
 var $OUTPUT = $('#output');
 var possibleTables = {
-  'tableImp': { 'name':   'imp',
-                'headers': {'Impegno' :             'i1',
+  'tableImp': { 'name':     'imp',
+                'headers': {'Impegno':              'i1',
                             'Cliente':              'i2',
                             'Data consegna':        'i3',
-                            'Numero ordine':        'i4'}},
+                            'Ordine':        'i4'}},
   'tableArt': { 'name':     'art',
                 'headers': {'Codice Articolo':      'a1',
                             'Descrizione':          'a2',
                             'Cliente':              'a3',
                             'Codice Cliente':       'a4',
                             'Quantità':             'a5'}},
-  'tableArtImp': { 'name':     'art',
+  'tableArtImp': { 'name':  'art',
                 'headers': {'Codice Articolo':      'a1',
                             'Descrizione':          'a2',
                             'Quantità':             'a5'}},
@@ -21,7 +21,7 @@ var possibleTables = {
                             'Descrizione':          'c2',
                             'Dimensione':           'c3',
                             'Materiale':            'c4',
-                            'Quantità':             'c5'}};
+                            'Quantità':             'c5'}}};
 
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
@@ -45,24 +45,29 @@ $BTN.click(function(event) {
 
 function getTable($table){
   var arr = [];
-  var tableClass = $table.attr('class');
-  var tableRows = $table.find('tr:not(:hidden)');
-  var tableHeaders = possibleTables[tableClass].headers;
-  console.log("1 - " + tableClass);
-  console.log("2 - " + possibleTables);
-  console.log("3 - " + possibleTables[tableClass]);
-  console.log("4 - " + tableHeaders.length);
-  console.log("5 - " + $table.find('th:not(.control)').length);
+  var headers = [];
+  var className = $table.attr('class');
+  var rows = $table.find('tr:not(:hidden)');
 
-  tableRows.shift();
-  tableRows.each(function(index, el) {
-    var $td = $(this).eq(index).text();
-    var val = {};
-    tableHeaders.forEach(function (header, i){
-      val[header] = $td.eq(i).text();
-    });
-    arr.push(val);
+  $table.find('th:not(.control)').each(function(index, el) {
+    headers.push($(this).text());
   });
+
+  if(headers.length == Object.keys(possibleTables[className].headers).length){
+    rows.shift();
+    rows.each(function(index, el) {
+      var $td = $(this).find('td');
+      var val = {};
+      headers.forEach(function(header,i){
+        val[possibleTables[className]['headers'][header]] = $td.eq(i).text();
+      });
+      arr.push(val);
+    });
+
+  }else{
+    console.log('Errore');
+    return false;
+  }
 
   return (arr);
 };
