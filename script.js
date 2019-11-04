@@ -63,7 +63,6 @@ function getTable($table){
 
 // On focusout check value to database and fill tables
 $FIRST.focusout(function(event) {
-
   var exp_arr = {};
   var cod_art = $FIRST.text();
   var attr = $FIRST.attr('id');
@@ -101,4 +100,20 @@ $FIRST.focusout(function(event) {
       });
     });
   },'json');
+});
+
+$('.check_comp').on('focusout', function(event) {
+  event.preventDefault();
+  var $table = $(this).parents('#tableComp');
+  var headers = [];
+  $table.find('th:not(.control)').each(function() {
+    headers.push($(this).attr('id'));
+  });
+  var val = $(this).text();
+  var $cells = $(this).siblings('td');
+  $.post('./connessioneDB.php', {componente: val}, function(msg) {
+    headers.forEach(function(h, i){
+      $td.eq(i).text(msg[h]);
+    });
+  });
 });
