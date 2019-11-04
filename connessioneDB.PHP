@@ -127,16 +127,18 @@
           $cliente = $row["cli_art"];
           $cod_cliente = $row["cod_cli_art"];
           //creo array dell' articolo
-          $arr_Articolo = array("ca"=>$cod_articolo,"d"=>$descrizione,"c"=>$cliente,"cc"=>$cod_cliente);
+          $arr_Articolo[0] = array("cod_art"=>$cod_articolo,"desc_art"=>$descrizione,"cli_art"=>$cliente,"cod_cli_art"=>$cod_cliente);
 
           //prendo la tabella articolo e stampo i componenti già salvati
           $istruzione = "SELECT * FROM ".$ricArticolo.";";
           if($result=mysqli_query($connessione,$istruzione)){
             $i = 0;
+            $arr_Componente[0]=array("cod_comp"=>"","desc_comp"=>"","dim_comp"=>"","mat_comp"=>"");
+
             while($row = mysqli_fetch_assoc($result)) {
               //salvo le righe dei componenti inseriti nell' articolo cercato
               //array di componenti
-              $arr_Componente[$i] = array("c1"=>$row["cod_comp"],"c2"=>$row["desc_comp"],"c3"=>$row["dim_comp"],"c4"=>$row["mat_comp"]);
+              $arr_Componente[$i] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
               $i = $i+1;
             }
           }
@@ -144,7 +146,7 @@
             echo "Error creating table: " . $connessione->error."<br>";
           }
           //concateno gli array e li passo codificati
-          $arrRisultato = array("aa"=>$arr_Articolo,"ac"=>$arr_Componente);
+          $arrRisultato = array("t_art"=>$arr_Articolo,"t_comp"=>$arr_Componente);
           echo json_encode($arrRisultato);
           //disconnessione
           mysqli_close($connessione);
@@ -349,6 +351,7 @@
 
 
       //RICERCA ARTICOLO INSERITO CON TUTTI I SUOI COMPONENTI
+      //sistemare gli indici
       public function getImpegno($ricImp){
         if(isset($this->attiva)){
           $arr_Articolo[0] = array("ca"=>"","d"=>"","q"=>"");
@@ -424,14 +427,16 @@
     echo "<br>REPORT NEW ARTICOLO:<br>";
     //prendo l' array
     $assieme = json_decode($_POST['newArticolo'],true);
+
     //setArticolo -> cilindro - componenti
-    $articolo = $assieme[0];
-    $componenti = $assieme[1];
+    $articolo = $assieme["t_art"];
+    $componenti = $assieme["t_comp"];
     //variabili del cilindro per settarlo
-    $codArticolo = $articolo["ca"];
-    $descrizione = $articolo["desc"];
-    $cliente = $articolo["cli"];
-    $codCliente = $articolo["cc"];
+    $codArticolo = $articolo[0]["cod_art"];
+    $descrizione = $articolo[0]["desc_art"];
+    $cliente = $articolo[0]["cli_art"];
+    $codCliente = $articolo[0]["cod_cli_art"];
+
     //setto l' articolo
     $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
     //vado a salvare le componenti del cilindro

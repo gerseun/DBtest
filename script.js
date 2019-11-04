@@ -63,6 +63,7 @@ function getTable($table){
 
 // On focusout check value to database and fill tables
 $FIRST.focusout(function(event) {
+
   var exp_arr = {};
   var cod_art = $FIRST.text();
   var attr = $FIRST.attr('id');
@@ -70,18 +71,19 @@ $FIRST.focusout(function(event) {
   $.post('./connessioneDB.php',exp_arr, function(msg){
     $OUTPUT.text(JSON.stringify(msg));
     var $tables = $('.container').find('table');
-    if(msg.length != $tables.length){
-      return false;
-      console.log('Wrong number of element received');
-    }
+    //if(msg.length != $tables.length){
+      //console.log('Wrong number of element received');
+      //return false;
+    //}
     $tables.each(function() {
       var t_name = $(this).attr('class');
       var val = msg[t_name];
       var headers = [];
       var $rows = $(this).find('tr:not(:hidden)');
+
       if(val.length != $rows.length-1){
-        return false;
         console.log('Wrong number of rows passed');
+        return false;
       };
       $(this).find('th:not(.control)').each(function() {
         headers.push($(this).attr('id'));
@@ -89,10 +91,10 @@ $FIRST.focusout(function(event) {
       $rows.shift();
       $rows.each(function(index, el) {
         var $td = $(this).find('td');
-        if($td.length != headers.length){
-          return false;
-          console.log('Wrong number of value passed');
-        };
+        //if($td.length != headers.length){
+          //console.log('Wrong number of value passed');
+          //return false;
+        //};
         headers.forEach(function(h, i){
           $td.eq(i).text(val[index][h]);
         });
