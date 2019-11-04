@@ -1,73 +1,67 @@
-var $BTN = $('#export-btn');
+// PHP TEST:  https://ptsv2.com/t/zbqq5-1572855256/post
+
+var $BTN = $('#export_btn');
 var $OUTPUT = $('#output');
-var possibleTables = {
-  'tableImp': { 'name':     'imp',
-                'headers': {'Impegno':              'i1',
-                            'Cliente':              'i2',
-                            'Data consegna':        'i3',
-                            'Ordine':        'i4'}},
-  'tableArt': { 'name':     'art',
-                'headers': {'Codice Articolo':      'a1',
-                            'Descrizione':          'a2',
-                            'Cliente':              'a3',
-                            'Codice Cliente':       'a4',
-                            'Quantità':             'a5'}},
-  'tableArtImp': { 'name':  'art',
-                'headers': {'Codice Articolo':      'a1',
-                            'Descrizione':          'a2',
-                            'Quantità':             'a5'}},
-  'tableComp': { 'name':    'comp',
-                'headers': {'Codice Componente':    'c1',
-                            'Descrizione':          'c2',
-                            'Dimensione':           'c3',
-                            'Materiale':            'c4',
-                            'Quantità':             'c5'}}};
+var $FIRST = $('#first_cell');
 
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
 
-$BTN.click(function(event) {
-  var exportArr = {};
-  // Check tables number
-  var tables = $('.container').find('table');
-
-  tables.each(function(index, el) {
-    var val = getTable($(this));
-    var tableClass = $(this).attr('class');
-    exportArr[possibleTables[tableClass].name] = val;
-    //var val = $(this).attr('class');
-    //var attrName = tablesNames[val];
-    //console.log("Valore: "+index+" Nome: "+attrName);
-    //exportArr[attrName] = index;
-  });
-  $OUTPUT.text(JSON.stringify(exportArr));
+// Add new row on click
+$('.table-add').click(function(){
+  var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
+  $('#table').find('table').append($clone);
 });
 
+// Remove row on click
+$('.table-remove').click(function () {
+  $(this).parents('tr').detach();
+});
+
+// Export tables value on button click
+$BTN.click(function(event) {
+  var exp_arr = {};
+  var v_arr = {};
+  var $tables = $('.container').find('table');
+  // Loop through tables
+  $tables.each(function(index, el) {
+    var val = getTable($(this));
+    // Get table class as attr. of json
+    var t_class = $(this).attr('class');
+    v_arr[t_class] = val;
+  });
+  var attr = $('.container').attr('id');
+  exp_arr[attr] = JSON.stringify(v_arr)
+  $.post( './connessioneDB.php', exp_arr, function(msg){
+    $('#output').html(msg);
+  });
+  $OUTPUT.text(JSON.stringify(exp_arr));
+});
+
+// Function to get table values
 function getTable($table){
   var arr = [];
   var headers = [];
-  var className = $table.attr('class');
-  var rows = $table.find('tr:not(:hidden)');
-
+  var $rows = $table.find('tr:not(:hidden)');
+  // Get headers id
   $table.find('th:not(.control)').each(function(index, el) {
-    headers.push($(this).text());
+    headers.push($(this).attr('id'));
   });
-
-  if(headers.length == Object.keys(possibleTables[className].headers).length){
-    rows.shift();
-    rows.each(function(index, el) {
-      var $td = $(this).find('td');
-      var val = {};
-      headers.forEach(function(header,i){
-        val[possibleTables[className]['headers'][header]] = $td.eq(i).text();
-      });
-      arr.push(val);
+  $rows.shift(); // Remove first row(headers)
+  // Loop through rows
+  $rows.each(function(index, el) {
+    var $td = $(this).find('td');
+    var val = {};
+    // Get cell value and connect to headers id
+    headers.forEach(function(header,i){
+      val[header] = $td.eq(i).text();
     });
-
-  }else{
-    console.log('Errore');
-    return false;
-  }
-
+    arr.push(val);
+  });
   return (arr);
 };
+
+// On focusout check value to database and fill tables
+$FIRST.focusout(function(event) {
+  /* Act on the event */
+});
