@@ -9,8 +9,9 @@ jQuery.fn.shift = [].shift;
 
 // Add new row on click
 $('.table-add').click(function(){
-  var $clone = $('#table').find('tr.hide').clone(true).removeClass('hide table-line');
-  $('#table').find('table').append($clone);
+  var $parent_table = $(this).parents('table');
+  var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide table-line');
+  $parent_table.append($clone);
 });
 
 // Remove row on click
