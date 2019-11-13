@@ -26,7 +26,6 @@
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
         $dataOra = date("Y-m-d"); //data odierna
-        echo $dataOra."<br>";
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //inserisco la riga articolo
@@ -52,6 +51,10 @@
     public function setComponenteInArticolo($codArt, $codComponenti){
       $flag_anag_comp = false;  //false -> nuovo comp
                                 //true -> anagrafica già inserita
+      //variabili per la formattazione delle DATE da salvare
+      $dataOra = date("Y-m-d"); //data odierna
+      //prendo l' indice di articolo
+      $idArt = getIDarticolo($codArt);
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
@@ -59,59 +62,102 @@
         $cont = 0;
         foreach($codComponenti as $componente){
           echo "<br>".$cont."<br>";
+          //salvo variabili del componente
           $codComp = $componente["cod_comp"];
           $desc = $componente["desc_comp"];
           $dim = $componente["dim_comp"];
           $mat = $componente["mat_comp"];
           $qt = $componente["qt_comp"];
-
           //controllo se l' anagrafica componente esiste già
           $istruzione = "SELECT * FROM componente WHERE cod_comp = '".$codComp."'";
           $result=mysqli_query($connessione,$istruzione);
+          $flag_anag_comp = false;
           if (mysqli_num_rows($result)>0) {
+            //già presente nell' anagrafica
+            $flag_anag_comp = true;
             echo $codComp." già presente nell' anagrafica <br>";
           }
           else {
-            echo $codComp." NON ESISTE <br>";
+            //salvo il codice componente nell' anagrafica componente
+            $flag_anag_comp = false;
+            $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`, `pos_comp`, `data_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."','0','". $dataOra."');";
+            if (mysqli_query($connessione,$istruzione)) {
+              echo $codComp." inserito nell' anagrafica <br>";
+            }
+            else {
+              echo "Errore inserimento riga articolo: ".$codComp." - ". $connessione->error."<br>";
+            }
           }
-
-
-          /*
-          //query per inserire il componente nella tabella cilindro
-          //la tabella cilindro sarà sempre vuota -> cod comp e qt.
-          $istruzione = "INSERT INTO ".$codArt." (`cod_comp`, `qt_comp`)VALUES ('".$codComp."','".$qt."');";
+          //prendo l' indice di componente
+          $idComp = getIDcomponente($codComp);
+          //salvo la riga nella tabella articolo_componenti
+          $istruzione = "INSERT INTO `articolo_componenti` (`id_art`, `id_comp`, `qt_comp`)VALUES ('".$idArt."','".$idComp."','".$qt."');";
           if (mysqli_query($connessione,$istruzione)) {
-            echo $codComp." INSERITO CORRETTAMENTE <br>";
+            echo $codComp.": inserito nella descrizione articolo ".$codArt."<br>";
           }
           else {
-            echo "Error creating table: " . $connessione->error."<br>";
-            echo "err 2 -> Componente già inserito nel cilindro - Vedere cod. componente: ".$codComp." <br>";
+            echo "Errore inserimento descrizione articolo: ".$codComp." - ". $connessione->error."<br>";
           }
-
-          //cancello la riga componente e vado così ad aggiornare eventuali modifiche
-          $istruzione = "DELETE FROM componente WHERE cod_comp = '".$codComp."'";
-          mysqli_query($connessione,$istruzione);
-          //query per inserire il componente nella tabella componenti
-          $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
-          if (mysqli_query($connessione,$istruzione)) {
-            //echo "COMPONENTE INSERITO CORRETTAMENTE <br>";
-          }
-          else {
-            echo "Error creating table: " . $connessione->error."<br>";
-            echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
-          }
-
-          */
-
+          //incremento il contatore
           $cont = $cont +1;
-
         }
-
         //disconnessione
         mysqli_close($connessione);
         return true;
       }
       else{
+        return false;
+      }
+    }
+
+    //ricerco ID ARTICOLO
+    public function getIDarticolo($art){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessioneID = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "SELECT * FROM articolo WHERE cod_art='".$art."';";
+        $result=mysqli_query($connessioneID,$istruzione);
+        //controllo se articolo già salvato
+        if (mysqli_num_rows($result)>0) {
+          $row = mysqli_fetch_assoc($result);
+          //articolo gia inserito -> salvo i dati articolo
+          $idart=$row["id_art"];
+          mysqli_close($connessioneID);
+          return $idart;
+        }
+        else {
+          mysqli_close($connessioneID);
+          return false;
+        }
+      }
+      else{
+        mysqli_close($connessioneID);
+        return false;
+      }
+    }
+
+    //ricerco ID COMPONENTE
+    public function getIDcomponente($comp){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessioneID = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "SELECT * FROM componente WHERE cod_comp='".$comp."';";
+        $result=mysqli_query($connessione,$istruzione);
+        //controllo se articolo già salvato
+        if (mysqli_num_rows($result)>0) {
+          $row = mysqli_fetch_assoc($result);
+          //articolo gia inserito -> salvo i dati articolo
+          $idcomp=$row["id_comp"];
+          mysqli_close($connessioneID);
+          return $idcomp;
+        }
+        else {
+          mysqli_close($connessioneID);
+          return false;
+        }
+      }
+      else{
+        mysqli_close($connessioneID);
         return false;
       }
     }
