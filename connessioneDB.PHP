@@ -24,32 +24,23 @@
     //CREAZIONE ARTICOLO (CILINDRO)
     public function setArticolo($codArt,$desc,$cli,$codCli){
       if(isset($this->attiva)){
+        //variabili per la formattazione delle DATE da salvare
+        $dataOra = date("Y-m-d"); //data odierna
+        echo $dataOra."<br>";
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        //cancello la riga con la vecchia impostazione
-        $istruzione = "DELETE FROM articolo WHERE cod_art = '".$codArt."';";
-        mysqli_query($connessione,$istruzione);
-        //inserisco l' articolo
-        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `data_art`, `kit_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."',null ,'0');";
+        //inserisco la riga articolo
+        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `kit_art`, `data_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."','0','". $dataOra."');";
+        echo $istruzione."<br>";
         if (mysqli_query($connessione,$istruzione)) {
-          echo "ARTICOLO INSERITO CORRETTAMENTE <br>";
-          //cancello la tabella dell' articolo e la creo nuova aggiornata
-          $istruzione = "DROP TABLE ".$codArt;
-          mysqli_query($connessione,$istruzione);
-          //creo la tabella relativa all' articolo
-          $istruzione = "CREATE TABLE ".$codArt." ( `cod_comp` VARCHAR(50) NOT NULL , `qt_comp` INT(4) NULL , PRIMARY KEY (`cod_comp`));";
-          if (mysqli_query($connessione,$istruzione)) {
-            echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br><br>";
-          }
-          else {
-            echo "Error creating table: " . $connessione->error."<br><br>";
-          }
+          echo "ANAGRAFICA ARTICOLO INSERITA CORRETTAMENTE <br>";
         }
         else {
-          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!<br><br>";
+          echo "Errore nell' inserimento articolo: ".$codArt." - ".$connessione->error."<br><br>";
         }
         //disconnessione
         mysqli_close($connessione);
+        return true;
       }
       else{
         mysqli_close($connessione);
@@ -59,6 +50,8 @@
 
     //INSERISCO I COMPONENTI NELLA TABELLA DELL' ARTICOLO
     public function setComponenteInArticolo($codArt, $codComponenti){
+      $flag_anag_comp = false;  //false -> nuovo comp
+                                //true -> anagrafica già inserita
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
@@ -72,7 +65,18 @@
           $mat = $componente["mat_comp"];
           $qt = $componente["qt_comp"];
 
+          //controllo se l' anagrafica componente esiste già
+          $istruzione = "SELECT * FROM componente WHERE cod_comp = '".$codComp."'";
+          $result=mysqli_query($connessione,$istruzione);
+          if (mysqli_num_rows($result)>0) {
+            echo $codComp." già presente nell' anagrafica <br>";
+          }
+          else {
+            echo $codComp." NON ESISTE <br>";
+          }
 
+
+          /*
           //query per inserire il componente nella tabella cilindro
           //la tabella cilindro sarà sempre vuota -> cod comp e qt.
           $istruzione = "INSERT INTO ".$codArt." (`cod_comp`, `qt_comp`)VALUES ('".$codComp."','".$qt."');";
@@ -96,6 +100,8 @@
             echo "Error creating table: " . $connessione->error."<br>";
             echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
           }
+
+          */
 
           $cont = $cont +1;
 
@@ -440,13 +446,8 @@
     //setto l' articolo
     $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
     //vado a salvare le componenti del cilindro
-    //$varDB->setComponenteInArticolo($codArticolo, $componenti);
+    $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
-
-
-
-
-
 
   elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
