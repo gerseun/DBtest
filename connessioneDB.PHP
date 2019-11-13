@@ -26,10 +26,12 @@
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
         $dataOra = date("Y-m-d"); //data odierna
+        echo $dataOra."<br>";
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //inserisco la riga articolo
-        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `kit_art`, `data_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."','0', $dataOra);";
+        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `kit_art`, `data_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."','0','". $dataOra."');";
+        echo $istruzione."<br>";
         if (mysqli_query($connessione,$istruzione)) {
           echo "ANAGRAFICA ARTICOLO INSERITA CORRETTAMENTE <br>";
         }
@@ -48,6 +50,8 @@
 
     //INSERISCO I COMPONENTI NELLA TABELLA DELL' ARTICOLO
     public function setComponenteInArticolo($codArt, $codComponenti){
+      $flag_anag_comp = false;  //false -> nuovo comp
+                                //true -> anagrafica già inserita
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
@@ -61,7 +65,18 @@
           $mat = $componente["mat_comp"];
           $qt = $componente["qt_comp"];
 
+          //controllo se l' anagrafica componente esiste già
+          $istruzione = "SELECT * FROM componente WHERE cod_comp = '".$codComp."'";
+          $result=mysqli_query($connessione,$istruzione);
+          if (mysqli_num_rows($result)>0) {
+            echo $codComp." già presente nell' anagrafica <br>";
+          }
+          else {
+            echo $codComp." NON ESISTE <br>";
+          }
 
+
+          /*
           //query per inserire il componente nella tabella cilindro
           //la tabella cilindro sarà sempre vuota -> cod comp e qt.
           $istruzione = "INSERT INTO ".$codArt." (`cod_comp`, `qt_comp`)VALUES ('".$codComp."','".$qt."');";
@@ -85,6 +100,8 @@
             echo "Error creating table: " . $connessione->error."<br>";
             echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
           }
+
+          */
 
           $cont = $cont +1;
 
@@ -429,7 +446,7 @@
     //setto l' articolo
     $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
     //vado a salvare le componenti del cilindro
-    //$varDB->setComponenteInArticolo($codArticolo, $componenti);
+    $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
 
   elseif(isset($_POST['articolo'])){
