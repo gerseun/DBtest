@@ -440,8 +440,13 @@
     //setto l' articolo
     $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
     //vado a salvare le componenti del cilindro
-    $varDB->setComponenteInArticolo($codArticolo, $componenti);
+    //$varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
+
+
+
+
+
 
   elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
