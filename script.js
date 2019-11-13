@@ -118,3 +118,71 @@ $('.check_comp').on('focusout', function(event) {
     });
   });
 });
+
+
+$( function() {
+    var availableTags = [
+      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme",
+      "asda",
+      "adeha",
+      "attedhd",
+      "khag",
+      "lakjhsdaa",
+      "alsdhja",
+      "asidhal",
+      "asdafafg",
+      "oasugfa",
+      "asfgagaa",
+      "oaugflja",
+      "aewruear",
+      "agiaohua",
+      "apghahai",
+      "òakhsbfòa",
+      "kjagfoa",
+      "ljaga",
+      "ujgafja"
+    ];
+    $( "#articolo" ).autocomplete({
+      source: availableTags
+    });
+  } );
+
+function open_dialog(){
+  $( "#dialog-confirm" ).dialog({
+    resizable: false,
+    height: "auto",
+    width: 400,
+    modal: true,
+    buttons: {
+      "Modifica": function() {
+        $( this ).dialog( "close" );
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
+
+        location.reload();
+      }
+    }
+  });
+};
