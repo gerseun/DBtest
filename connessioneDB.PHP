@@ -24,32 +24,21 @@
     //CREAZIONE ARTICOLO (CILINDRO)
     public function setArticolo($codArt,$desc,$cli,$codCli){
       if(isset($this->attiva)){
+        //variabili per la formattazione delle DATE da salvare
+        $dataOra = date("Y-m-d"); //data odierna
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        //cancello la riga con la vecchia impostazione
-        $istruzione = "DELETE FROM articolo WHERE cod_art = '".$codArt."';";
-        mysqli_query($connessione,$istruzione);
-        //inserisco l' articolo
-        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `data_art`, `kit_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."',null ,'0');";
+        //inserisco la riga articolo
+        $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `kit_art`, `data_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."','0', $dataOra);";
         if (mysqli_query($connessione,$istruzione)) {
-          echo "ARTICOLO INSERITO CORRETTAMENTE <br>";
-          //cancello la tabella dell' articolo e la creo nuova aggiornata
-          $istruzione = "DROP TABLE ".$codArt;
-          mysqli_query($connessione,$istruzione);
-          //creo la tabella relativa all' articolo
-          $istruzione = "CREATE TABLE ".$codArt." ( `cod_comp` VARCHAR(50) NOT NULL , `qt_comp` INT(4) NULL , PRIMARY KEY (`cod_comp`));";
-          if (mysqli_query($connessione,$istruzione)) {
-            echo "TABELLA ARTICOLO CREATA CORRETTAMENTE <br><br>";
-          }
-          else {
-            echo "Error creating table: " . $connessione->error."<br><br>";
-          }
+          echo "ANAGRAFICA ARTICOLO INSERITA CORRETTAMENTE <br>";
         }
         else {
-          echo "ERRORE CONNESSIONE AL DATABASE, VERIFICARE CHE SIA UN NUOVO CILINDRO!<br><br>";
+          echo "Errore nell' inserimento articolo: ".$codArt." - ".$connessione->error."<br><br>";
         }
         //disconnessione
         mysqli_close($connessione);
+        return true;
       }
       else{
         mysqli_close($connessione);
@@ -442,11 +431,6 @@
     //vado a salvare le componenti del cilindro
     //$varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
-
-
-
-
-
 
   elseif(isset($_POST['articolo'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
