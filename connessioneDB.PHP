@@ -30,7 +30,6 @@
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //inserisco la riga articolo
         $istruzione = "INSERT INTO `articolo` (`cod_art`, `desc_art`, `cli_art`, `cod_cli_art`, `kit_art`, `data_art`) VALUES ('".$codArt."','".$desc."','".$cli."','".$codCli."','0','". $dataOra."');";
-        echo $istruzione."<br>";
         if (mysqli_query($connessione,$istruzione)) {
           echo "ANAGRAFICA ARTICOLO INSERITA CORRETTAMENTE <br>";
         }
@@ -49,12 +48,13 @@
 
     //INSERISCO I COMPONENTI NELLA TABELLA DELL' ARTICOLO
     public function setComponenteInArticolo($codArt, $codComponenti){
+      $varDB = new conn_DB();
       $flag_anag_comp = false;  //false -> nuovo comp
                                 //true -> anagrafica già inserita
       //variabili per la formattazione delle DATE da salvare
       $dataOra = date("Y-m-d"); //data odierna
       //prendo l' indice di articolo
-      $idArt = getIDarticolo($codArt);
+      $idArt = $varDB->getIDarticolo($codArt);
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
@@ -89,7 +89,7 @@
             }
           }
           //prendo l' indice di componente
-          $idComp = getIDcomponente($codComp);
+          $idComp = $varDB->getIDcomponente($codComp);
           //salvo la riga nella tabella articolo_componenti
           $istruzione = "INSERT INTO `articolo_componenti` (`id_art`, `id_comp`, `qt_comp`)VALUES ('".$idArt."','".$idComp."','".$qt."');";
           if (mysqli_query($connessione,$istruzione)) {
@@ -142,7 +142,7 @@
         //apro la connessione al DB
         $connessioneID = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         $istruzione = "SELECT * FROM componente WHERE cod_comp='".$comp."';";
-        $result=mysqli_query($connessione,$istruzione);
+        $result=mysqli_query($connessioneID,$istruzione);
         //controllo se articolo già salvato
         if (mysqli_num_rows($result)>0) {
           $row = mysqli_fetch_assoc($result);
