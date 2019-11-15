@@ -7,101 +7,123 @@ var $FIRST = $('.first_cell');
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
 
-// Add new row on click
+//--- Add row on click ---//
 $('.table-add').click(function(){
   var $parent_table = $(this).parents('table');
-  var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide table-line');
-  $parent_table.append($clone);
+  add_row($parent_table,1);
 });
 
-// Remove row on click
+//--- Add n rows to the table ---//
+function add_row($parent_table, n){
+  for (var i = 0; i < n; i++) {
+    var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide table-line');
+    $parent_table.append($clone);
+  }
+};
+
+//--- Remove row on click ---//
 $('.table-remove').click(function () {
   $(this).parents('tr').detach();
 });
 
-// Export tables value on button click
+//--- Export tables value on button click ---//
 $BTN.click(function(event) {
   var exp_arr = {};
   var v_arr = {};
   var $tables = $('.container').find('table');
-  // Loop through tables
-  $tables.each(function(index, el) {
-    var val = getTable($(this));
-    // Get table class as attr. of json
-    var t_class = $(this).attr('class');
+
+  $tables.each(function(index, el) {  // Loop through tables
+    var val = getTable($(this));  // Use function to collect tables values
+    var t_class = $(this).attr('class');  // Use table class ass attr. of JSON
     v_arr[t_class] = val;
   });
-  var attr = $('.container').attr('id');
+  var attr = $('.container').attr('id');  // Use container_id ass attr. of JSON
+
   exp_arr[attr] = JSON.stringify(v_arr)
-  $.post( './connessioneDB.php', exp_arr, function(msg){
+
+  $.post( './connessioneDB.php', exp_arr, function(msg){  // Export JSON
     $('#output').html(msg);
   });
   $OUTPUT.text(JSON.stringify(exp_arr));
 });
 
-// Function to get table values
+//--- Function to get table values ---//
 function getTable($table){
   var arr = [];
   var headers = [];
   var $rows = $table.find('tr:not(:hidden)');
-  // Get headers id
-  $table.find('th:not(.control)').each(function(index, el) {
+
+  $table.find('th:not(.control)').each(function(index, el) {  // Get table headers id
     headers.push($(this).attr('id'));
   });
   $rows.shift(); // Remove first row(headers)
-  // Loop through rows
-  $rows.each(function(index, el) {
+
+  $rows.each(function(index, el) {  // Loop through rows
     var $td = $(this).find('td');
     var val = {};
-    // Get cell value and connect to headers id
-    headers.forEach(function(header,i){
+
+    headers.forEach(function(header,i){ // Use table header as attr. for cells value in JSON
       val[header] = $td.eq(i).text();
     });
     arr.push(val);
   });
-  return (arr);
+  return (arr); // Return array [{ h1:r1c1, h2:r1c2, ... }, { h1:r2c1, h2:r2c2, ...}, ...]
 };
 
-// On focusout check value to database and fill tables
+//--- On focusout on first cell call database and fill tables ---//
 $FIRST.focusout(function(event) {
   var exp_arr = {};
   var cod_art = $FIRST.text();
   var attr = $FIRST.attr('id');
   exp_arr[attr] = cod_art;
-  $.post('./connessioneDB.php',exp_arr, function(msg){
+//  $.post('./connessioneDB.php',exp_arr, function(msg){
+  var msg = JSON.parse(test);
     $OUTPUT.text(JSON.stringify(msg));
-    var $tables = $('.container').find('table');
-    //if(msg.length != $tables.length){
-      //console.log('Wrong number of element received');
-      //return false;
-    //}
-    $tables.each(function() {
-      var t_name = $(this).attr('class');
-      var val = msg[t_name];
-      var headers = [];
-      var $rows = $(this).find('tr:not(:hidden)');
+    fill_table(msg);
+    if ($('#dialog-confirm').length) {
+      open_dialog(); // Open dialog for mod or refresh
+    }
+//  },'json');
+});
 
-      if(val.length != $rows.length-1){
-        console.log('Wrong number of rows passed');
-        return false;
-      };
-      $(this).find('th:not(.control)').each(function() {
-        headers.push($(this).attr('id'));
-      });
-      $rows.shift();
-      $rows.each(function(index, el) {
-        var $td = $(this).find('td');
-        //if($td.length != headers.length){
-          //console.log('Wrong number of value passed');
-          //return false;
-        //};
-        headers.forEach(function(h, i){
-          $td.eq(i).text(val[index][h]);
+//--- Function that get a JSON and fill all the tables ---//
+function fill_table(json){
+  var $tables = $('.container').find('table');
+  //if(msg.length != $tables.length){
+    //console.log('Wrong number of element received');
+    //return false;
+  //}
+  $tables.each(function(tnum) { // Loop through tables
+    var table_name = $(this).attr('class');
+    var container_name = $('.container').attr('id');
+    var import_rows = json[container_name][table_name];  // Get corresponding table values from JSON
+    var headers = [];
+    var $rows = $(this).find('tr:not(:hidden)');
+
+    $(this).find('th:not(.control)').each(function() {  // Get table headers id
+      headers.push($(this).attr('id'));
+    });
+    $rows.shift();
+
+    if($rows.length < import_rows.length){
+      add_row($(this),import_rows.length-$rows.length); // Add rows is JSON has more
+    }else{
+        $rows.each(function(index, el) {
+          if (index > import_rows.length-1) { // Remove rows if JSON has more
+            $(this).detach();
+          }
         });
+    }
+    var $rows = $(this).find('tr:not(:hidden)');  // Find rows
+    $rows.shift();  // Remove first row
+    $rows.each(function(index, el) {  // Pass every row and add value to table
+      var $td = $(this).find('td');
+      headers.forEach(function(h,i){
+        $td.eq(i).text(import_rows[index][h])
       });
     });
-  },'json');
-});
+  });
+};
 
 $('.check_comp').on('focusout', function(event) {
   event.preventDefault();
@@ -119,7 +141,7 @@ $('.check_comp').on('focusout', function(event) {
   });
 });
 
-
+// Aautocomplete cod articolo
 $( function() {
     var availableTags = [
       "ActionScript",
@@ -161,13 +183,22 @@ $( function() {
       "òakhsbfòa",
       "kjagfoa",
       "ljaga",
-      "ujgafja"
+      "ujgafja",
+      "asdkthd",
+      "asdklhkhd",
+      "asdhbsbv0",
+      "asdasgg"
     ];
     $( "#articolo" ).autocomplete({
-      source: availableTags
+      source: availableTags,
+      minLength: 3,
+      select: function(event, ui){
+        console.log(event);
+      }
     });
   } );
 
+// Open box if cod articolo exist
 function open_dialog(){
   $( "#dialog-confirm" ).dialog({
     resizable: false,
@@ -176,13 +207,31 @@ function open_dialog(){
     modal: true,
     buttons: {
       "Modifica": function() {
+        var container_id = $('.container').attr('id');
+        if (container_id == "newArticolo"){
+          $('.container').attr('id', 'modArticolo');
+        }
         $( this ).dialog( "close" );
       },
       Cancel: function() {
         $( this ).dialog( "close" );
-
         location.reload();
       }
     }
   });
 };
+
+var test = '{"newArticolo":'+
+'{"t_art":[{"cod_art":"a","desc_art":"b","cli_art":"c","cod_cli_art":"d"}],'+
+'"t_comp":['+
+'{"cod_comp":"e","desc_comp":"f","dim_comp":"g","mat_comp":"h","qt_comp":"i"},'+
+'{"cod_comp":"l","desc_comp":"m","dim_comp":"n","mat_comp":"o","qt_comp":"o"}]}}';
+/*{"newArticolo":
+            {"t_art":[
+              {"cod_art":"a","desc_art":"b","cli_art":"c","cod_cli_art":"d"}
+            ],
+            "t_comp":[
+              {"cod_comp":"e","desc_comp":"f","dim_comp":"g","mat_comp":"h","qt_comp":"i"},
+              {"cod_comp":"l","desc_comp":"m","dim_comp":"n","mat_comp":"o","qt_comp":"o"}
+            ]}
+          };*/
