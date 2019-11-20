@@ -1,8 +1,30 @@
 // PHP TEST:  https://ptsv2.com/t/zbqq5-1572855256/post
 
+var php_link = "./connessioneDB.php"
+
 var $BTN = $('#export_btn');
 var $OUTPUT = $('#output');
 var $FIRST = $('.first_cell');
+var IS_ADMIN = true;
+
+var test1 = '{"first_call":'+
+'{"list_art":["1ABC00100","1ABC00200","1BCA00100","1BCA00200"],'+
+'"list_comp":["1ABC00102","1ABC00110","1ABC00201","1BCA00120","1BCA00230"]}}';
+
+var test2 = '{"newArticolo":'+
+'{"t_art":[{"cod_art":"1ABC00100","desc_art":"cilindro","cli_art":"Asd","cod_cli_art":"123456"}],'+
+'"t_comp":['+
+'{"cod_comp":"1ABC00102","desc_comp":"camicia","dim_comp":"100","mat_comp":"S355","qt_comp":"1"},'+
+'{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2"}]}}';
+
+var test3 = '{"newArticolo":'+
+'{"t_art":[],'+
+'"t_comp":['+
+'{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2"}]}}';;
+
+var list_art = [];
+var list_comp = [];
+var list_imp = [];
 
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
@@ -18,6 +40,15 @@ function add_row($parent_table, n){
   for (var i = 0; i < n; i++) {
     var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide table-line');
     $parent_table.append($clone);
+
+    var $first_cell = $clone.find('td').eq(0);
+    var $parent_firstCell = $parent_table.find('td').eq(0);
+    var classname = $parent_firstCell.attr('class');
+    if(classname.indexOf('search_art') > -1){
+      add_searchDialog($first_cell, list_art);
+    }else if (classname.indexOf('search_comp') > -1) {
+      add_searchDialog($first_cell, list_comp);
+    }
   }
 };
 
@@ -25,6 +56,157 @@ function add_row($parent_table, n){
 $('.table-remove').click(function () {
   $(this).parents('tr').detach();
 });
+
+function get_tableHeaders ($el){
+  var headers = [];
+  if ($el.is('table')){
+    $el.find('th:not(.control)').each(function() {  // Get table headers id
+      headers.push($(this).attr('id'));
+    });
+  }else {
+    var $table = $el.parents('table');
+    $table.find('th:not(.control)').each(function() {  // Get table headers id
+      headers.push($(this).attr('id'));
+    });
+  }
+  return headers;
+};
+
+$(document).ready(function() {
+  $.post(php_link, {first_call: $('container').attr('id')}, function(data, textStatus, xhr) {
+    console.log('Server connection success: first_call');
+    if (IS_ADMIN) {
+//var data = JSON.parse(test1);
+//      $OUTPUT.text(JSON.stringify(data));
+//    }
+
+    if(data.hasOwnProperty('first_call')){
+      if(data['first_call'].hasOwnProperty('list_art')){
+        list_art = data['first_call']['list_art'];
+        add_searchDialog($('.search_art'), list_art);
+      }
+      if (data['first_call'].hasOwnProperty('list_comp')){
+        list_comp = data['first_call']['list_comp'];
+        add_searchDialog($('.search_comp'), list_comp);
+      }
+      if (data['first_call'].hasOwnProperty('list_imp')){
+        list_imp = data['first_call']['list_imp'];
+        add_searchDialog($('.search_imp'), list_imp);
+      }
+    }else{
+      console.log('json error: first_call');
+    }
+  }, 'JSON').fail(function(){
+    console.log('Server connection error: first_call');
+  });
+});
+
+
+
+function add_searchDialog ($el, arr){
+  var container_id = $('.container').attr('id');
+  if($el.attr('id') == 'first_cell'){
+    $el.autocomplete({
+      source: arr,
+      minLength: 1,
+      select: function(event, ui){
+        var exp_arr = {};
+        var value = ui.item.value;
+        var el_class = $(this).attr('class').split(' ')[0];
+        exp_arr[el_class] = value;
+        $.post(php_link, exp_arr, function(data, textStatus, xhr) {
+  //var data = JSON.parse(test2);
+          $OUTPUT.text(JSON.stringify(data));
+
+          var $tables = $('.container').find('table');
+          $tables.each(function(index, el) {
+            var table_name = $(this).attr('class');
+            if(data[container_id].hasOwnProperty(table_name)){
+              fill_table($(this), data[container_id][table_name]);
+            }
+          });
+          modify(false);
+        },'JSON');
+      }
+    });
+  }else{
+    $el.autocomplete({
+      source: arr,
+      minLength: 1,
+      select: function(event, ui){
+        var exp_arr = {};
+        var value = ui.item.value;
+        var el_class = $(this).attr('class').split(' ')[0];
+        exp_arr[el_class] = value;
+
+        $.post(php_link, exp_arr, function(data, textStatus, xhr) {
+  //var data = JSON.parse(test3);
+          $OUTPUT.text(JSON.stringify(data));
+
+          var $row = $el.parent('tr');
+          var $table = $el.parents('table');
+          var table_name = $table.attr('class');
+          fill_row($row, data[container_id][table_name]);
+        },'JSON');
+      }
+    });
+  }
+  console.log('search added');
+};
+
+function get_value ($el, json, type) {
+  var container_id = $('.container').attr('id');
+  if (!json.hasOwnProperty(container_id)) {
+    console.log('json error: fill_table');
+    return false;
+  }
+};
+
+function modify (bool){
+  if(bool){
+    $('#modify_btn').hide();
+    $('td').attr('contenteditable', 'true');
+    $('.control').show();
+  }else{
+    $('#modify_btn').show();
+    $('td').attr('contenteditable', 'false');
+    $('.control').hide();
+  }
+}
+
+function fill_table($table, arr){
+  var table_name = $table.attr('class');
+  var headers = get_tableHeaders($table);
+  var $rows = $table.find('tr:not(:hidden)');
+  $rows.shift();
+
+  if($rows.length < arr.length){
+    add_row($table,arr.length-$rows.length); // Add rows is JSON has more
+  }else{
+      $rows.each(function(index, el) {
+        if (index > arr.length-1) { // Remove rows if JSON has more
+          $(this).detach();
+        }
+      });
+  }
+  var $rows = $table.find('tr:not(:hidden)');  // Find rows
+  $rows.shift();  // Remove first row
+
+  $rows.each(function(index, el) {  // Pass every row and add value to table
+    var $td = $(this).find('td');
+    headers.forEach(function(h,i){
+      $td.eq(i).text(arr[index][h])
+    });
+  });
+};
+
+function fill_row ($row, arr){
+  var headers = get_tableHeaders($row);
+  var $td = $row.find('td');
+  headers.forEach(function(h,i){
+    $td.eq(i).text(arr[0][h])
+  });
+};
 
 //--- Export tables value on button click ---//
 $BTN.click(function(event) {
@@ -69,169 +251,3 @@ function getTable($table){
   });
   return (arr); // Return array [{ h1:r1c1, h2:r1c2, ... }, { h1:r2c1, h2:r2c2, ...}, ...]
 };
-
-//--- On focusout on first cell call database and fill tables ---//
-$FIRST.focusout(function(event) {
-  var exp_arr = {};
-  var cod_art = $FIRST.text();
-  var attr = $FIRST.attr('id');
-  exp_arr[attr] = cod_art;
-//  $.post('./connessioneDB.php',exp_arr, function(msg){
-  var msg = JSON.parse(test);
-    $OUTPUT.text(JSON.stringify(msg));
-    fill_table(msg);
-    if ($('#dialog-confirm').length) {
-      open_dialog(); // Open dialog for mod or refresh
-    }
-//  },'json');
-});
-
-//--- Function that get a JSON and fill all the tables ---//
-function fill_table(json){
-  var $tables = $('.container').find('table');
-  //if(msg.length != $tables.length){
-    //console.log('Wrong number of element received');
-    //return false;
-  //}
-  $tables.each(function(tnum) { // Loop through tables
-    var table_name = $(this).attr('class');
-    var container_name = $('.container').attr('id');
-    var import_rows = json[container_name][table_name];  // Get corresponding table values from JSON
-    var headers = [];
-    var $rows = $(this).find('tr:not(:hidden)');
-
-    $(this).find('th:not(.control)').each(function() {  // Get table headers id
-      headers.push($(this).attr('id'));
-    });
-    $rows.shift();
-
-    if($rows.length < import_rows.length){
-      add_row($(this),import_rows.length-$rows.length); // Add rows is JSON has more
-    }else{
-        $rows.each(function(index, el) {
-          if (index > import_rows.length-1) { // Remove rows if JSON has more
-            $(this).detach();
-          }
-        });
-    }
-    var $rows = $(this).find('tr:not(:hidden)');  // Find rows
-    $rows.shift();  // Remove first row
-    $rows.each(function(index, el) {  // Pass every row and add value to table
-      var $td = $(this).find('td');
-      headers.forEach(function(h,i){
-        $td.eq(i).text(import_rows[index][h])
-      });
-    });
-  });
-};
-
-$('.check_comp').on('focusout', function(event) {
-  event.preventDefault();
-  var $table = $(this).parents('#tableComp');
-  var headers = [];
-  $table.find('th:not(.control)').each(function() {
-    headers.push($(this).attr('id'));
-  });
-  var val = $(this).text();
-  var $cells = $(this).siblings('td');
-  $.post('./connessioneDB.php', {componente: val}, function(msg) {
-    headers.forEach(function(h, i){
-      $td.eq(i).text(msg[h]);
-    });
-  });
-});
-
-// Aautocomplete cod articolo
-$( function() {
-    var availableTags = [
-      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-      "Python",
-      "Ruby",
-      "Scala",
-      "Scheme",
-      "asda",
-      "adeha",
-      "attedhd",
-      "khag",
-      "lakjhsdaa",
-      "alsdhja",
-      "asidhal",
-      "asdafafg",
-      "oasugfa",
-      "asfgagaa",
-      "oaugflja",
-      "aewruear",
-      "agiaohua",
-      "apghahai",
-      "òakhsbfòa",
-      "kjagfoa",
-      "ljaga",
-      "ujgafja",
-      "asdkthd",
-      "asdklhkhd",
-      "asdhbsbv0",
-      "asdasgg"
-    ];
-    $( "#articolo" ).autocomplete({
-      source: availableTags,
-      minLength: 3,
-      select: function(event, ui){
-        console.log(event);
-      }
-    });
-  } );
-
-// Open box if cod articolo exist
-function open_dialog(){
-  $( "#dialog-confirm" ).dialog({
-    resizable: false,
-    height: "auto",
-    width: 400,
-    modal: true,
-    buttons: {
-      "Modifica": function() {
-        var container_id = $('.container').attr('id');
-        if (container_id == "newArticolo"){
-          $('.container').attr('id', 'modArticolo');
-        }
-        $( this ).dialog( "close" );
-      },
-      Cancel: function() {
-        $( this ).dialog( "close" );
-        location.reload();
-      }
-    }
-  });
-};
-
-var test = '{"newArticolo":'+
-'{"t_art":[{"cod_art":"a","desc_art":"b","cli_art":"c","cod_cli_art":"d"}],'+
-'"t_comp":['+
-'{"cod_comp":"e","desc_comp":"f","dim_comp":"g","mat_comp":"h","qt_comp":"i"},'+
-'{"cod_comp":"l","desc_comp":"m","dim_comp":"n","mat_comp":"o","qt_comp":"o"}]}}';
-/*{"newArticolo":
-            {"t_art":[
-              {"cod_art":"a","desc_art":"b","cli_art":"c","cod_cli_art":"d"}
-            ],
-            "t_comp":[
-              {"cod_comp":"e","desc_comp":"f","dim_comp":"g","mat_comp":"h","qt_comp":"i"},
-              {"cod_comp":"l","desc_comp":"m","dim_comp":"n","mat_comp":"o","qt_comp":"o"}
-            ]}
-          };*/

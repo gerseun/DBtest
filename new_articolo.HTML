@@ -51,6 +51,9 @@
     </style>
   </head>
   <body>
+    <div class="head">
+
+    </div>
 
     <div class="container" id="newArticolo">
       <!--
@@ -63,7 +66,6 @@
 
       <h1>CREAZIONE ARTICOLO - CILINDRO</h1>
       <p>Inserire i dati relativi al cilindro.</p>
-
       <!--
         COSTRUZIONE TABELLA PER L' ARTICOLO
       -->
@@ -83,7 +85,7 @@
               PRIMA RIGA - EDITABILE
             -->
             <tr>
-              <td contenteditable="true" class="first_cell ui-widget" id="articolo"></td>
+              <td contenteditable="true" class="search_art" id="first_cell"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
@@ -115,23 +117,23 @@
               PRIMA RIGA - EDITABILE
             -->
             <tr>
-              <td contenteditable="true" class="check_comp"></td>
+              <td contenteditable="true" class="search_comp"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
             <tr class="hide">
               <!--
                 SECONDA RIGA - NASCOSTA
               -->
-              <td contenteditable="true" class="check_comp"></td>
+              <td contenteditable="true" class=""></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
           </tbody>
         </table>
@@ -141,7 +143,8 @@
         EXPORT -> INVIA DATI A CONFIG.PHP
       -->
       <button id="export_btn" class="btn btn-primary">Export Data</button>
-      <button id="asdasda" class="button">reload</button>
+      <button id="reset_btn" class="btn btn-secondary" script="">reload</button>
+      <button id="modify_btn" class="btn btn-primary" script="" >Modifica</button>
       <!--
       <br><br>
       <input type="checkbox" id="myCheck"  onclick="checkBox()" checked>Editable</input>
@@ -162,10 +165,16 @@
     setto il focus alla tabella
     -->
     <script type="text/javascript">
+
+
       $(document).ready(function(){
-        $('#articolo').focus();
-        $('.button').click(function(event) {
-          open_dialog();
+        $('#first_cell').focus();
+        $('#modify_btn').hide();
+        $('#reset_btn').click(function(event) {
+          location.reload();
+        });
+        $('#modify_btn').click(function(event) {
+          modify(true);
         });
       });
     </script>
