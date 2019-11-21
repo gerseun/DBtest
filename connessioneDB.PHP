@@ -466,6 +466,22 @@
           }
         }
 
+    //RICEVO TUTTI I CODICI COMPONENTE
+    public function getCodComponente(){
+      //apro la connessione al DB
+      $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+      $istruzione = "SELECT cod_comp FROM componente";
+      $result=mysqli_query($connessione,$istruzione);
+      //ricevo tutte le righe
+      $row = mysqli_fetch_assoc($result);
+      while($row = mysqli_fetch_assoc($result)) {
+        //salvo l' arrey codici componenti
+        $arr_Componente = array($row["cod_comp"]);
+      }
+      //disconnessione
+      mysqli_close($connessione);
+      return $arr_Componente;
+    }
 
   //FINE CLASSE conn_DB
   }
@@ -473,7 +489,12 @@
 //////////////////////////////////////////////////////////////////////////
 
 //FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
-  if (isset($_POST['newArticolo'])){
+  if(isset($_POST['first_call'])){
+    //APERTURA PAGINA INSERIMENTO DATI
+    $varDB = new conn_DB();
+
+  }
+  elseif (isset($_POST['newArticolo'])){
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
     echo "<br>REPORT NEW ARTICOLO:<br>";

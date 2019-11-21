@@ -96,12 +96,12 @@ $(document).ready(function() {
     }else{
       console.log('json error: first_call');
     }
-  }, 'JSON').fail(function(){
-    console.log('Server connection error: first_call');
-  });
+  }
+}, 'JSON').fail(function(){
+
+  console.log('Server connection error: first_call');
 });
-
-
+});
 
 function add_searchDialog ($el, arr){
   var container_id = $('.container').attr('id');
@@ -172,7 +172,7 @@ function modify (bool){
     $('td').attr('contenteditable', 'false');
     $('.control').hide();
   }
-}
+};
 
 function fill_table($table, arr){
   var table_name = $table.attr('class');
