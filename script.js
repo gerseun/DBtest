@@ -73,11 +73,15 @@ function get_tableHeaders ($el){
 };
 
 $(document).ready(function() {
-  $.post(php_link, {first_call: $('container').attr('id')}, function(data, textStatus, xhr) {
+  var test_firstCall = {};
+  var name_Conn = 'firstCall';
+  test_firstCall[name_Conn] = $('.container').attr('id');
+  $.post(php_link, test_firstCall, function(data, textStatus, xhr) {
     console.log('Server connection success: first_call');
     if (IS_ADMIN) {
+
 //var data = JSON.parse(test1);
-//      $OUTPUT.text(JSON.stringify(data));
+//$OUTPUT.html(JSON.stringify(data));
 //    }
 
     if(data.hasOwnProperty('first_call')){
@@ -96,6 +100,7 @@ $(document).ready(function() {
     }else{
       console.log('json error: first_call');
     }
+
   }
 }, 'JSON').fail(function(){
 
@@ -116,7 +121,8 @@ function add_searchDialog ($el, arr){
         exp_arr[el_class] = value;
         $.post(php_link, exp_arr, function(data, textStatus, xhr) {
   //var data = JSON.parse(test2);
-          $OUTPUT.text(JSON.stringify(data));
+          //$OUTPUT.text(JSON.stringify(data));
+//$OUTPUT.html(JSON.stringify(data));
 
           var $tables = $('.container').find('table');
           $tables.each(function(index, el) {
@@ -141,7 +147,7 @@ function add_searchDialog ($el, arr){
 
         $.post(php_link, exp_arr, function(data, textStatus, xhr) {
   //var data = JSON.parse(test3);
-          $OUTPUT.text(JSON.stringify(data));
+          //$OUTPUT.text(JSON.stringify(data));
 
           var $row = $el.parent('tr');
           var $table = $el.parents('table');
@@ -165,10 +171,12 @@ function get_value ($el, json, type) {
 function modify (bool){
   if(bool){
     $('#modify_btn').hide();
+    $('#export_btn').show();
     $('td').attr('contenteditable', 'true');
     $('.control').show();
   }else{
     $('#modify_btn').show();
+    $('#export_btn').hide();
     $('td').attr('contenteditable', 'false');
     $('.control').hide();
   }
@@ -210,6 +218,7 @@ function fill_row ($row, arr){
 
 //--- Export tables value on button click ---//
 $BTN.click(function(event) {
+
   var exp_arr = {};
   var v_arr = {};
   var $tables = $('.container').find('table');

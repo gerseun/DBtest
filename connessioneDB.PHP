@@ -162,54 +162,79 @@
       }
     }
 
-    //RICERCA ARTICOLO INSERITO CON TUTTI I SUOI COMPONENTI
+    //RICERCA ARTICOLO INSERITO
     public function getArticolo($ricArticolo){
       if(isset($this->attiva)){
         //apro la connessione al DB
-        $cod_articolo = $descrizione = $cliente = $cod_cliente = "";
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         $istruzione = "SELECT * FROM articolo WHERE cod_art='".$ricArticolo."';";
         $result=mysqli_query($connessione,$istruzione);
         //controllo se articolo già salvato
         if (mysqli_num_rows($result)>0) {
           $row = mysqli_fetch_assoc($result);
+          //salvo l' ID articolo
+          $id_articolo = $row["id_art"];
           //articolo gia inserito -> salvo i dati articolo
           $cod_articolo = $row["cod_art"];
           $descrizione = $row["desc_art"];
           $cliente = $row["cli_art"];
           $cod_cliente = $row["cod_cli_art"];
           //creo array dell' articolo
-          $arr_Articolo[0] = array("cod_art"=>$cod_articolo,"desc_art"=>$descrizione,"cli_art"=>$cliente,"cod_cli_art"=>$cod_cliente);
-
-          //prendo la tabella articolo e stampo i componenti già salvati
-          $istruzione = "SELECT * FROM ".$ricArticolo.";";
-          if($result=mysqli_query($connessione,$istruzione)){
-            $i = 0;
-            $arr_Componente[0]=array("cod_comp"=>"","desc_comp"=>"","dim_comp"=>"","mat_comp"=>"");
-
-            while($row = mysqli_fetch_assoc($result)) {
-              //salvo le righe dei componenti inseriti nell' articolo cercato
-              //array di componenti
-              $arr_Componente[$i] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
-              $i = $i+1;
-            }
-          }
-          else {
-            echo "Error creating table: " . $connessione->error."<br>";
-          }
-          //concateno gli array e li passo codificati
-          $arrRisultato = array("t_art"=>$arr_Articolo,"t_comp"=>$arr_Componente);
-          echo json_encode($arrRisultato);
+          $arr_Articolo = array("id_art"=>$id_articolo, "cod_art"=>$cod_articolo,"desc_art"=>$descrizione,"cli_art"=>$cliente,"cod_cli_art"=>$cod_cliente);
           //disconnessione
           mysqli_close($connessione);
-          return true;
+          //non ancora inserito
+          return $arr_Articolo;
         }
-        else{
+        else {
+          echo "Error creating table: " . $connessione->error."<br>";
           //disconnessione
           mysqli_close($connessione);
           //non ancora inserito
           return false;
         }
+      }
+      else{
+        //disconnessione
+        mysqli_close($connessione);
+        //non ancora inserito
+        return false;
+      }
+    }
+
+    //RICERCA I COMPONENTI INSERITI IN UN DATO ID_ARTICOLO  - ok 25/11/19
+    public function getCompInArticolo($ric_id_articolo){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //seleziono gli id_componenti dell' articolo ricercato
+        $istruzione = "SELECT * FROM articolo_componenti INNER JOIN componente ON componente.ID_comp=articolo_componenti.ID_comp  WHERE articolo_componenti.id_art = '".$ric_id_articolo."';";
+        $result=mysqli_query($connessione,$istruzione);
+        //variabili array COMPONENTI
+        $cont = 0;
+        $arr_Componente[] = array();
+        //controllo se componente già salvato
+        if (mysqli_num_rows($result)>0) {
+          //ciclo tutti i componenti
+          while($row = mysqli_fetch_assoc($result)) {
+            //articolo inserito -> salvo i dati dei componenti
+            $arr_Componente[$cont] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
+            $cont= $cont + 1;
+          }
+          //disconnessione
+          mysqli_close($connessione);
+          //trasmetto i componenti
+          return $arr_Componente;
+        }
+        else {
+          //disconnessione
+          mysqli_close($connessione);
+          //non ancora inserito
+          return false;
+        }
+      }
+      else{
+        return false;
       }
     }
 
@@ -249,32 +274,28 @@
       return true;
     }
 
-    //RICERCA COMPONENTE INSERITO
+    //RICERCA COMPONENTE INSERITO - ok 25/11/19
     public function getComponente($ricComponente){
       if(isset($this->attiva)){
         //apro la connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         $istruzione = "SELECT * FROM componente WHERE cod_comp='".$ricComponente."';";
         $result=mysqli_query($connessione,$istruzione);
-        //controllo se componente già salvato
+        //controllo se articolo già salvato
         if (mysqli_num_rows($result)>0) {
           $row = mysqli_fetch_assoc($result);
           //articolo gia inserito -> salvo i dati articolo
-          $arr_Componente = array("c1"=>$row["cod_comp"],"c2"=>$row["desc_comp"],"c3"=>$row["dim_comp"],"c4"=>$row["mat_comp"]);
-          //passo l'array codificato
-          echo json_encode($arr_Componente);
-          //disconnessione
+          $arrayComp[0] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
           mysqli_close($connessione);
-          return true;
+          return $arrayComp;
         }
         else {
-          //disconnessione
           mysqli_close($connessione);
-          //non ancora inserito
           return false;
         }
       }
       else{
+        mysqli_close($connessione);
         return false;
       }
     }
@@ -466,34 +487,100 @@
           }
         }
 
-    //RICEVO TUTTI I CODICI COMPONENTE
-    public function getCodComponente(){
+    //RICEVO TUTTI I CODICI COMPONENTE  - ok 25/11/19
+    public function getCodComponenti(){
       //apro la connessione al DB
       $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
       $istruzione = "SELECT cod_comp FROM componente";
       $result=mysqli_query($connessione,$istruzione);
       //ricevo tutte le righe
-      $row = mysqli_fetch_assoc($result);
+      $cont = 0;
+      $arr_Componente[] = array();
       while($row = mysqli_fetch_assoc($result)) {
         //salvo l' arrey codici componenti
-        $arr_Componente = array($row["cod_comp"]);
+        $arr_Componente[$cont] = $row["cod_comp"];
+        $cont = $cont + 1;
       }
       //disconnessione
       mysqli_close($connessione);
       return $arr_Componente;
     }
 
+    //RICEVO TUTTI I CODICI ARTICOLO  - ok 25/11/19
+    public function getCodArticoli(){
+      //apro la connessione al DB
+      $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+      $istruzione = "SELECT cod_art FROM articolo";
+      $result=mysqli_query($connessione,$istruzione);
+      //ricevo tutte le righe
+      $cont = 0;
+      $arr_Articolo[] = array();
+      while($row = mysqli_fetch_assoc($result)) {
+        //salvo l' arrey codici componenti
+        $arr_Articolo[$cont] = $row["cod_art"];
+        $cont = $cont + 1;
+      }
+      //disconnessione
+      mysqli_close($connessione);
+      return $arr_Articolo;
+    }
   //FINE CLASSE conn_DB
   }
 
 //////////////////////////////////////////////////////////////////////////
 
 //FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
-  if(isset($_POST['first_call'])){
+  //apertura pagina inserimento  - ok 25/11/19
+  if(isset($_POST['firstCall'])){
     //APERTURA PAGINA INSERIMENTO DATI
     $varDB = new conn_DB();
-
+    //array componenti
+    $componenti = $varDB->getCodComponenti();
+    //array articoli
+    $articoli = $varDB->getCodArticoli();
+    //concatenazione array
+    $arrCodici = array("list_art"=>$articoli,"list_comp"=>$componenti);
+    $arrRisultato = array("first_call"=>$arrCodici);
+    echo json_encode($arrRisultato);
   }
+
+  //ricerca articolo gia inserito  - ok 25/11/19
+  elseif(isset($_POST['search_art'])){
+    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
+    $varDB = new conn_DB();
+    //ricerco articolo
+    $ricercaArticolo = $_POST['search_art'];
+    $articolo = $varDB->getArticolo($ricercaArticolo);
+    //ricerco componenti contenuti nell' articolo
+    $ricercaIDart = $articolo["id_art"];
+    $componenti = $varDB->getCompInArticolo($ricercaIDart);
+    //creo array di risposta
+    $art[0] = array("cod_art"=>$articolo["cod_art"], "desc_art"=>$articolo["desc_art"], "cli_art"=>$articolo["cli_art"], "cod_cli_art"=>$articolo["cod_cli_art"]);
+    $artComp = array("t_art"=>$art, "t_comp"=>$componenti);
+    $risposta = array("newArticolo"=>$artComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+  //ricerca componente gia inserito  - ok 25/11/19
+  elseif(isset($_POST['search_comp'])){
+    //RICERCO IL CODICE COMPONENTE ED INVIO I DATI
+    $varDB = new conn_DB();
+    //ricerco componenti contenuti nell' articolo
+    $ricercaComp = $_POST['search_comp'];
+    $componente = $varDB->getComponente($ricercaComp);
+    //creo array di risposta
+    $art[0] = array("cod_art"=>"", "desc_art"=>"", "cli_art"=>"", "cod_cli_art"=>"");
+    $artComp = array("t_art"=>$art, "t_comp"=>$componente);
+    $risposta = array("newArticolo"=>$artComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+
+
+
+
   elseif (isset($_POST['newArticolo'])){
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
@@ -516,12 +603,6 @@
     $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
 
-  elseif(isset($_POST['articolo'])){
-    //RICERCA SE E' GIA' STATO INSERITO IL CODICE ARTICOLO ED INVIO I DATI
-    $varDB = new conn_DB();
-    $ricercaArticolo = $_POST['articolo'];
-    $varDB->getArticolo($ricercaArticolo);
-  }
 
   elseif(isset($_POST['componente'])){
     //RICERCA SE E' GIA' STATO INSERITO IL CODICE COMPONENTE ED INVIO I DATI
