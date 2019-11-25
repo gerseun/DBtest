@@ -39,6 +39,7 @@ $('.table-add').click(function(){
 function add_row($parent_table, n){
   for (var i = 0; i < n; i++) {
     var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide table-line');
+    $clone.addClass('search_comp');
     $parent_table.append($clone);
 
     var $first_cell = $clone.find('td').eq(0);
