@@ -577,10 +577,7 @@
     echo json_encode($risposta);
   }
 
-
-
-
-
+  //inserimento nuovo articolo  - ok 25/11/19
   elseif (isset($_POST['newArticolo'])){
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
     $varDB = new conn_DB();
