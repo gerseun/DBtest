@@ -38,7 +38,7 @@ $('.table-add').click(function(){
 //--- Add n rows to the table ---//
 function add_row($parent_table, n){
   for (var i = 0; i < n; i++) {
-    var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide table-line');
+    var $clone = $parent_table.find('tr.hide').clone(true).removeClass('hide');
     $parent_table.append($clone);
 
     var $first_cell = $clone.find('td').eq(0);
@@ -109,8 +109,10 @@ $(document).ready(function() {
 });
 
 function add_searchDialog ($el, arr){
-  var $parent_elClass = $el.parent('tr').attr('class');
-  if ($parent_elClass.indexOf(hide) > -1) {
+  if($el.length > 1){$el = $el.eq(0)}
+  var $parent_el = $el.parent('tr');
+  var $parent_elClass =$parent_el.attr('class');
+  if ($parent_elClass.indexOf('hide') > -1) {
     return false;
   }
   var container_id = $('.container').attr('id');
