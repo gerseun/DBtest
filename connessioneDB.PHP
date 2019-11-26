@@ -21,7 +21,7 @@
       }
     }
 
-    //CREAZIONE ARTICOLO (CILINDRO)
+    //CREAZIONE ARTICOLO (CILINDRO) - ok 25/11/19
     public function setArticolo($codArt,$desc,$cli,$codCli){
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
@@ -46,7 +46,7 @@
       }
     }
 
-    //INSERISCO I COMPONENTI NELLA TABELLA DELL' ARTICOLO
+    //INSERISCO I COMPONENTI NELLA TABELLA DELL' ARTICOLO - ok 25/11/19
     public function setComponenteInArticolo($codArt, $codComponenti){
       $varDB = new conn_DB();
       $flag_anag_comp = false;  //false -> nuovo comp
@@ -110,7 +110,7 @@
       }
     }
 
-    //ricerco ID ARTICOLO
+    //ricerco ID ARTICOLO - ok 25/11/19
     public function getIDarticolo($art){
       if(isset($this->attiva)){
         //apro la connessione al DB
@@ -136,7 +136,7 @@
       }
     }
 
-    //ricerco ID COMPONENTE
+    //ricerco ID COMPONENTE - ok 25/11/19
     public function getIDcomponente($comp){
       if(isset($this->attiva)){
         //apro la connessione al DB
@@ -218,7 +218,7 @@
           //ciclo tutti i componenti
           while($row = mysqli_fetch_assoc($result)) {
             //articolo inserito -> salvo i dati dei componenti
-            $arr_Componente[$cont] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
+            $arr_Componente[$cont] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"],"qt_comp"=>$row["qt_comp"]);
             $cont= $cont + 1;
           }
           //disconnessione
