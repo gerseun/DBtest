@@ -306,12 +306,9 @@
     public function setImpegno($assImp){
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
-        $dataOra = date("Y-m-d"); //data odierna
+        $dataOra = date("Y-m-d"); //data creazione impegno sul gestionale
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        //cancello la riga precedente per aggiornare
-        $istruzione = "DELETE FROM impegno WHERE cod_imp = ".$assImp["cod_imp"];
-        mysqli_query($connessione,$istruzione);
         //inserisco la riga nuovo impegno
         $istruzione = "INSERT INTO `impegno` (`cod_imp`, `cli_imp`, `cons_imp`, `ord_imp`, `stato_imp`, `creazione_imp`)
                        VALUES ('".$assImp["cod_imp"]."','".$assImp["cli_imp"]."','".$assImp["cons_imp"]."','".$assImp["ord_imp"]."','0','".$dataOra."');";
@@ -613,26 +610,24 @@
     $varDB->setCompSingolo($componenti);
   }
 
-
-
-
-
-
+  //inserimento nuovo impegno - da fare 27/11/19
   elseif (isset($_POST['newImpegno'])) {
     //CREAZIONE NUOVO IMPEGNO
     $varDB = new conn_DB();
     echo "<br>REPORT NEW IMPEGNO:<br>";
     //prendo l' array
     $assieme = json_decode($_POST['newImpegno'],true);
-    //separo le 3 componenti principali
-    $impegno = $assieme["imp"];
-    $articoli = $assieme["art"];
-    $componenti = $assieme["comp"];
+    //separo le componenti principali
+    $impegno = $assieme["t_imp"];
     //1-> CREO LA RIGA IMPEGNO
-    $varDB->setImpegno($impegno);
-    //2-> COMPILO LA TABELLA PRODUZIONE
-    $varDB->setProduzione($impegno,$articoli,$componenti);
+    $id_imp = $varDB->setImpegno($impegno);
+    //2->
+
   }
+
+
+
+
 
   elseif (isset($_POST['impegno'])) {
     //AUTOCOMPILAZIONE TABELLA IMPEGNO
