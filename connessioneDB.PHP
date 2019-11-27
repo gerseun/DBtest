@@ -238,27 +238,29 @@
       }
     }
 
-    //SALVO I COMPONENTI SINGOLI AL DI FUORI DELL' ASSIEME
+    //SALVO I COMPONENTI SINGOLI AL DI FUORI DELL' ASSIEME  - ok 27/11/19
     public function setCompSingolo($codComponenti){
       //ricevo un array di componenti, devo ciclarli ed inserirli uno alla volta
       if(isset($this->attiva)){
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //variabili per la formattazione delle DATE da salvare
+        $dataOra = date("Y-m-d"); //data odierna
         $cont = 0;
         foreach($codComponenti as $componente){
+          //ciclo tutti i componenti
           echo "<br>".$cont." -> ";
           $codComp = $componente["cod_comp"];
           $desc = $componente["desc_comp"];
           $dim = $componente["dim_comp"];
           $mat = $componente["mat_comp"];
           //query per inserire il componente nella tabella componenti
-          $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."');";
+          $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`, `pos_comp`, `data_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."','0','". $dataOra."');";
           if (mysqli_query($connessione,$istruzione)) {
-            echo $codComp." - COMPONENTE INSERITO CORRETTAMENTE <br>";
+            echo $codComp." inserito nell' anagrafica <br>";
           }
           else {
-            echo "<br>Error creating table: " . $connessione->error."<br>";
-            echo "err 3 Componente già salvato - Vedere cod. componente: ".$codComp." <br>";
+            echo "Errore inserimento riga articolo: ".$codComp." - ". $connessione->error."<br>";
           }
           $cont = $cont +1;
         }
@@ -600,22 +602,21 @@
     $varDB->setComponenteInArticolo($codArticolo, $componenti);
   }
 
-
-  elseif(isset($_POST['componente'])){
-    //RICERCA SE E' GIA' STATO INSERITO IL CODICE COMPONENTE ED INVIO I DATI
-    $varDB = new conn_DB();
-    $ricercaComponente = $_POST['componente'];
-    $varDB->getComponente($ricercaComponente);
-  }
-
-  elseif (isset($_POST['setCompSingolo'])) {
+  //inserimento nuovo componente  - ok 27/11/19
+  elseif (isset($_POST['newComponente'])) {
     //INSERISCO I COMPONENTI SINGOLI
     $varDB = new conn_DB();
     echo "<br>REPORT NEW COMPONENTE:<br>";
-    //prendo l' array
-    $assieme = json_decode($_POST['setCompSingolo'],true);
-    $varDB->setCompSingolo($assieme);
+    //prendo l' array dei componenti
+    $assieme = json_decode($_POST['newComponente'],true);
+    $componenti = $assieme["t_comp"];
+    $varDB->setCompSingolo($componenti);
   }
+
+
+
+
+
 
   elseif (isset($_POST['newImpegno'])) {
     //CREAZIONE NUOVO IMPEGNO
