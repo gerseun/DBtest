@@ -21,11 +21,11 @@
       #date {
         font-size: 10px;
       }
-      .table-add1, .table-add2 {
+      .table-add {
         color: #070;
         cursor: pointer;
       }
-      .table-add1:hover, .table-add2:hover {
+      .table-add:hover {
         color: #0b0;
       }
       .table-remove {
@@ -47,7 +47,7 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="container" id="newImpegno">
       <!--
       RITORNO ALLA HOME PAGE ed inizio pagina
       -->
@@ -63,25 +63,25 @@
         COSTRUZIONE TABELLA PER L' IMPEGNO
       -->
       <div id="tableImpegno" class="table-editable">
-        <table class="tableImp">
-          <thead class="headerImp">
+        <table class="t_imp">
+          <thead class="header">
             <!--
               HEADER TABELLA
             -->
-            <th>Codice Impegno</th>
-            <th>Cliente</th>
-            <th>Data consegna</th>
-            <th>Ordine</th>
+            <th id="cdo_imp">Codice Impegno</th>
+            <th id="cliente">Cliente</th>
+            <th id="cod_ord_cli">Num. ord. cliente</th>
+            <th id="data_ord">Data ordine</th>
           </thead>
-          <tbody id="tbodyImp">
+          <tbody class="tbody">
             <!--
               PRIMA RIGA - EDITABILE
             -->
-            <tr>
-              <td contenteditable="true" id="codImpegno"></td>
-              <td contenteditable="true" id="cliente"></td>
-              <td id="dataCons"><input type="text" id="datepicker" ></td>
-              <td contenteditable="true" id="ordine"></td>
+            <tr class="">
+              <td contenteditable="true" class="search_imp" id="first_cell"></td>
+              <td contenteditable="true"></td>
+              <td contenteditable="true"></td>
+              <td><input type="text" class="datepicker" ></td>
             </tr>
           </tbody>
         </table>
@@ -92,26 +92,28 @@
       -->
       <br>
       <p>Compilare le righe degli ARTICOLI.</p>
-      <div id="tableArticolo" class="table-editable">
-        <table class="tableArt">
-          <thead id = "headerAr" class="headerAr">
+      <div id="tableArt" class="table-editable">
+        <table class="t_art">
+          <thead class="header">
             <!--
               HEADER TABELLA
             -->
-            <th>Codice Articolo</th>
-            <th>Descrizione</th>
-            <th>Quantità</th>
-            <th class="control"><span class="table-add1 glyphicon glyphicon-plus"></span></th>
+            <th id="cod_art">Codice Articolo</th>
+            <th id="desc_art">Descrizione</th>
+            <th id="qt_art">Quantità</th>
+            <th id="data_cons_art">Data consegna</th>
+            <th class="control"><span class="table-add glyphicon glyphicon-plus"></span></th>
           </thead>
           <tbody id="tbody">
             <!--
               PRIMA RIGA - EDITABILE
             -->
-            <tr>
+            <tr class="">
+              <td contenteditable="true" class="search_art"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td><input type="text" class="datepicker" ></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
             <tr class="hide">
               <!--
@@ -120,7 +122,8 @@
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td><input type="text" class="datepicker" ></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
           </tbody>
         </table>
@@ -131,30 +134,28 @@
       -->
       <br>
       <p>Compilare le righe dei COMPONENTI o KIT per la produzione.</p>
-      <div id="tableComponente" class="table-editable">
-        <table class="tableComp">
-          <thead class="headerComp">
+      <div id="tableComp" class="table-editable">
+        <table class="t_Comp">
+          <thead class="header">
             <!--
               HEADER TABELLA
             -->
-            <th>Codice Componente</th>
-            <th>Descrizione</th>
-            <th>Dimensione</th>
-            <th>Materiale</th>
-            <th>Quantità</th>
-            <th class="control"><span class="table-add2 glyphicon glyphicon-plus"></span></th>
+            <th id="cod_comp">Codice Componente</th>
+            <th id="desc_comp">Descrizione</th>
+            <th id="qt_comp">Quantità</th>
+            <th id="data_cons_comp">Quantità</th>
+            <th class="control"><span class="table-add glyphicon glyphicon-plus"></span></th>
           </thead>
           <tbody id="tbody">
             <!--
               PRIMA RIGA - EDITABILE
             -->
-            <tr>
+            <tr class="">
+              <td contenteditable="true" class="search_comp"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td><input type="text" class="datepicker" ></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
             <tr class="hide">
               <!--
@@ -163,9 +164,8 @@
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td><input type="text" class="datepicker" ></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
           </tbody>
         </table>
@@ -175,7 +175,7 @@
         BUTTONI (GRANDI BUTT) PER I CONTROLLI
         EXPORT -> INVIA DATI A CONFIG.PHP
       -->
-      <button id="export-btn-ni" class="btn btn-primary">Export Data</button>
+      <button id="export_btn" class="btn btn-primary">Export Data</button>
       <!--
       <br><br>
       <input type="checkbox" id="myCheck"  onclick="checkBox()" checked>Editable</input>
@@ -191,15 +191,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="script4.js"></script>
+    <script src="script.js"></script>
 
     <!--
     setto il focus alla tabella
     -->
     <script type="text/javascript">
         $('#codImpegno').focus();
-        $('#datepicker').datepicker();
-        $( "#datepicker" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+
+        //$('#datepicker1').datepicker();
+        //$( "#datepicker1" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
     </script>
 
   </body>

@@ -44,7 +44,7 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="container" id="newComponente">
       <!--
       RITORNO ALLA HOME PAGE ed inizio pagina
       -->
@@ -58,28 +58,28 @@
       <!--
         COSTRUZIONE TABELLA PER I COMPONENTI
       -->
-      <div id="table-NCS" class="table-editable">
-        <table class="table-NCS">
+      <div id="tableComp" class="table-editable">
+        <table class="t_comp">
           <thead class="header">
             <!--
               HEADER TABELLA
             -->
-            <th>Codice Componente</th>
-            <th>Descrizione</th>
-            <th>Dimensione</th>
-            <th>Materiale</th>
+            <th id="cod_comp">Codice Componente</th>
+            <th id="desc_comp">Descrizione</th>
+            <th id="dim_comp">Dimensione</th>
+            <th id="mat_comp">Materiale</th>
             <th class="control"><span class="table-add glyphicon glyphicon-plus"></span></th>
           </thead>
-          <tbody id="tbody">
+          <tbody class="tbody">
             <!--
               PRIMA RIGA - EDITABILE
             -->
-            <tr>
+            <tr class="">
+              <td contenteditable="true" id="first_cell"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
             <tr class="hide">
               <!--
@@ -89,7 +89,7 @@
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
               <td contenteditable="true"></td>
-              <td><span class="table-remove glyphicon glyphicon-remove"></span></td>
+              <td class="control"><span class="table-remove glyphicon glyphicon-remove"></span></td>
             </tr>
           </tbody>
         </table>
@@ -99,7 +99,7 @@
         EXPORT -> INVIA DATI A CONFIG.PHP
       -->
 
-      <button id="export-btn-NCS" class="btn btn-primary">Export Data</button>
+      <button id="export_btn" class="btn btn-primary">Export Data</button>
       <!--
       <br><br>
       <input type="checkbox" id="myCheck"  onclick="checkBox()" checked>Editable</input>
@@ -113,7 +113,7 @@
       INCLUSIONE FILE DI SCRIPT
     -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="script3.js"></script>
+    <script src="script.js"></script>
 
     <!--
     setto il focus alla tabella

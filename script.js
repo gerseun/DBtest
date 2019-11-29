@@ -22,6 +22,10 @@ var test3 = '{"newArticolo":'+
 '"t_comp":['+
 '{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2"}]}}';;
 
+var test4 = '';
+
+var test5 = '';
+
 var list_art = [];
 var list_comp = [];
 var list_imp = [];
@@ -43,12 +47,18 @@ function add_row($parent_table, n){
 
     var $first_cell = $clone.find('td').eq(0);
     var $parent_firstCell = $parent_table.find('td').eq(0);
-    var classname = $parent_firstCell.attr('class');
-    if(classname.indexOf('search_art') > -1){
+    if($parent_firstCell.hasClass('search_art')){
       add_searchDialog($first_cell, list_art);
-    }else if (classname.indexOf('search_comp') > -1) {
+    }else if ($parent_firstCell.hasClass('search_comp')) {
       add_searchDialog($first_cell, list_comp);
+    }else if ($parent_firstCell.hasClass('search_imp')) {
+      add_searchDialog($first_cell, list_imp);
     }
+    $('.datepicker').each(function(index, el) {
+      if (!$(this).hasClass('hasDatepicker')) {
+        add_datepicker($(this));
+      }
+    });
   }
 };
 
@@ -73,6 +83,10 @@ function get_tableHeaders ($el){
 };
 
 $(document).ready(function() {
+  $('.datepicker').each(function(index, el) {
+    add_datepicker($(this));
+  });
+
   var test_firstCall = {};
   var name_Conn = 'firstCall';
   test_firstCall[name_Conn] = $('.container').attr('id');
@@ -83,36 +97,42 @@ $(document).ready(function() {
 //var data = JSON.parse(test1);
 //$OUTPUT.html(JSON.stringify(data));
 //    }
-
-    if(data.hasOwnProperty('first_call')){
-      if(data['first_call'].hasOwnProperty('list_art')){
-        list_art = data['first_call']['list_art'];
-        add_searchDialog($('.search_art'), list_art);
+      if(data.hasOwnProperty('first_call')){
+        if(data['first_call'].hasOwnProperty('list_art')){
+          list_art = data['first_call']['list_art'];
+          add_searchDialog($('.search_art'), list_art);
+        }
+        if (data['first_call'].hasOwnProperty('list_comp')){
+          list_comp = data['first_call']['list_comp'];
+          add_searchDialog($('.search_comp'), list_comp);
+        }
+        if (data['first_call'].hasOwnProperty('list_imp')){
+          list_imp = data['first_call']['list_imp'];
+          add_searchDialog($('.search_imp'), list_imp);
+        }
+      }else{
+        console.log('json error: first_call');
       }
-      if (data['first_call'].hasOwnProperty('list_comp')){
-        list_comp = data['first_call']['list_comp'];
-        add_searchDialog($('.search_comp'), list_comp);
-      }
-      if (data['first_call'].hasOwnProperty('list_imp')){
-        list_imp = data['first_call']['list_imp'];
-        add_searchDialog($('.search_imp'), list_imp);
-      }
-    }else{
-      console.log('json error: first_call');
     }
+  }, 'JSON').fail(function(){
+    console.log('Server connection error: first_call');
+  });
+});
 
+function add_datepicker($el){
+  if($el.length > 1){$el = $el.eq(0)}
+  var $parent_el = $el.parents('tr');
+  if ($parent_el.hasClass('hide')) {
+    return false;
   }
-}, 'JSON').fail(function(){
-
-  console.log('Server connection error: first_call');
-});
-});
+  $el.datepicker();
+  $el.datepicker( "option", "dateFormat", "yy-mm-dd" );
+};
 
 function add_searchDialog ($el, arr){
   if($el.length > 1){$el = $el.eq(0)}
   var $parent_el = $el.parent('tr');
-  var $parent_elClass =$parent_el.attr('class');
-  if ($parent_elClass.indexOf('hide') > -1) {
+  if ($parent_el.hasClass('hide')) {
     return false;
   }
   var container_id = $('.container').attr('id');
@@ -209,7 +229,11 @@ function fill_table($table, arr){
   $rows.each(function(index, el) {  // Pass every row and add value to table
     var $td = $(this).find('td');
     headers.forEach(function(h,i){
-      $td.eq(i).text(arr[index][h])
+      if ($td.eq(i).children('input').length) {
+        $td.eq(i).children('input').val(arr[index][h]);
+      } else {
+        $td.eq(i).text(arr[index][h]);
+      }
     });
   });
 };
@@ -218,7 +242,11 @@ function fill_row ($row, arr){
   var headers = get_tableHeaders($row);
   var $td = $row.find('td');
   headers.forEach(function(h,i){
-    $td.eq(i).text(arr[0][h])
+    if ($td.eq(i).children('input').length) {
+      $td.eq(i).children('input').val(arr[0][h]);
+    } else {
+      $td.eq(i).text(arr[0][h]);
+    }
   });
 };
 
@@ -241,7 +269,7 @@ $BTN.click(function(event) {
   $.post( './connessioneDB.php', exp_arr, function(msg){  // Export JSON
     $('#output').html(msg);
   });
-  $OUTPUT.text(JSON.stringify(exp_arr));
+  $OUTPUT.html(JSON.stringify(exp_arr));
 });
 
 //--- Function to get table values ---//
@@ -260,7 +288,12 @@ function getTable($table){
     var val = {};
 
     headers.forEach(function(header,i){ // Use table header as attr. for cells value in JSON
-      val[header] = $td.eq(i).text();
+      if ($td.eq(i).children('input').length) {
+        val[header] = $td.eq(i).children('input').val();
+      } else {
+        val[header] = $td.eq(i).text();
+      }
+
     });
     arr.push(val);
   });
