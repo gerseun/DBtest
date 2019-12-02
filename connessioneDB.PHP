@@ -302,7 +302,7 @@
       }
     }
 
-    //CREO LA RIGA IMPEGNO  - test 02/12/19
+    //CREO LA RIGA IMPEGNO  - ok 02/12/19
     public function setImpegno($assImp){
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
@@ -314,9 +314,12 @@
                        VALUES ('".$assImp["cod_imp"]."','".$assImp["cliente"]."','".$assImp["cod_ord_cli"]."','".$assImp["data_ord"]."','".$dataOra."');";
         if (mysqli_query($connessione,$istruzione)) {
           echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["cod_imp"]."<br>";
+          //vado a prendere l' ID riga dell' impegno inserito
+          $istruzione = "SELECT id_imp FROM impegno WHERE cod_imp='".$assImp["cod_imp"]."';";
+          $id_impegno = mysqli_query($connessione,$istruzione);
           //disconnessione
           mysqli_close($connessione);
-          return true;
+          return $id_impegno;
         }
         else {
           echo "Error: ".$assImp["cod_imp"]." -> " . $istruzione . "<br>" . $connessione->error;
@@ -324,6 +327,40 @@
           mysqli_close($connessione);
           return false;
         }
+      }
+      else{
+          return false;
+      }
+    }
+
+    public function setArticoloInImpegno($artAssieme, $idImp){
+      if(isset($this->attiva)){
+        $varDB = new conn_DB();
+        //connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //ciclo tutte le righe articolo
+        foreach($artAssieme as $rigaArticolo){
+          //cerco l' id articolo
+          $id_art = $varDB->getIDarticolo($rigaArticolo["cod_art"]);
+          if($id_art){
+            //echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INSERITO";
+            //articolo già inserito, vado a compilare la tabella "riga_imp"
+            $istruzione = "INSERT INTO `riga_imp` (`id_imp`, `id_art`, `qt_art`, `data_cons_art`)
+                           VALUES ('".$idImp."','".$id_art."','".$rigaArticolo["qt_art"]."','".$rigaArticolo["data_cons_art"]."');";
+            if(mysqli_query($connessione,$istruzione)){
+              //ok
+            }
+            else{
+              //non inserito riga imp
+            }
+          }
+          else{
+            echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INESISTENTE";
+          }
+        }
+        //disconnessione
+        mysqli_close($connessione);
+        return true;
       }
       else{
           return false;
@@ -500,6 +537,10 @@
         $arr_Componente[$cont] = $row["cod_comp"];
         $cont = $cont + 1;
       }
+      //se non sono presenti righe, passo casella VUOTA
+      if($cont == 0){
+        $arr_Componente[0] = "";
+      }
       //disconnessione
       mysqli_close($connessione);
       return $arr_Componente;
@@ -519,6 +560,10 @@
         $arr_Articolo[$cont] = $row["cod_art"];
         $cont = $cont + 1;
       }
+      //se non sono presenti righe, passo casella VUOTA
+      if($cont == 0){
+        $arr_Articolo[0] = "";
+      }
       //disconnessione
       mysqli_close($connessione);
       return $arr_Articolo;
@@ -534,15 +579,18 @@
       $cont = 0;
       $arr_Impegno[] = array();
       while($row = mysqli_fetch_assoc($result)) {
-        //salvo l' arrey codici impegni
+        //salvo l' array codici impegni
         $arr_Impegno[$cont] = $row["cod_imp"];
         $cont = $cont + 1;
+      }
+      //se non sono presenti righe, passo casella VUOTA
+      if($cont == 0){
+        $arr_Impegno[0] = "";
       }
       //disconnessione
       mysqli_close($connessione);
       return $arr_Impegno;
     }
-
   //FINE CLASSE conn_DB
   }
 
@@ -551,6 +599,7 @@
 //FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
   //apertura pagina inserimento  - ok 25/11/19
   if(isset($_POST['firstCall'])){
+
     //APERTURA PAGINA INSERIMENTO DATI
     $varDB = new conn_DB();
     //array impegni
@@ -646,8 +695,12 @@
     $componenti = $assieme["t_comp"];
     //1-> CREO LA RIGA IMPEGNO
     $id_imp = $varDB->setImpegno($impegno[0]);
-    //2->
-
+    //2-> CICLO GLI ARTICOLI DA INSERIRE NELL' IMPEGNO
+    if($id_imp){
+      //se l' impegno è stato inserito correttamente
+      //vado ad inserire le righe articolo
+      $varDB->setArticoloInImpegno($articoli, $id_imp);
+    }
   }
 
   elseif (isset($_POST['impegno'])) {

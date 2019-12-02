@@ -4,6 +4,7 @@ var php_link = "./connessioneDB.php"
 
 var $BTN = $('#export_btn');
 var $OUTPUT = $('#output');
+var $INPUT = $('#input');
 var $FIRST = $('.first_cell');
 var IS_ADMIN = true;
 
@@ -95,7 +96,7 @@ $(document).ready(function() {
     if (IS_ADMIN) {
 
 //var data = JSON.parse(test1);
-//$OUTPUT.html(JSON.stringify(data));
+//$INPUT.html(JSON.stringify(data));
 //    }
       if(data.hasOwnProperty('first_call')){
         if(data['first_call'].hasOwnProperty('list_art')){
@@ -142,7 +143,7 @@ function add_searchDialog ($el, arr){
   }
   var container_id = $('.container').attr('id');
   if($el.attr('id') == 'first_cell'){
-    console.log('if');
+
     $el.autocomplete({
       source: arr,
       minLength: 1,
@@ -171,7 +172,7 @@ function add_searchDialog ($el, arr){
       }
     });
   }else{
-    console.log('else');
+
     $el.autocomplete({
       source: arr,
       minLength: 1,
@@ -282,7 +283,7 @@ $BTN.click(function(event) {
   $.post( './connessioneDB.php', exp_arr, function(msg){  // Export JSON
     $('#output').html(msg);
   });
-  $OUTPUT.html(JSON.stringify(exp_arr));
+  $INPUT.html(JSON.stringify(exp_arr));
 });
 
 //--- Function to get table values ---//
