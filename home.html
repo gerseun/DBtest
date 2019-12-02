@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="./styles.css">
+    <title>
+        LAVORAZIONI sam&mago 2.0
+    </title>
+  </head>
+  <body>
+    <div class="title" style="padding-left:16px">
+      <img src="logo.png">
+      <h1>PROGRESSO LAVORAZIONI</h1>
+      <h3>Vers: 2.0.0 pre alpha developers only
+    </div>
+    <div class="topnav" id="myTopnav">
+      <a href="./home.html" class="active">Home</a>
+      <a href="./new_articolo.html">Inserimento articolo</a>
+      <a href="./new_comp_singolo.html">Inserimento componente</a>
+      <a href="./new_impegno.html">Inserimento impegno</a>
+      <div class="dropdown">
+        <button class="dropbtn">Dropdown
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+      <a href="#about">About</a>
+      <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    </div>
+
+    <div style="padding-left:16px">
+      <p>News: On year 2020 vers: 2.0.1 for beta tester.</p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="script.js"></script>
+    <script>
+      function myFunction() {
+        var x = document.getElementById("myTopnav");
+        if (x.className === "topnav") {
+          x.className += " responsive";
+        } else {
+          x.className = "topnav";
+        }
+      }
+    </script>
+
+  </body>
+</html>
