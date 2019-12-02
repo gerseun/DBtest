@@ -130,13 +130,19 @@ function add_datepicker($el){
 };
 
 function add_searchDialog ($el, arr){
+  if(arr.length == 0){
+    console.log('arr dim 0');
+    return false;
+  }
   if($el.length > 1){$el = $el.eq(0)}
   var $parent_el = $el.parent('tr');
   if ($parent_el.hasClass('hide')) {
+    console.log('has class hide');
     return false;
   }
   var container_id = $('.container').attr('id');
   if($el.attr('id') == 'first_cell'){
+    console.log('if');
     $el.autocomplete({
       source: arr,
       minLength: 1,
@@ -158,10 +164,14 @@ function add_searchDialog ($el, arr){
             }
           });
           modify(false);
-        },'JSON');
+        },'JSON').fail(function(){
+          console.log('failed adding autocomp.');
+          return false;
+        });
       }
     });
   }else{
+    console.log('else');
     $el.autocomplete({
       source: arr,
       minLength: 1,
@@ -179,7 +189,10 @@ function add_searchDialog ($el, arr){
           var $table = $el.parents('table');
           var table_name = $table.attr('class');
           fill_row($row, data[container_id][table_name]);
-        },'JSON');
+        },'JSON').fail(function(){
+          console.log('failed adding autocomp.');
+          return false;
+        });
       }
     });
   }
