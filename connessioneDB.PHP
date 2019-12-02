@@ -302,7 +302,7 @@
       }
     }
 
-    //CREO LA RIGA IMPEGNO
+    //CREO LA RIGA IMPEGNO  - test 02/12/19
     public function setImpegno($assImp){
       if(isset($this->attiva)){
         //variabili per la formattazione delle DATE da salvare
@@ -310,8 +310,8 @@
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //inserisco la riga nuovo impegno
-        $istruzione = "INSERT INTO `impegno` (`cod_imp`, `cli_imp`, `cons_imp`, `ord_imp`, `stato_imp`, `creazione_imp`)
-                       VALUES ('".$assImp["cod_imp"]."','".$assImp["cli_imp"]."','".$assImp["cons_imp"]."','".$assImp["ord_imp"]."','0','".$dataOra."');";
+        $istruzione = "INSERT INTO `impegno` (`cod_imp`, `cliente`, `cod_ord_cli`, `data_ord`, `data_comp`)
+                       VALUES ('".$assImp["cod_imp"]."','".$assImp["cliente"]."','".$assImp["cod_ord_cli"]."','".$assImp["data_ord"]."','".$dataOra."');";
         if (mysqli_query($connessione,$istruzione)) {
           echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["cod_imp"]."<br>";
           //disconnessione
@@ -523,6 +523,26 @@
       mysqli_close($connessione);
       return $arr_Articolo;
     }
+
+    //RICEVO TUTTI I CODICI ARTICOLO  - ok 02/12/19
+    public function getCodImpegni(){
+      //apro la connessione al DB
+      $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+      $istruzione = "SELECT cod_imp FROM impegno";
+      $result=mysqli_query($connessione,$istruzione);
+      //ricevo tutte le righe
+      $cont = 0;
+      $arr_Impegno[] = array();
+      while($row = mysqli_fetch_assoc($result)) {
+        //salvo l' arrey codici impegni
+        $arr_Impegno[$cont] = $row["cod_imp"];
+        $cont = $cont + 1;
+      }
+      //disconnessione
+      mysqli_close($connessione);
+      return $arr_Impegno;
+    }
+
   //FINE CLASSE conn_DB
   }
 
@@ -533,12 +553,14 @@
   if(isset($_POST['firstCall'])){
     //APERTURA PAGINA INSERIMENTO DATI
     $varDB = new conn_DB();
+    //array impegni
+    $impegni = $varDB->getCodImpegni();
     //array componenti
     $componenti = $varDB->getCodComponenti();
     //array articoli
     $articoli = $varDB->getCodArticoli();
     //concatenazione array
-    $arrCodici = array("list_art"=>$articoli,"list_comp"=>$componenti);
+    $arrCodici = array("list_imp"=>$impegni, "list_art"=>$articoli, "list_comp"=>$componenti);
     $arrRisultato = array("first_call"=>$arrCodici);
     echo json_encode($arrRisultato);
   }
@@ -610,6 +632,7 @@
     $varDB->setCompSingolo($componenti);
   }
 
+
   //inserimento nuovo impegno - da fare 27/11/19
   elseif (isset($_POST['newImpegno'])) {
     //CREAZIONE NUOVO IMPEGNO
@@ -619,15 +642,13 @@
     $assieme = json_decode($_POST['newImpegno'],true);
     //separo le componenti principali
     $impegno = $assieme["t_imp"];
+    $articoli = $assieme["t_art"];
+    $componenti = $assieme["t_comp"];
     //1-> CREO LA RIGA IMPEGNO
-    $id_imp = $varDB->setImpegno($impegno);
+    $id_imp = $varDB->setImpegno($impegno[0]);
     //2->
 
   }
-
-
-
-
 
   elseif (isset($_POST['impegno'])) {
     //AUTOCOMPILAZIONE TABELLA IMPEGNO
