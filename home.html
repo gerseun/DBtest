@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./styles.css">
@@ -18,7 +18,7 @@
     </div>
     <div class="topnav" id="myTopnav">
       <a href="./home.html" class="active">Home</a>
-      <a href="./new_articolo.html">Inserimento articolo</a>
+      <a class="newArticolo">Inserimento articolo</a>
       <a href="./new_comp_singolo.html">Inserimento componente</a>
       <a href="./new_impegno.html">Inserimento impegno</a>
       <div class="dropdown">
@@ -35,14 +35,17 @@
       <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
     </div>
 
-    <div style="padding-left:16px">
-      <br>
-      <p>News: On year 2020 vers: 2.0.1 for beta tester.</p>
+    <div style="padding:0px 16px 0px 16px">
+      <div id="title">
+        <p>News: On year 2020 vers: 2.0.1 for beta tester.</p>
+      </div>
+
+
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <!---<script src="script.js"></script>--->
+    <script src="./scripts/app.js"></script>
     <script>
       function myFunction() {
         var x = document.getElementById("myTopnav");
