@@ -333,6 +333,7 @@
       }
     }
 
+    //SETTO LE RIGHE_IMP PER LA PRODUZIONE DI ARTICOLI  - ok 03/12/19
     public function setArticoloInImpegno($artAssieme, $idImp){
       if(isset($this->attiva)){
         $varDB = new conn_DB();
@@ -349,15 +350,15 @@
                            VALUES ('".$idImp."','".$id_art."','".$rigaArticolo["qt_art"]."','".$rigaArticolo["data_cons_art"]."');";
             if(mysqli_query($connessione,$istruzione)){
               //ok
-              echo $rigaArticolo["cod_art"].": ARTICOLO IMPEGNATO";
+              echo "<br>".$rigaArticolo["cod_art"].": ARTICOLO IMPEGNATO";
             }
             else{
               //non inserito riga imp
-              echo $rigaArticolo["cod_art"].": ERRORE CREAZIONE ARTICOLO IN IMPEGNO";
+              echo "<br>".$rigaArticolo["cod_art"].": ERRORE CREAZIONE ARTICOLO IN IMPEGNO";
             }
           }
           else{
-            echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INESISTENTE";
+            echo "<br>".$rigaArticolo["cod_art"].": CODICE ARTICOLO INESISTENTE";
           }
         }
         //disconnessione
@@ -368,6 +369,44 @@
           return false;
       }
     }
+
+    //SETTO LE RIGHE_IMP_COMP PER LA PRODUZIONE DI COMPONENTI SINGOLI DA PRODUZIONE  - ok 03/12/19
+    public function setComponenteInImpegno($compAssieme, $idImp){
+      if(isset($this->attiva)){
+        $varDB = new conn_DB();
+        //connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //ciclo tutte le righe articolo
+        foreach($compAssieme as $rigaComponente){
+          //cerco l' id articolo
+          $id_comp = $varDB->getIDcomponente($rigaComponente["cod_comp"]);
+          if($id_comp){
+            //echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INSERITO";
+            //articolo già inserito, vado a compilare la tabella "riga_imp"
+            $istruzione = "INSERT INTO `riga_imp_comp` (`id_imp`, `id_comp`, `qt_comp`, `data_cons_comp`, `id_produzione`)
+                           VALUES ('".$idImp."','".$id_art."','".$rigaArticolo["qt_art"]."','".$rigaArticolo["data_cons_art"]."', '0');";
+               if(mysqli_query($connessione,$istruzione)){
+                 //ok
+                 echo "<br>".$rigaComponente["cod_comp"].": COMPONENTE IMPEGNATO";
+               }
+               else{
+                 //non inserito riga imp
+                 echo "<br>".$rigaComponente["cod_comp"].": ERRORE CREAZIONE COMPONENTE IN IMPEGNO";
+               }
+             }
+             else{
+               echo "<br>".$rigaComponente["cod_comp"].": CODICE COMPONENTE INESISTENTE";
+             }
+        }
+        //disconnessione
+        mysqli_close($connessione);
+        return true;
+      }
+      else{
+          return false;
+      }
+    }
+
 
     //COMPILO LA TABELLA PRODUZIONE PER LA MESSA IN PRODUZIONE
     public function setProduzione($imp,$art,$comp){
@@ -612,7 +651,7 @@
     //concatenazione array
     $arrCodici = array("list_imp"=>$impegni, "list_art"=>$articoli, "list_comp"=>$componenti);
     $arrRisultato = array("first_call"=>$arrCodici);
-    //echo json_encode($arrRisultato);
+    echo json_encode($arrRisultato);
   }
 
   //ricerca articolo gia inserito  - ok 25/11/19
@@ -683,7 +722,7 @@
   }
 
 
-  //inserimento nuovo impegno - da fare 27/11/19
+  //inserimento nuovo impegno - ok 03/12/19
   elseif (isset($_POST['newImpegno'])) {
     //CREAZIONE NUOVO IMPEGNO
     $varDB = new conn_DB();
@@ -696,13 +735,13 @@
     $componenti = $assieme["t_comp"];
     //1-> CREO LA RIGA IMPEGNO
     $id_imp = $varDB->setImpegno($impegno[0]);
-    //2-> CICLO GLI ARTICOLI DA INSERIRE NELL' IMPEGNO
+    //2-> CICLO GLI ARTICOLI-COMPONENTI DA INSERIRE NELL' IMPEGNO
     if($id_imp){
       //se l' impegno è stato inserito correttamente
       //vado ad inserire le righe articolo
       $varDB->setArticoloInImpegno($articoli, $id_imp);
       //vado ad inserire le righe componente
-      //$varDB->setComponenteInImpegno($componenti, $id_imp);
+      $varDB->setComponenteInImpegno($componenti, $id_imp);
     }
   }
 
