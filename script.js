@@ -96,15 +96,18 @@ $(document).ready(function() {
     if (IS_ADMIN) {
 
 //var data = JSON.parse(test1);
-//$INPUT.html(JSON.stringify(data));
-//    }
+$INPUT.html(JSON.stringify(data));
+
       if(data.hasOwnProperty('first_call')){
+        console.log(1);
         if(data['first_call'].hasOwnProperty('list_art')){
           list_art = data['first_call']['list_art'];
+          console.log(11);
           add_searchDialog($('.search_art'), list_art);
         }
         if (data['first_call'].hasOwnProperty('list_comp')){
           list_comp = data['first_call']['list_comp'];
+          console.log(12);
           add_searchDialog($('.search_comp'), list_comp);
         }
         if (data['first_call'].hasOwnProperty('list_imp')){
@@ -115,7 +118,7 @@ $(document).ready(function() {
         console.log('json error: first_call');
       }
     }
-  }, 'JSON').fail(function(){
+  }/*, 'JSON'*/).fail(function(){
     console.log('Server connection error: first_call');
   });
 });
@@ -131,6 +134,9 @@ function add_datepicker($el){
 };
 
 function add_searchDialog ($el, arr){
+  console.log($el);
+  console.log($('.search_comp'));
+
   if(arr.length == 0){
     console.log('arr dim 0');
     return false;

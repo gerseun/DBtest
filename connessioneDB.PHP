@@ -600,6 +600,7 @@
   //apertura pagina inserimento  - ok 25/11/19
   if(isset($_POST['firstCall'])){
 
+    echo $_POST['firstCall'];
     //APERTURA PAGINA INSERIMENTO DATI
     $varDB = new conn_DB();
     //array impegni
