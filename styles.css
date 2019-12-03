@@ -114,3 +114,22 @@ td, th {
   text-align: left;
   padding: 8px;
 }
+
+.hide {
+  display: none;
+}
+
+.table-add {
+  color: #070;
+  cursor: pointer;
+}
+.table-add:hover {
+  color: #0b0;
+}
+.table-remove {
+  color: #700;
+  cursor: pointer;
+}
+.table-remove:hover {
+  color: #f00;
+}
