@@ -349,9 +349,11 @@
                            VALUES ('".$idImp."','".$id_art."','".$rigaArticolo["qt_art"]."','".$rigaArticolo["data_cons_art"]."');";
             if(mysqli_query($connessione,$istruzione)){
               //ok
+              echo $rigaArticolo["cod_art"].": ARTICOLO IMPEGNATO";
             }
             else{
               //non inserito riga imp
+              echo $rigaArticolo["cod_art"].": ERRORE CREAZIONE ARTICOLO IN IMPEGNO";
             }
           }
           else{
@@ -599,8 +601,6 @@
 //FINE CLASSE -> FUNZIONI DI RICEZIONE DATI
   //apertura pagina inserimento  - ok 25/11/19
   if(isset($_POST['firstCall'])){
-
-    echo $_POST['firstCall'];
     //APERTURA PAGINA INSERIMENTO DATI
     $varDB = new conn_DB();
     //array impegni
@@ -612,7 +612,7 @@
     //concatenazione array
     $arrCodici = array("list_imp"=>$impegni, "list_art"=>$articoli, "list_comp"=>$componenti);
     $arrRisultato = array("first_call"=>$arrCodici);
-    echo json_encode($arrRisultato);
+    //echo json_encode($arrRisultato);
   }
 
   //ricerca articolo gia inserito  - ok 25/11/19
@@ -701,6 +701,8 @@
       //se l' impegno è stato inserito correttamente
       //vado ad inserire le righe articolo
       $varDB->setArticoloInImpegno($articoli, $id_imp);
+      //vado ad inserire le righe componente
+      //$varDB->setComponenteInImpegno($componenti, $id_imp);
     }
   }
 
