@@ -115,13 +115,13 @@
       if(isset($this->attiva)){
         //apro la connessione al DB
         $connessioneID = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        $istruzione = "SELECT * FROM articolo WHERE cod_art='".$art."';";
-        $result=mysqli_query($connessioneID,$istruzione);
+        $istruzioneID = "SELECT * FROM articolo WHERE cod_art='".$art."';";
+        $resultID=mysqli_query($connessioneID,$istruzioneID);
         //controllo se articolo già salvato
-        if (mysqli_num_rows($result)>0) {
-          $row = mysqli_fetch_assoc($result);
+        if (mysqli_num_rows($resultID)>0) {
+          $rowID = mysqli_fetch_assoc($resultID);
           //articolo gia inserito -> salvo i dati articolo
-          $idart=$row["id_art"];
+          $idart=$rowID["id_art"];
           mysqli_close($connessioneID);
           return $idart;
         }
@@ -141,13 +141,13 @@
       if(isset($this->attiva)){
         //apro la connessione al DB
         $connessioneID = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        $istruzione = "SELECT * FROM componente WHERE cod_comp='".$comp."';";
-        $result=mysqli_query($connessioneID,$istruzione);
+        $istruzioneID = "SELECT * FROM componente WHERE cod_comp='".$comp."';";
+        $resultID=mysqli_query($connessioneID,$istruzioneID);
         //controllo se articolo già salvato
-        if (mysqli_num_rows($result)>0) {
-          $row = mysqli_fetch_assoc($result);
+        if (mysqli_num_rows($resultID)>0) {
+          $rowID = mysqli_fetch_assoc($resultID);
           //articolo gia inserito -> salvo i dati articolo
-          $idcomp=$row["id_comp"];
+          $idcomp=$rowID["id_comp"];
           mysqli_close($connessioneID);
           return $idcomp;
         }
@@ -316,7 +316,10 @@
           echo "IMPEGNO INSERITO CORRETTAMENTE: ".$assImp["cod_imp"]."<br>";
           //vado a prendere l' ID riga dell' impegno inserito
           $istruzione = "SELECT id_imp FROM impegno WHERE cod_imp='".$assImp["cod_imp"]."';";
-          $id_impegno = mysqli_query($connessione,$istruzione);
+          $result = mysqli_query($connessione,$istruzione);
+          $row = mysqli_fetch_assoc($result);
+          //articolo gia inserito -> salvo i dati articolo
+          $id_impegno = $row["id_imp"];
           //disconnessione
           mysqli_close($connessione);
           return $id_impegno;
@@ -346,8 +349,11 @@
           if($id_art){
             //echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INSERITO";
             //articolo già inserito, vado a compilare la tabella "riga_imp"
-            $istruzione = "INSERT INTO `riga_imp` (`id_imp`, `id_art`, `qt_art`, `data_cons_art`)
-                           VALUES ('".$idImp."','".$id_art."','".$rigaArticolo["qt_art"]."','".$rigaArticolo["data_cons_art"]."');";
+            $QTart = $rigaArticolo["qt_art"];
+            $dataCons = $rigaArticolo["data_cons_art"];
+            //riga sql di creazione
+            $istruzione = "INSERT INTO `riga_imp` (`id_imp`, `id_art`, `qt_art`, `data_cons_art`) VALUES ('".$idImp."', '".$id_art."', '".$QTart."', '".$dataCons."');";
+
             if(mysqli_query($connessione,$istruzione)){
               //ok
               echo "<br>".$rigaArticolo["cod_art"].": ARTICOLO IMPEGNATO";
@@ -359,6 +365,7 @@
               //non inserito riga imp
               echo "<br>".$rigaArticolo["cod_art"].": ERRORE CREAZIONE ARTICOLO IN IMPEGNO";
             }
+
           }
           else{
             echo "<br>".$rigaArticolo["cod_art"].": CODICE ARTICOLO INESISTENTE";
@@ -367,6 +374,7 @@
         //disconnessione
         mysqli_close($connessione);
         return true;
+
       }
       else{
           return false;
@@ -412,8 +420,27 @@
 
 
     //COMPILO LA TABELLA PRODUZIONE PER LA MESSA IN PRODUZIONE  - inizio 03/12/19
-    public function setProduzione($imp,$art,$comp){
-
+    public function setProduzione($IDimp,$IDart,$QTcomp){
+      if(isset($this->attiva)){
+        echo "<br> INIZIO PRODUZIONE <br>";
+        //ricevo dalla tabella articolo_componenti le righe da mettere in produzione
+        //connessione al DB
+        $connessionePROD = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzionePROD = "SELECT * FROM articolo_componenti WHERE id_art = '".$IDart."';";
+        $resultPROD = mysqli_query($connessionePROD,$istruzionePROD);
+        //ricevo tutte le righe
+        while($righePROD = mysqli_fetch_assoc($resultPROD)) {
+          //riga COMPONENTE
+          $QTcompTemp = $QTcomp * $righePROD["qt_comp"];
+          $istruzione = "INSERT INTO riga_dett (id_riga_imp, id_comp, qt_comp, id_produzione) VALUES ('".$IDimp."', '".$righePROD["id_comp"]."', '".$QTcompTemp."', '0');";
+          echo $istruzione."<br>";
+          $inserimento = mysqli_query($connessionePROD,$istruzione);
+        }
+        echo "<br> FINE PRODUZIONE <br>";
+        //disconnessione
+        mysqli_close($connessionePROD);
+        return true;
+      }
     }
 
 
@@ -659,7 +686,7 @@
       $varDB->setArticoloInImpegno($articoli, $id_imp);
 
       //vado ad inserire le righe componente
-      $varDB->setComponenteInImpegno($componenti, $id_imp);
+      //$varDB->setComponenteInImpegno($componenti, $id_imp);
     }
   }
 
