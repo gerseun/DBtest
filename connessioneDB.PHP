@@ -635,11 +635,11 @@
   }
 
   //ricerca componente gia inserito  - ok 25/11/19
-  elseif(isset($_POST['search_comp'])){
+  elseif(isset($_POST['newArticolo_search_comp'])){
     //RICERCO IL CODICE COMPONENTE ED INVIO I DATI
     $varDB = new conn_DB();
     //ricerco componenti contenuti nell' articolo
-    $ricercaComp = $_POST['search_comp'];
+    $ricercaComp = $_POST['newArticolo_search_comp'];
     $componente = $varDB->getComponente($ricercaComp);
     //creo array di risposta
     $art[0] = array("cod_art"=>"", "desc_art"=>"", "cli_art"=>"", "cod_cli_art"=>"");
