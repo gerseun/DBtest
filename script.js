@@ -21,7 +21,7 @@ var test2 = '{"newArticolo":'+
 var test3 = '{"newArticolo":'+
 '{"t_art":[],'+
 '"t_comp":['+
-'{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2"}]}}';;
+'{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2"}]}}';
 
 var test4 = '';
 
@@ -281,7 +281,7 @@ $BTN.click(function(event) {
   });
   var attr = $('.container').attr('id');  // Use container_id ass attr. of JSON
 
-  exp_arr[attr] = JSON.stringify(v_arr)
+  exp_arr[attr] = JSON.stringify(v_arr);
 
   $.post( './connessioneDB.php', exp_arr, function(msg){  // Export JSON
     $('#output').html(msg);
