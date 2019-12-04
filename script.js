@@ -264,7 +264,7 @@ $BTN.click(function(event) {
   });
   var attr = $('.container').attr('id');  // Use container_id ass attr. of JSON
 
-  exp_arr[attr] = JSON.stringify(v_arr)
+  exp_arr[attr] = JSON.stringify(v_arr);
 
   $.post( './connessioneDB.php', exp_arr, function(msg){  // Export JSON
     $('#output').html(msg);

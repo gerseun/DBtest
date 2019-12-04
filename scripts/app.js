@@ -90,9 +90,11 @@ var list_art = [];
 var list_comp = [];
 var list_imp = [];
 var page_class = "";
+
 var PHP_LINK = "./connessioneDB.php";
 var $OUTPUT = $('#output_field');
 var $EXPORT = $('#export_btn');
+var $MODIFY = $('#modify_btn')
 
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
@@ -113,7 +115,42 @@ $(document).ready(function() {
     $OUTPUT.show();
   });
   first_call();
+  $EXPORT.click(function(event) {
+    var exp_arr = {};
+    var v_arr = {};
+    $('.container').find('table').each(function(index, el) {
+        v_arr[$(this).attr('class')] = get_table($(this));
+    });
+    exp_arr[page_class] = v_arr;
+    $.post(PHP_LINK, exp_arr, function(data) {
+      $('#output').html(msg);
+    }).fail(function() {
+      console.log('Function: export, Error: database connection error');
+    });
+    $OUTPUT.text(JSON.stringify(exp_arr));
+  });
 });
+
+function get_table($table){
+  var arr = [];
+  var headers_id = [];
+  $table.find('th:not(.control)').each(function(index, el) {
+    headers_id.push($(this).attr('id'));
+  });
+  $table.find('tr:not(:hidden)').each(function(index, el) {
+    var $td = $(this).find('td');
+    var val = {};
+    headers_id.forEach(function(h,i){
+      if ($td.eq(i).children('input').length) {
+        val[h] = $td.eq(i).children('input').val();
+      } else {
+        val[h] = $td.eq(i).text();
+      }
+    });
+    arr.push(val);
+  });
+  return (arr);
+};
 
 function create_table(json){
   json.forEach(function(value, index){  // Loop through table
@@ -133,7 +170,7 @@ function create_table(json){
       var $td = $('<td></td>'); // Create table cell obj
       $td.attr('contenteditable', h.editabile); // Add editability to cell
       $td.attr('class', h.other); // Add class to cell
-      if(i==0 && index==0){$td.attr('id', 'first_cell');}
+      if(i==0 && index==0 && page_class != 'newComponente'){$td.attr('id', 'first_cell');}
       if (h.datepicker) { // Check if a date field is required
         var $i = $('<input type="text" class="datepicker">'); // Create input obj
         $td.append($i);
@@ -175,7 +212,6 @@ function post_init(){
   add_search($('.search_imp'), list_imp);
 };
 
-
 function add_row($table, n){ ///----- Add new row
   for (var i = 0; i < n; i++) {
     var $clone = $table.find('tr.hide').clone(true, true).removeClass('hide');
@@ -206,9 +242,9 @@ function first_call(){
   var val = {};
   var name = 'firstCall';
   val[name] = page_class;
-  //$.post(PHP_LINK, val, function(data, textStatus, xhr) {
-    var data = JSON.parse(test1);
-    $OUTPUT.html(JSON.stringify(data));
+  $.post(PHP_LINK, val, function(data, textStatus, xhr) {
+    //var data = JSON.parse(test1);
+    //$OUTPUT.html(JSON.stringify(data));
     if(data.hasOwnProperty('first_call')){
       if(data['first_call'].hasOwnProperty('list_art')){
         list_art = data['first_call']['list_art'];
@@ -222,9 +258,9 @@ function first_call(){
     }else{
       console.log('Func: first_call, Error: json wrong structure');
     }
-  //},'JSON').fail(function(){
-    //console.log('Func: first_call, Error: server call fail');
-  //});
+  },'JSON').fail(function(){
+    console.log('Func: first_call, Error: server call fail');
+  });
 };
 
 function add_search($el, arr){
@@ -232,52 +268,42 @@ function add_search($el, arr){
     if ($(this).parent('tr').hasClass('hide')) {
       return true;
     }
-    var container_id = page_class;
-    if($(this).attr('id') == 'first_cell'){
-      $(this).autocomplete({
-        source: arr,
-        minLength: 1,
-        select: function(event, ui){
-          var exp_arr = {};
-          var value = ui.item.value;
-          var el_class = $(this).attr('class').split(' ')[0];
-          exp_arr[el_class] = value;
-          //$.post(php_link, exp_arr, function(data, textStatus, xhr) {
-          var data = JSON.parse(test2);
-          $OUTPUT.text(JSON.stringify(data));
-            var $tables = $('.container').find('table');
-            $tables.each(function(index, el) {
-              var table_name = $(this).attr('class');
-              if(data[container_id].hasOwnProperty(table_name)){
-                fill_table($(this), data[container_id][table_name]);
-              }
-            });
-          //},'JSON');
-        }
-      });
-    }else{
-      $(this).autocomplete({
-        source: arr,
-        minLength: 1,
-        select: function(event, ui){
-          var exp_arr = {};
-          var value = ui.item.value;
-          var el_class = $(this).attr('class').split(' ')[0];
-          exp_arr[el_class] = value;
+    $(this).autocomplete({
+      source: arr,
+      minLength: 1,
+      select: function(event, ui){
+        var exp_arr = {};
+        var msg = {};
+        var val = ui.item.value;
+        var el_class = $(this).attr('class').split(' ')[0];
+        exp_arr[el_class] = val;
+        msg[page_class] = exp_arr;
+        $OUTPUT.text(JSON.stringify(msg));
+        $.post(PHP_LINK, msg, function(data, textStatus, xhr) {
+          //var data = JSON.parse(test7);
+          //$OUTPUT.text(JSON.stringify(data));
+          fill_tables(data, $el);
+        },'JSON');
+      }
+    });
 
-          var data = JSON.parse(test3);
-          $OUTPUT.text(JSON.stringify(data));
-          //$.post(php_link, exp_arr, function(data, textStatus, xhr) {
-            var $row = $el.parent('tr');
-            var $table = $el.parents('table');
-            var table_name = $table.attr('class');
-            fill_row($row, data[container_id][table_name]);
-          //},'JSON');
-        }
-      });
-    }
-    console.log('search added');
+    console.log('Search added');
   });
+};
+
+function fill_tables(data, $el){
+  if($el.attr('id') == 'first_cell'){
+    $('.container').find('table').each(function(index, el) {
+      var table_name = $(this).attr('class');
+      fill_table($(this), data[page_class][table_name]);
+    });
+  }else{
+    var $row = $el.parent('tr');
+    var $table = $el.parents('table');
+    var table_name = $table.attr('class');
+    fill_row($row, data[page_class][table_name]);
+  }
+
 };
 
 function fill_table($table, arr){
@@ -334,7 +360,7 @@ function get_tableHeaders ($el){
   }
   return headers;
 };
-
+/*
 var test1 = '{"first_call":'+
 '{"list_imp":["123","321","145","167"],'+
 '"list_art":["1ABC00100","1ABC00200","1BCA00100","1BCA00200"],'+
@@ -350,3 +376,22 @@ var test3 = '{"newArticolo":'+
 '{"t_art":[],'+
 '"t_comp":['+
 '{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2"}]}}';
+
+var test4 = '{"newComponente":'+
+'{"t_comp":['+
+'{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45"}]}}';
+
+var test5 = '{"newImpegno":'+
+'{"t_imp":[{"cod_imp":"123","cliente":"asd","cod_ord_cli":"111","data_ord":"2019-12-04"}],'+
+'"t_art":[{"cod_art":"1ABC00100","desc_art":"cilindro","qt_art":"2","data_cons_art":"2019-12-05"},'+
+'{"cod_art":"1ABC00200","desc_art":"cilindro2","qt_art":"1","data_cons_art":"2019-12-06"}],'+
+'"t_comp":['+
+'{"cod_comp":"1ABC00102","desc_comp":"camicia","qt_comp":"100","data_cons_comp":"2019-12-07"},'+
+'{"cod_comp":"1ABC00110","desc_comp":"stelo","qt_comp":"50","data_cons_comp":"2019-12-08"}]}}';
+
+var test6 = '{"newImpegno":'+
+'{"t_art":[{"cod_art":"1ABC00100","desc_art":"cilindro","qt_art":"2","data_cons_art":"2019-12-05"}]}}';
+
+var test7 = '{"newImpegno":'+
+'{"t_comp":[{"cod_comp":"1ABC00102","desc_comp":"camicia","qt_comp":"100","data_cons_comp":"2019-12-07"}]}}';
+*/
