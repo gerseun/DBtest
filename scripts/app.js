@@ -91,7 +91,7 @@ var list_comp = [];
 var list_imp = [];
 var page_class = "";
 
-var PHP_LINK = "./connessioneDB.php";
+var PHP_LINK = "../connessioneDB.php";
 var $OUTPUT = $('#output_field');
 var $EXPORT = $('#export_btn');
 var $MODIFY = $('#modify_btn')
