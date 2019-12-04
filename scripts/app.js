@@ -103,6 +103,8 @@ $(document).ready(function() {
   $('a').click(function(event) { ///----- Load page on menu click
     $('#title').children().remove(); // Clean the title field
     $('.container').children().remove(); // Clean the container field
+    $OUTPUT.text('');
+    $OUTPUT.html('');
     page_class = $(this).attr('class'); // Get menu button class
     $('#title').append(header_art[page_class].titolo) // Retrieve html from json and append it on title
     if(page_class == 'home'){
@@ -121,13 +123,16 @@ $(document).ready(function() {
     $('.container').find('table').each(function(index, el) {
         v_arr[$(this).attr('class')] = get_table($(this));
     });
-    exp_arr[page_class] = v_arr;
+    exp_arr[page_class] = JSON.stringify(v_arr);
+
+    //$OUTPUT.text(JSON.stringify(exp_arr));
+    console.log(exp_arr);
     $.post(PHP_LINK, exp_arr, function(data) {
-      $('#output').html(data);
+      $OUTPUT.html(data);
     }).fail(function() {
       console.log('Function: export, Error: database connection error');
     });
-    $OUTPUT.text(JSON.stringify(exp_arr));
+
   });
 });
 
@@ -277,7 +282,7 @@ function add_search($el, arr){
         var val = ui.item.value;
         var el_class = $(this).attr('class').split(' ')[0];
         exp_arr[page_class + '_' + el_class] = val;
-        $OUTPUT.text(JSON.stringify(msg));
+        //$OUTPUT.text(JSON.stringify(msg));
         $.post(PHP_LINK, exp_arr, function(data, textStatus, xhr) {
           //var data = JSON.parse(test7);
           //$OUTPUT.text(JSON.stringify(data));

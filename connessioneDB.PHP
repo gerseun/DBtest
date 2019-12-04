@@ -666,6 +666,8 @@
     $cliente = $articolo[0]["cli_art"];
     $codCliente = $articolo[0]["cod_cli_art"];
 
+    echo "<br>".$codArticolo."<br>";
+
     //setto l' articolo
     $varDB->setArticolo($codArticolo,$descrizione,$cliente,$codCliente);
     //vado a salvare le componenti del cilindro
