@@ -612,12 +612,77 @@
     //creo array di risposta
     $art[0] = array("cod_art"=>$articolo["cod_art"], "desc_art"=>$articolo["desc_art"], "cli_art"=>$articolo["cli_art"], "cod_cli_art"=>$articolo["cod_cli_art"]);
     $artComp = array("t_art"=>$art, "t_comp"=>$componenti);
+    //$artComp = array("t_art"=>$art);
     $risposta = array("newArticolo"=>$artComp);
     //consegno il pacco
     echo json_encode($risposta);
   }
 
-  elseif(isset($_POST['search_art'])){
+  //ricerca componente gia inserito  - ok 25/11/19
+  elseif(isset($_POST['newArticolo_search_comp'])){
+    //RICERCO IL CODICE COMPONENTE ED INVIO I DATI
+    $varDB = new conn_DB();
+    //ricerco componenti contenuti nell' articolo
+    $ricercaComp = $_POST['newArticolo_search_comp'];
+    $componente = $varDB->getComponente($ricercaComp);
+    //creo array di risposta
+    //$art[0] = array("cod_art"=>"", "desc_art"=>"", "cli_art"=>"", "cod_cli_art"=>"");
+    //$artComp = array("t_art"=>$art, "t_comp"=>$componente);
+    $artComp = array("t_comp"=>$componente);
+    $risposta = array("newArticolo"=>$artComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+  //ricerca impegno gia inserito  - ok 04/12/19
+  elseif(isset($_POST['newImpegno_search_imp'])){
+    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
+    $varDB = new conn_DB();
+    //ricerco articolo
+    $ricercaImpegno = $_POST['newImpegno_search_imp'];
+    $impegno = $varDB->getImpegno($ricercaImpegno);
+    
+    //array impegno
+    $art[0] = array("cod_art"=>$articolo["cod_art"], "desc_art"=>$articolo["desc_art"], "cli_art"=>$articolo["cli_art"], "cod_cli_art"=>$articolo["cod_cli_art"]);
+    //$artComp = array("t_art"=>$art, "t_comp"=>$componenti);
+    $artArray = array("t_art"=>$art);
+    $risposta = array("newImpegno"=>$artArray);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+  //ricerca articolo gia inserito  - ok 25/11/19
+  elseif(isset($_POST['newImpegno_search_comp'])){
+    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
+    $varDB = new conn_DB();
+    //ricerco articolo
+    $ricercaComp = $_POST['newImpegno_search_comp'];
+    //ricerco componente
+    $comp = $varDB->getComponente($ricercaComp);
+    //creo array di risposta
+    //$artComp = array("t_art"=>$art, "t_comp"=>$componenti);
+    $artComp = array("t_comp"=>$comp);
+    $risposta = array("newImpegno"=>$artComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+  //ricerca articolo gia inserito  - ok 25/11/19
+  elseif(isset($_POST['newImpegno_search_comp'])){
+    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
+    $varDB = new conn_DB();
+    //ricerco articolo
+    $ricercaComp = $_POST['newImpegno_search_comp'];
+    //ricerco componente
+    $comp = $varDB->getComponente($ricercaComp);
+    //creo array di risposta
+    //$artComp = array("t_art"=>$art, "t_comp"=>$componenti);
+    $artComp = array("t_comp"=>$comp);
+    $risposta = array("newImpegno"=>$artComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+  /*elseif(isset($_POST['search_art'])){
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
     $varDB = new conn_DB();
     //ricerco articolo
@@ -632,22 +697,9 @@
     $risposta = array("newArticolo"=>$artComp);
     //consegno il pacco
     echo json_encode($risposta);
-  }
+  }*/
 
-  //ricerca componente gia inserito  - ok 25/11/19
-  elseif(isset($_POST['newArticolo_search_comp'])){
-    //RICERCO IL CODICE COMPONENTE ED INVIO I DATI
-    $varDB = new conn_DB();
-    //ricerco componenti contenuti nell' articolo
-    $ricercaComp = $_POST['newArticolo_search_comp'];
-    $componente = $varDB->getComponente($ricercaComp);
-    //creo array di risposta
-    $art[0] = array("cod_art"=>"", "desc_art"=>"", "cli_art"=>"", "cod_cli_art"=>"");
-    $artComp = array("t_art"=>$art, "t_comp"=>$componente);
-    $risposta = array("newArticolo"=>$artComp);
-    //consegno il pacco
-    echo json_encode($risposta);
-  }
+
 
   //inserimento nuovo articolo  - ok 25/11/19
   elseif (isset($_POST['newArticolo'])){
