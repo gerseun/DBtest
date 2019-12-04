@@ -276,10 +276,9 @@ function add_search($el, arr){
         var msg = {};
         var val = ui.item.value;
         var el_class = $(this).attr('class').split(' ')[0];
-        exp_arr[el_class] = val;
-        msg[page_class] = exp_arr;
+        exp_arr[page_class + '_' + el_class] = val;
         $OUTPUT.text(JSON.stringify(msg));
-        $.post(PHP_LINK, msg, function(data, textStatus, xhr) {
+        $.post(PHP_LINK, exp_arr, function(data, textStatus, xhr) {
           //var data = JSON.parse(test7);
           //$OUTPUT.text(JSON.stringify(data));
           fill_tables(data, $el);
