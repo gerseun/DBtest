@@ -123,7 +123,7 @@ $(document).ready(function() {
     });
     exp_arr[page_class] = v_arr;
     $.post(PHP_LINK, exp_arr, function(data) {
-      $('#output').html(msg);
+      $('#output').html(data);
     }).fail(function() {
       console.log('Function: export, Error: database connection error');
     });
