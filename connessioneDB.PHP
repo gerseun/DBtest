@@ -726,42 +726,6 @@
     echo json_encode($risposta);
   }
 
-/*
-  //ricerca articolo gia inserito  - ok 25/11/19
-  elseif(isset($_POST['newImpegno_search_comp'])){
-    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
-    $varDB = new conn_DB();
-    //ricerco articolo
-    $ricercaComp = $_POST['newImpegno_search_comp'];
-    //ricerco componente
-    $comp = $varDB->getComponente($ricercaComp);
-    //creo array di risposta
-    //$artComp = array("t_art"=>$art, "t_comp"=>$componenti);
-    $artComp = array("t_comp"=>$comp);
-    $risposta = array("newImpegno"=>$artComp);
-    //consegno il pacco
-    echo json_encode($risposta);
-  }
-*/
-  /*
-  elseif(isset($_POST['search_art'])){
-    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
-    $varDB = new conn_DB();
-    //ricerco articolo
-    $ricercaArticolo = $_POST['search_art'];
-    $articolo = $varDB->getArticolo($ricercaArticolo);
-    //ricerco componenti contenuti nell' articolo
-    $ricercaIDart = $articolo["id_art"];
-    $componenti = $varDB->getCompInArticolo($ricercaIDart);
-    //creo array di risposta
-    $art[0] = array("cod_art"=>$articolo["cod_art"], "desc_art"=>$articolo["desc_art"], "cli_art"=>$articolo["cli_art"], "cod_cli_art"=>$articolo["cod_cli_art"]);
-    $artComp = array("t_art"=>$art, "t_comp"=>$componenti);
-    $risposta = array("newArticolo"=>$artComp);
-    //consegno il pacco
-    echo json_encode($risposta);
-  }
-*/
-
   //inserimento nuovo articolo  - ok 25/11/19
   elseif (isset($_POST['newArticolo'])){
     //CREAZIONE NUOVO ARTICOLO - CILINDRO
@@ -798,8 +762,7 @@
     $varDB->setCompSingolo($componenti);
   }
 
-
-  //inserimento nuovo impegno - ok 03/12/19
+  //inserimento nuovo impegno - ok 05/12/19
   elseif (isset($_POST['newImpegno'])) {
     //CREAZIONE NUOVO IMPEGNO
     $varDB = new conn_DB();
@@ -822,12 +785,5 @@
       $varDB->setComponenteInImpegno($componenti, $id_imp);
     }
   }
-
-  /*elseif (isset($_POST['impegno'])) {
-    //AUTOCOMPILAZIONE TABELLA IMPEGNO
-    $varDB = new conn_DB();
-    $ricercaImpegno = $_POST['impegno'];
-    $varDB->getImpegno($ricercaImpegno);
-  }*/
 
 ?>
