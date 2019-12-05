@@ -392,22 +392,21 @@
           //cerco l' id articolo
           $id_comp = $varDB->getIDcomponente($rigaComponente["cod_comp"]);
           if($id_comp){
-            //echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INSERITO";
-            //articolo già inserito, vado a compilare la tabella "riga_imp"
+            //articolo già inserito, vado a compilare la tabella "riga_imp_comp"
             $istruzione = "INSERT INTO `riga_imp_comp` (`id_imp`, `id_comp`, `qt_comp`, `data_cons_comp`, `id_produzione`)
-                           VALUES ('".$idImp."','".$id_art."','".$rigaArticolo["qt_art"]."','".$rigaArticolo["data_cons_art"]."', '0');";
-               if(mysqli_query($connessione,$istruzione)){
-                 //ok
-                 echo "<br>".$rigaComponente["cod_comp"].": COMPONENTE IMPEGNATO";
-               }
-               else{
-                 //non inserito riga imp
-                 echo "<br>".$rigaComponente["cod_comp"].": ERRORE CREAZIONE COMPONENTE IN IMPEGNO";
-               }
-             }
-             else{
-               echo "<br>".$rigaComponente["cod_comp"].": CODICE COMPONENTE INESISTENTE";
-             }
+                           VALUES ('".$idImp."','".$id_comp."','".$rigaComponente["qt_comp"]."','".$rigaComponente["data_cons_comp"]."', '0');";
+           if(mysqli_query($connessione,$istruzione)){
+             //ok
+             echo "<br>".$rigaComponente["cod_comp"].": COMPONENTE IMPEGNATO";
+           }
+           else{
+             //non inserito riga imp
+             echo "<br>".$rigaComponente["cod_comp"].": ERRORE CREAZIONE COMPONENTE IN IMPEGNO";
+           }
+          }
+          else{
+           echo "<br>".$rigaComponente["cod_comp"].": CODICE COMPONENTE INESISTENTE";
+          }
         }
         //disconnessione
         mysqli_close($connessione);
