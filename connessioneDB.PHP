@@ -326,9 +326,15 @@
         }
         else {
           echo "Error: ".$assImp["cod_imp"]." -> " . $istruzione . "<br>" . $connessione->error;
+          //gia inserito, prendo il codice ID
+          $istruzione = "SELECT id_imp FROM impegno WHERE cod_imp='".$assImp["cod_imp"]."';";
+          $result = mysqli_query($connessione,$istruzione);
+          $row = mysqli_fetch_assoc($result);
+          //articolo gia inserito -> salvo i dati articolo
+          $id_impegno = $row["id_imp"];
           //disconnessione
           mysqli_close($connessione);
-          return false;
+          return $id_impegno;
         }
       }
       else{
