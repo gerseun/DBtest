@@ -269,6 +269,7 @@ function first_call(){
 };
 
 function add_search($el, arr){
+
   $el.each(function(index, el) {
     if ($(this).parent('tr').hasClass('hide')) {
       return true;
@@ -284,8 +285,9 @@ function add_search($el, arr){
         exp_arr[page_class + '_' + el_class] = val;
         //$OUTPUT.text(JSON.stringify(msg));
         $.post(PHP_LINK, exp_arr, function(data, textStatus, xhr) {
+          //console.log(data);
           //var data = JSON.parse(test7);
-          //$OUTPUT.text(JSON.stringify(data));
+          //$OUTPUT.html(data);
           fill_tables(data, $el);
         },'JSON');
       }
@@ -314,7 +316,6 @@ function fill_table($table, arr){
   var table_name = $table.attr('class');
   var headers = get_tableHeaders($table);
   var $rows = $table.find('tr:not(:hidden)');
-
   if($rows.length < arr.length){
     add_row($table,arr.length-$rows.length); // Add rows is JSON has more
   }else{

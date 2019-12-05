@@ -444,69 +444,109 @@
     }
 
 
-      //RICERCA ARTICOLO INSERITO CON TUTTI I SUOI COMPONENTI
-      //sistemare gli indici
-      public function getImpegno($ricImp){
-        if(isset($this->attiva)){
-          $arr_Articolo[0] = array("ca"=>"","d"=>"","q"=>"");
-          $arr_Componente[0] = array("c1"=>"","c2"=>"","c3"=>"","c4"=>"","c5"=>"");
+    //RICERCA RIGA IMPEGNO  - ok 05/12/19
+    public function getImpegno($ricImp){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzione = "SELECT * FROM impegno WHERE cod_imp = '".$ricImp."';";
+        $result=mysqli_query($connessione,$istruzione);
+        //controllo se articolo già salvato
+        if (mysqli_num_rows($result)>0) {
+          $row = mysqli_fetch_assoc($result);
+          //impegno gia inserito -> salvo i dati impegno
+          $arrayImp[0] = array("id_imp"=>$row["id_imp"],"cod_imp"=>$row["cod_imp"],"cliente"=>$row["cliente"],"cod_ord_cli"=>$row["cod_ord_cli"],"data_ord"=>$row["data_ord"],"data_comp"=>$row["data_comp"]);
+          mysqli_close($connessione);
+          return $arrayImp;
+        }
+        else {
+          mysqli_close($connessione);
+          return false;
+        }
+      }
+      else{
+        //disconnessione
+        mysqli_close($connessione);
+        //non ancora inserito
+        return false;
+      }
+    }
 
-          //apro la connessione al DB
-          $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-          $istruzione = "SELECT * FROM impegno WHERE cod_impegno='".$ricImp."';";
-          $result=mysqli_query($connessione,$istruzione);
-          //controllo se impegno già salvato
-          if (mysqli_num_rows($result)>0) {
-            $row = mysqli_fetch_assoc($result);
-            //impegno gia inserito -> salvo i dati dell' impegno
-            //creo array dell' impegno
-            $arr_Impegno = array("i1"=>$row["cod_impegno"],"i2"=>$row["cliente"],"i3"=>$row["data_consegna"],"i4"=>$row["ordine"]);
-            //prendo la tabella produzione e stampo gli articoli collegati all' impegno
-            $istruzione = "SELECT DISTINCT cod_articolo, desc_articolo, qt_articolo FROM produzione WHERE cod_impegno = '".$ricImp."';";
-            if($result=mysqli_query($connessione,$istruzione)){
-              $i = 0;
-              while($row = mysqli_fetch_assoc($result)) {
-                //salvo le righe degli articoli trovati nell' impegno
-                if($row["cod_articolo"]!= "-"){
-                  //se diversa da "-" allora è un codice cilindro
-                  //array di articoli
-                  $arr_Articolo[$i] = array("ca"=>$row["cod_articolo"],"d"=>$row["desc_articolo"],"q"=>$row["qt_articolo"]);
-                  $i = $i+1;
-                }
-              }
-            }
-            else {
-              echo "<br>Error creating table: " . $connessione->error."<br>";
-            }
-            //prendo la tabella produzione e stampo i componenti singoli collegati all' impegno
-            $istruzione = "SELECT FROM produzione WHERE cod_impegno = '".$ricImp."' AND cod_articolo = '-' ;";
-            if($result=mysqli_query($connessione,$istruzione)){
-              $i = 0;
-              while($row = mysqli_fetch_assoc($result)) {
-                //salvo le righe degli articoli trovati nell' impegno
-                $arr_Articolo[$i] = array("c1"=>$row["cod_componente"],"c2"=>$row["descrizione"],"c3"=>$row["dimensione"],"c4"=>$row["materiale"],"c4"=>$row["qt_componente"]);
-                $i = $i+1;
-              }
-            }
+    //RICERCA GLI ARTICOLO IN UN DATO IMPEGNO - ID_IMP  - test 05/12/19
+    public function getRigheImp($ric_id_impegno){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //seleziono gli id_articolo dell' impegno ricercato
+        $istruzione = "SELECT * FROM riga_imp INNER JOIN articolo ON riga_imp.ID_art=articolo.ID_art  WHERE riga_imp.ID_imp = '".$ric_id_impegno."';";
+        $result=mysqli_query($connessione,$istruzione);
+        //variabili array COMPONENTI
+        $cont = 0;
+        $arr_righeImp[] = array();
+        //controllo se impegno già salvato o contiene righe
+        if (mysqli_num_rows($result)>0) {
+          //ciclo tutti gli articoli
+          while($row = mysqli_fetch_assoc($result)) {
+            //impegno inserito -> salvo i dati degli articoli
+            $arr_righeImp[$cont] = array("cod_art"=>$row["cod_art"], "desc_art"=>$row["desc_art"], "qt_art"=>$row["qt_art"],"data_cons_art"=>$row["data_cons_art"]);
+            $cont= $cont + 1;
           }
-          else {
-            echo "<br>Error creating table: " . $connessione->error."<br>";
-          }
-
-          //concateno gli array e li passo codificati
-          $arrRisultato = array("imp"=>$arr_Impegno,"art"=>$arr_Articolo,"comp"=>$arr_Componente);
-          echo json_encode($arrRisultato);
           //disconnessione
           mysqli_close($connessione);
-          return true;
-          }
-          else{
-            //disconnessione
-            mysqli_close($connessione);
-            //non ancora inserito
-            return false;
-          }
+          //trasmetto i componenti
+          return $arr_righeImp;
         }
+        else {
+          //nessuna riga inserita -> array vuoto
+          $arr_righeImp[$cont] = array("cod_art"=>"", "desc_art"=>"", "qt_art"=>"","data_cons_art"=>"");
+          //disconnessione
+          mysqli_close($connessione);
+          //non ancora inserito
+          return $arr_righeImp;
+        }
+      }
+      else{
+        return false;
+      }
+    }
+
+    //RICERCA GLI ARTICOLO IN UN DATO IMPEGNO - ID_IMP  - test 05/12/19
+    public function getRigheImpComp($ric_id_impegno){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //seleziono gli id_componenti SINGOLI dell' impegno ricercato
+        $istruzione = "SELECT * FROM riga_imp_comp INNER JOIN componente ON riga_imp_comp.ID_comp=componente.ID_comp  WHERE riga_imp_comp.ID_imp = '".$ric_id_impegno."';";
+        $result=mysqli_query($connessione,$istruzione);
+        //variabili array COMPONENTI
+        $cont = 0;
+        $arr_righeImpComp[] = array();
+        //controllo se impegno già salvato o contiene righe
+        if (mysqli_num_rows($result)>0) {
+          //ciclo tutti gli articoli
+          while($row = mysqli_fetch_assoc($result)) {
+            //impegno inserito -> salvo i dati degli articoli
+            $arr_righeImpComp[$cont] = array("cod_comp"=>$row["cod_comp"], "desc_comp"=>$row["desc_comp"], "qt_comp"=>$row["qt_comp"],"data_cons_comp"=>$row["data_cons_comp"]);
+            $cont= $cont + 1;
+          }
+          //disconnessione
+          mysqli_close($connessione);
+          //trasmetto i componenti
+          return $arr_righeImpComp;
+        }
+        else {
+          //nessuna riga salvata -> array vuoto
+          $arr_righeImpComp[$cont] = array("cod_comp"=>"", "desc_comp"=>"", "qt_comp"=>"","data_cons_comp"=>"");
+          //disconnessione
+          mysqli_close($connessione);
+          //non ancora inserito
+          return $arr_righeImpComp;
+        }
+      }
+      else{
+        return false;
+      }
+    }
 
     //RICEVO TUTTI I CODICI COMPONENTE  - ok 25/11/19
     public function getCodComponenti(){
@@ -600,7 +640,6 @@
 
   //ricerca articolo gia inserito  - ok 25/11/19
   elseif(isset($_POST['newArticolo_search_art'])){
-
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
     $varDB = new conn_DB();
     //ricerco articolo
@@ -634,23 +673,61 @@
     echo json_encode($risposta);
   }
 
-  //ricerca impegno gia inserito  - ok 04/12/19
+  //ricerca impegno gia inserito  - inizio 04/12/19
   elseif(isset($_POST['newImpegno_search_imp'])){
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
     $varDB = new conn_DB();
-    //ricerco articolo
+    //array impegno
     $ricercaImpegno = $_POST['newImpegno_search_imp'];
     $impegno = $varDB->getImpegno($ricercaImpegno);
-    
-    //array impegno
-    $art[0] = array("cod_art"=>$articolo["cod_art"], "desc_art"=>$articolo["desc_art"], "cli_art"=>$articolo["cli_art"], "cod_cli_art"=>$articolo["cod_cli_art"]);
-    //$artComp = array("t_art"=>$art, "t_comp"=>$componenti);
-    $artArray = array("t_art"=>$art);
-    $risposta = array("newImpegno"=>$artArray);
+    //echo "<br>TEST: ".$impegno[0]["id_imp"];
+    //righe articoli in impegno
+    $righe_imp = $varDB->getRigheImp($impegno[0]["id_imp"]);
+    //righe componenti singoli in impegno
+    $righe_imp_Comp = $varDB->getRigheImpComp($impegno[0]["id_imp"]);
+    //concateno gli arrey da consegnare
+    //$imp = array("t_imp"=>$impegno);
+    //$art = array("t_art"=>$righe_imp);
+    //$comp = array("t_comp"=>$righe_imp_Comp);
+    $artConsegna = array("t_imp"=>$impegno, "t_art"=>$righe_imp, "t_comp"=>$righe_imp_Comp);
+    $risposta = array("newImpegno"=>$artConsegna);
     //consegno il pacco
     echo json_encode($risposta);
   }
 
+  //ricerca articolo gia inserito  - ok 05/12/19
+  elseif(isset($_POST['newImpegno_search_art'])){
+    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
+    $varDB = new conn_DB();
+    //ricerco articolo
+    $ricercaArt = $_POST['newImpegno_search_art'];
+    //ricerco componente
+    $art = $varDB->getArticolo($ricercaArt);
+    //creo array di risposta
+    $articolo[0] = array("cod_art"=>$art["cod_art"], "desc_art"=>$art["desc_art"], "qt_art"=>"", "data_cons_art"=>"");
+    $arrayArt = array("t_art"=>$articolo);
+    $risposta = array("newImpegno"=>$arrayArt);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+  //ricerca componente singolo gia inserito  - ok 05/12/19
+  elseif(isset($_POST['newImpegno_search_comp'])){
+    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
+    $varDB = new conn_DB();
+    //ricerco componente singolo
+    $ricercaComp = $_POST['newImpegno_search_comp'];
+    //ricerco componente
+    $comp = $varDB->getComponente($ricercaComp);
+    //creo array di risposta
+    $componente[0] = array("cod_comp"=>$comp[0]["cod_comp"], "desc_comp"=>$comp[0]["desc_comp"], "qt_comp"=>"", "data_cons_comp"=>"");
+    $arrayComp = array("t_comp"=>$componente);
+    $risposta = array("newImpegno"=>$arrayComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
+/*
   //ricerca articolo gia inserito  - ok 25/11/19
   elseif(isset($_POST['newImpegno_search_comp'])){
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
@@ -666,23 +743,9 @@
     //consegno il pacco
     echo json_encode($risposta);
   }
-
-  //ricerca articolo gia inserito  - ok 25/11/19
-  elseif(isset($_POST['newImpegno_search_comp'])){
-    //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
-    $varDB = new conn_DB();
-    //ricerco articolo
-    $ricercaComp = $_POST['newImpegno_search_comp'];
-    //ricerco componente
-    $comp = $varDB->getComponente($ricercaComp);
-    //creo array di risposta
-    //$artComp = array("t_art"=>$art, "t_comp"=>$componenti);
-    $artComp = array("t_comp"=>$comp);
-    $risposta = array("newImpegno"=>$artComp);
-    //consegno il pacco
-    echo json_encode($risposta);
-  }
-  /*elseif(isset($_POST['search_art'])){
+*/
+  /*
+  elseif(isset($_POST['search_art'])){
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
     $varDB = new conn_DB();
     //ricerco articolo
@@ -697,9 +760,8 @@
     $risposta = array("newArticolo"=>$artComp);
     //consegno il pacco
     echo json_encode($risposta);
-  }*/
-
-
+  }
+*/
 
   //inserimento nuovo articolo  - ok 25/11/19
   elseif (isset($_POST['newArticolo'])){
@@ -758,15 +820,15 @@
       $varDB->setArticoloInImpegno($articoli, $id_imp);
 
       //vado ad inserire le righe componente
-      //$varDB->setComponenteInImpegno($componenti, $id_imp);
+      $varDB->setComponenteInImpegno($componenti, $id_imp);
     }
   }
 
-  elseif (isset($_POST['impegno'])) {
+  /*elseif (isset($_POST['impegno'])) {
     //AUTOCOMPILAZIONE TABELLA IMPEGNO
     $varDB = new conn_DB();
     $ricercaImpegno = $_POST['impegno'];
     $varDB->getImpegno($ricercaImpegno);
-  }
+  }*/
 
 ?>
