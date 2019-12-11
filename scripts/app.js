@@ -181,7 +181,8 @@ var header_art = {
           {
             text: 'Data consegna',
             id: 'data_cons_art',
-            datepicker: true
+            datepicker: true,
+            other: 'qt'
           },
           {
             text: 'id art imp',
@@ -216,7 +217,8 @@ var header_art = {
           {
             text: 'Data consegna',
             id: 'data_cons_comp',
-            datepicker: true
+            datepicker: true,
+            other: 'qt'
           },
           {
             text: 'id comp imp',
@@ -564,10 +566,10 @@ function make_editable($el, bool, istable) {
     $el.attr('contenteditable', bool);
     if (istable) {
       $el.siblings('.control').hide();
-      if ($el.children('input').length) {
 
-        $el.children('input').attr('disabled', '');
-      }
+    }
+    if ($el.children('input').length) {
+      $el.children('input').attr('disabled', '');
     }
     $el.css('color', '#8c8c8c');
     if ($ADMIN) {
