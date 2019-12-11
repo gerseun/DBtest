@@ -218,7 +218,7 @@
           //ciclo tutti i componenti
           while($row = mysqli_fetch_assoc($result)) {
             //articolo inserito -> salvo i dati dei componenti
-            $arr_Componente[$cont] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"],"qt_comp"=>$row["qt_comp"]);
+            $arr_Componente[$cont] = array("id_comp"=>$row["id_comp"], "cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"],"qt_comp"=>$row["qt_comp"]);
             $cont= $cont + 1;
           }
           //disconnessione
@@ -287,7 +287,7 @@
         if (mysqli_num_rows($result)>0) {
           $row = mysqli_fetch_assoc($result);
           //articolo gia inserito -> salvo i dati articolo
-          $arrayComp[0] = array("cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
+          $arrayComp[0] = array("id_comp"=>$row["id_comp"], "cod_comp"=>$row["cod_comp"],"desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"],"mat_comp"=>$row["mat_comp"]);
           mysqli_close($connessione);
           return $arrayComp;
         }
@@ -654,7 +654,7 @@
     $ricercaIDart = $articolo["id_art"];
     $componenti = $varDB->getCompInArticolo($ricercaIDart);
     //creo array di risposta
-    $art[0] = array("cod_art"=>$articolo["cod_art"], "desc_art"=>$articolo["desc_art"], "cli_art"=>$articolo["cli_art"], "cod_cli_art"=>$articolo["cod_cli_art"]);
+    $art[0] = $articolo;
     $artComp = array("t_art"=>$art, "t_comp"=>$componenti);
     //$artComp = array("t_art"=>$art);
     $risposta = array("newArticolo"=>$artComp);
@@ -670,8 +670,6 @@
     $ricercaComp = $_POST['newArticolo_search_comp'];
     $componente = $varDB->getComponente($ricercaComp);
     //creo array di risposta
-    //$art[0] = array("cod_art"=>"", "desc_art"=>"", "cli_art"=>"", "cod_cli_art"=>"");
-    //$artComp = array("t_art"=>$art, "t_comp"=>$componente);
     $artComp = array("t_comp"=>$componente);
     $risposta = array("newArticolo"=>$artComp);
     //consegno il pacco
