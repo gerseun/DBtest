@@ -525,7 +525,7 @@ function fill_table($table, arr) {
       } else {
         $td.eq(i).text(arr[index][h]);
       }
-      make_editable($td.eq(i), false);
+      make_editable($td.eq(i), false,true);
     });
   });
 };
@@ -541,7 +541,7 @@ function fill_row($row, arr) {
     } else {
       $td.eq(i).text(arr[0][h]);
     }
-    make_editable($td.eq(i), false);
+    make_editable($td.eq(i), false,false);
   });
 
 };
@@ -561,10 +561,13 @@ function get_tableHeaders($el) {
   return headers;
 };
 
-function make_editable($el, bool) {
+function make_editable($el, bool, istable) {
   if ($el.attr('contenteditable') && $el.hasClass('editable') && !$el.hasClass('qt')) {
     $el.attr('contenteditable', bool);
-    $el.siblings('.control').hide();
+    if (istable) {
+      $el.siblings('.control').hide();
+    }
+
     $el.css('color', '#8c8c8c');
     if ($ADMIN) {
       $MODIFY.show();
