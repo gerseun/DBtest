@@ -475,10 +475,10 @@ function add_search($el, arr) {
         $OUTPUT.text(JSON.stringify(msg));
         $.post(PHP_LINK, exp_arr, function(data, textStatus, xhr) {
         //console.log(data);
-        //var data = JSON.parse(test5);
-        //$OUTPUT.html(data);
-        fill_tables(data, $el);
-        }, 'JSON');
+        $OUTPUT.html(data);
+        var data2 = JSON.parse(data);
+        fill_tables(data2, $el);
+      }/*, 'JSON'*/);
       }
     });
 
@@ -521,7 +521,6 @@ function fill_table($table, arr) {
     headers.forEach(function(h, i) {
       if ($td.eq(i).children('input').length) {
         $td.eq(i).children('input').val(arr[index][h]);
-        $td.eq(i).children('input').attr('disabled', '');
       } else {
         $td.eq(i).text(arr[index][h]);
       }
@@ -537,7 +536,6 @@ function fill_row($row, arr) {
   headers.forEach(function(h, i) {
     if ($td.eq(i).children('input').length) {
       $td.eq(i).children('input').val(arr[0][h]);
-      $td.eq(i).children('input').attr('disabled', '');
     } else {
       $td.eq(i).text(arr[0][h]);
     }
@@ -566,8 +564,11 @@ function make_editable($el, bool, istable) {
     $el.attr('contenteditable', bool);
     if (istable) {
       $el.siblings('.control').hide();
-    }
+      if ($el.children('input').length) {
 
+        $el.children('input').attr('disabled', '');
+      }
+    }
     $el.css('color', '#8c8c8c');
     if ($ADMIN) {
       $MODIFY.show();

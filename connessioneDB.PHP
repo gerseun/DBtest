@@ -80,7 +80,7 @@
           else {
             //salvo il codice componente nell' anagrafica componente
             $flag_anag_comp = false;
-            $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`, `pos_comp`, `data_comp`)VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."','0','". $dataOra."');";
+            $istruzione = "INSERT INTO `componente` (`cod_comp`, `desc_comp`, `dim_comp`, `mat_comp`, `pos_comp`, `data_comp`) VALUES ('".$codComp."','".$desc."','".$dim."','".$mat."','0','". $dataOra."');";
             if (mysqli_query($connessione,$istruzione)) {
               echo $codComp." inserito nell' anagrafica <br>";
             }
@@ -91,7 +91,9 @@
           //prendo l' indice di componente
           $idComp = $varDB->getIDcomponente($codComp);
           //salvo la riga nella tabella articolo_componenti
-          $istruzione = "INSERT INTO `articolo_componenti` (`id_art`, `id_comp`, `qt_comp`)VALUES ('".$idArt."','".$idComp."','".$qt."');";
+          $istruzione = "INSERT INTO `articolo_componenti` (`id_art`, `id_comp`, `qt_comp`)
+                        VALUES ('".$idArt."','".$idComp."','".$qt."')
+                        ON DUPLICATE KEY UPDATE qt_comp = '".$qt."';";
           if (mysqli_query($connessione,$istruzione)) {
             echo $codComp.": inserito nella descrizione articolo ".$codArt."<br>";
           }
@@ -400,7 +402,7 @@
           if($id_comp){
             //articolo già inserito, vado a compilare la tabella "riga_imp_comp"
             $istruzione = "INSERT INTO `riga_imp_comp` (`id_imp`, `id_comp`, `qt_comp`, `data_cons_comp`, `id_produzione`)
-                           VALUES ('".$idImp."','".$id_comp."','".$rigaComponente["qt_comp"]."','".$rigaComponente["data_cons_comp"]."', '0');";
+                           VALUES ('".$idImp."','".$id_comp."','".$rigaComponente["qt_comp"]."','".$rigaComponente["data_cons_comp"]."', '0'); ";
            if(mysqli_query($connessione,$istruzione)){
              //ok
              echo "<br>".$rigaComponente["cod_comp"].": COMPONENTE IMPEGNATO";
@@ -493,7 +495,7 @@
           //ciclo tutti gli articoli
           while($row = mysqli_fetch_assoc($result)) {
             //impegno inserito -> salvo i dati degli articoli
-            $arr_righeImp[$cont] = array("cod_art"=>$row["cod_art"], "desc_art"=>$row["desc_art"], "qt_art"=>$row["qt_art"],"data_cons_art"=>$row["data_cons_art"]);
+            $arr_righeImp[$cont] = array("id_riga_imp"=>$row["id_riga_imp"], "cod_art"=>$row["cod_art"], "desc_art"=>$row["desc_art"], "qt_art"=>$row["qt_art"],"data_cons_art"=>$row["data_cons_art"]);
             $cont= $cont + 1;
           }
           //disconnessione
@@ -531,7 +533,7 @@
           //ciclo tutti gli articoli
           while($row = mysqli_fetch_assoc($result)) {
             //impegno inserito -> salvo i dati degli articoli
-            $arr_righeImpComp[$cont] = array("cod_comp"=>$row["cod_comp"], "desc_comp"=>$row["desc_comp"], "qt_comp"=>$row["qt_comp"],"data_cons_comp"=>$row["data_cons_comp"]);
+            $arr_righeImpComp[$cont] = array("id_riga_imp_comp"=>$row["id_riga_imp_comp"], "cod_comp"=>$row["cod_comp"], "desc_comp"=>$row["desc_comp"], "qt_comp"=>$row["qt_comp"],"data_cons_comp"=>$row["data_cons_comp"]);
             $cont= $cont + 1;
           }
           //disconnessione
@@ -675,6 +677,20 @@
     echo json_encode($risposta);
   }
 
+  //ricerca componente gia inserito  - ok 25/11/19
+  elseif(isset($_POST['newComponente_search_comp'])){
+    //RICERCO IL CODICE COMPONENTE ED INVIO I DATI
+    $varDB = new conn_DB();
+    //ricerco componenti contenuti nell' articolo
+    $ricercaComp = $_POST['newComponente_search_comp'];
+    $componente = $varDB->getComponente($ricercaComp);
+    //creo array di risposta
+    $artComp = array("t_comp"=>$componente);
+    $risposta = array("newComponente"=>$artComp);
+    //consegno il pacco
+    echo json_encode($risposta);
+  }
+
   //ricerca impegno gia inserito  - inizio 04/12/19
   elseif(isset($_POST['newImpegno_search_imp'])){
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
@@ -682,15 +698,11 @@
     //array impegno
     $ricercaImpegno = $_POST['newImpegno_search_imp'];
     $impegno = $varDB->getImpegno($ricercaImpegno);
-    //echo "<br>TEST: ".$impegno[0]["id_imp"];
     //righe articoli in impegno
     $righe_imp = $varDB->getRigheImp($impegno[0]["id_imp"]);
     //righe componenti singoli in impegno
     $righe_imp_Comp = $varDB->getRigheImpComp($impegno[0]["id_imp"]);
     //concateno gli arrey da consegnare
-    //$imp = array("t_imp"=>$impegno);
-    //$art = array("t_art"=>$righe_imp);
-    //$comp = array("t_comp"=>$righe_imp_Comp);
     $artConsegna = array("t_imp"=>$impegno, "t_art"=>$righe_imp, "t_comp"=>$righe_imp_Comp);
     $risposta = array("newImpegno"=>$artConsegna);
     //consegno il pacco
@@ -702,13 +714,11 @@
     //RICERCO IL CODICE ARTICOLO ED INVIO I DATI ARTICOLO E COMPONENTI
     $varDB = new conn_DB();
     //ricerco articolo
-    $ricercaArt = $_POST['newImpegno_search_art'];
-    //ricerco componente
-    $art = $varDB->getArticolo($ricercaArt);
-    //creo array di risposta
-    $articolo[0] = array("cod_art"=>$art["cod_art"], "desc_art"=>$art["desc_art"], "qt_art"=>"", "data_cons_art"=>"");
-    $arrayArt = array("t_art"=>$articolo);
-    $risposta = array("newImpegno"=>$arrayArt);
+    $ricercaArticolo = $_POST['newImpegno_search_art'];
+    $articolo = $varDB->getArticolo($ricercaArticolo);
+    //creo array risposta
+    $art = array("t_art"=>$articolo);
+    $risposta = array("newImpegno"=>$art);
     //consegno il pacco
     echo json_encode($risposta);
   }
