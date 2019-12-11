@@ -180,7 +180,7 @@
           $cliente = $row["cli_art"];
           $cod_cliente = $row["cod_cli_art"];
           //creo array dell' articolo
-          $arr_Articolo = array("id_art"=>$id_articolo, "cod_art"=>$cod_articolo,"desc_art"=>$descrizione,"cli_art"=>$cliente,"cod_cli_art"=>$cod_cliente);
+          $arr_Articolo[0] = array("id_art"=>$id_articolo, "cod_art"=>$cod_articolo,"desc_art"=>$descrizione,"cli_art"=>$cliente,"cod_cli_art"=>$cod_cliente);
           //disconnessione
           mysqli_close($connessione);
           //non ancora inserito
@@ -651,11 +651,10 @@
     $ricercaArticolo = $_POST['newArticolo_search_art'];
     $articolo = $varDB->getArticolo($ricercaArticolo);
     //ricerco componenti contenuti nell' articolo
-    $ricercaIDart = $articolo["id_art"];
+    $ricercaIDart = $articolo[0]["id_art"];
     $componenti = $varDB->getCompInArticolo($ricercaIDart);
     //creo array di risposta
-    $art[0] = $articolo;
-    $artComp = array("t_art"=>$art, "t_comp"=>$componenti);
+    $artComp = array("t_art"=>$articolo, "t_comp"=>$componenti);
     //$artComp = array("t_art"=>$art);
     $risposta = array("newArticolo"=>$artComp);
     //consegno il pacco

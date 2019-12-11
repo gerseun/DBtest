@@ -562,7 +562,7 @@ function get_tableHeaders($el) {
 };
 
 function make_editable($el, bool) {
-  if ($el.attr('contenteditable') && $el.hasClass('editable') && $el.hasClass('qt')) {
+  if ($el.attr('contenteditable') && $el.hasClass('editable') && !$el.hasClass('qt')) {
     $el.attr('contenteditable', bool);
     $el.siblings('.control').hide();
     $el.css('color', '#8c8c8c');
