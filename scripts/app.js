@@ -72,8 +72,8 @@ var header_art = {
             editabile: true
           },
           {
-            text: 'id art-comp',
-            id: 'id_artcomp',
+            text: 'id comp',
+            id: 'id_comp',
             editabile: false
           }
 
@@ -577,13 +577,13 @@ var test1 = '{"first_call":' +
 var test2 = '{"newArticolo":' +
   '{"t_art":[{"cod_art":"1ABC00100","desc_art":"cilindro","cli_art":"Asd","cod_cli_art":"123456","id_art":"1"}],' +
   '"t_comp":[' +
-  '{"cod_comp":"1ABC00102","desc_comp":"camicia","dim_comp":"100","mat_comp":"S355","qt_comp":"1","id_artcomp":"1"},' +
-  '{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2","id_artcomp":"2"}]}}';
+  '{"cod_comp":"1ABC00102","desc_comp":"camicia","dim_comp":"100","mat_comp":"S355","qt_comp":"1","id_comp":"1"},' +
+  '{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2","id_comp":"2"}]}}';
 
 var test3 = '{"newArticolo":' +
   '{"t_art":[],' +
   '"t_comp":[' +
-  '{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2","id_artcomp":"1"}]}}';
+  '{"cod_comp":"1ABC00110","desc_comp":"stelo","dim_comp":"50","mat_comp":"C45","qt_comp":"2","id_comp":"1"}]}}';
 
 var test4 = '{"newComponente":' +
   '{"t_comp":[' +
