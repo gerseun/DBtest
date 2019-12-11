@@ -69,7 +69,8 @@ var header_art = {
           {
             text: 'Qt Componente',
             id: 'qt_comp',
-            editabile: true
+            editabile: true,
+            other: 'qt'
           },
           {
             text: 'id comp',
@@ -174,7 +175,8 @@ var header_art = {
           {
             text: 'Quantita\'',
             id: 'qt_art',
-            editabile: true
+            editabile: true,
+            other: 'qt'
           },
           {
             text: 'Data consegna',
@@ -208,7 +210,8 @@ var header_art = {
           {
             text: 'Quantita\'',
             id: 'qt_comp',
-            editabile: true
+            editabile: true,
+            other: 'qt'
           },
           {
             text: 'Data consegna',
@@ -559,7 +562,7 @@ function get_tableHeaders($el) {
 };
 
 function make_editable($el, bool) {
-  if ($el.attr('contenteditable') && $el.hasClass('editable')) {
+  if ($el.attr('contenteditable') && $el.hasClass('editable') && $el.hasClass('qt')) {
     $el.attr('contenteditable', bool);
     $el.siblings('.control').hide();
     $el.css('color', '#8c8c8c');
