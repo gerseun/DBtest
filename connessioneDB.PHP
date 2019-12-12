@@ -355,13 +355,21 @@
           //cerco l' id articolo
           $id_art = $varDB->getIDarticolo($rigaArticolo["cod_art"]);
           if($id_art){
-            //echo $rigaArticolo["cod_art"].": CODICE ARTICOLO INSERITO";
-            //articolo già inserito, vado a compilare la tabella "riga_imp"
+            //articolo esistente, vado a compilare la tabella "riga_imp"
             $QTart = $rigaArticolo["qt_art"];
             $dataCons = $rigaArticolo["data_cons_art"];
-            //riga sql di creazione
-            $istruzione = "INSERT INTO `riga_imp` (`id_imp`, `id_art`, `qt_art`, `data_cons_art`) VALUES ('".$idImp."', '".$id_art."', '".$QTart."', '".$dataCons."');";
-
+            //controllo se esiste id_riga_imp -> modifica
+            if ($rigaArticolo["id_riga_imp"]=='') {
+              //riga sql di creazione
+              $istruzione = "INSERT INTO `riga_imp` (`id_imp`, `id_art`, `qt_art`, `data_cons_art`)
+                              VALUES ('".$idImp."', '".$id_art."', '".$QTart."', '".$dataCons."');";
+            }
+            else{
+              $istruzione = "UPDATE `riga_imp`
+                            SET  qt_art = '".$QTart."', data_cons_art ='".$dataCons."'
+                            WHERE id_riga_imp = '".$rigaArticolo["id_riga_imp"]."' ;";
+            }
+            //invio richiesta
             if(mysqli_query($connessione,$istruzione)){
               //ok
               echo "<br>".$rigaArticolo["cod_art"].": ARTICOLO IMPEGNATO";
@@ -395,14 +403,23 @@
         $varDB = new conn_DB();
         //connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
-        //ciclo tutte le righe articolo
+        //ciclo tutte le righe componente
         foreach($compAssieme as $rigaComponente){
-          //cerco l' id articolo
+          //cerco l' id componente
           $id_comp = $varDB->getIDcomponente($rigaComponente["cod_comp"]);
           if($id_comp){
-            //articolo già inserito, vado a compilare la tabella "riga_imp_comp"
-            $istruzione = "INSERT INTO `riga_imp_comp` (`id_imp`, `id_comp`, `qt_comp`, `data_cons_comp`, `id_produzione`)
-                           VALUES ('".$idImp."','".$id_comp."','".$rigaComponente["qt_comp"]."','".$rigaComponente["data_cons_comp"]."', '0'); ";
+            //controllo se esiste id_riga_imp_comp -> modifica
+            if ($rigaComponente["id_riga_imp_comp"]=='') {
+              //riga sql di creazione
+              $istruzione = "INSERT INTO `riga_imp_comp` (`id_imp`, `id_comp`, `qt_comp`, `data_cons_comp`, `id_produzione`)
+                             VALUES ('".$idImp."','".$id_comp."','".$rigaComponente["qt_comp"]."','".$rigaComponente["data_cons_comp"]."', '0'); ";
+            }
+            else{
+              $istruzione = "UPDATE `riga_imp_comp`
+                            SET  qt_comp = '".$rigaComponente["qt_comp"]."', data_cons_comp ='".$rigaComponente["data_cons_comp"]."'
+                            WHERE id_riga_imp_comp = '".$rigaComponente["id_riga_imp_comp"]."' ;";
+            }
+            //invio richiesta
            if(mysqli_query($connessione,$istruzione)){
              //ok
              echo "<br>".$rigaComponente["cod_comp"].": COMPONENTE IMPEGNATO";
