@@ -360,28 +360,28 @@
             $dataCons = $rigaArticolo["data_cons_art"];
             //controllo se esiste id_riga_imp -> modifica
             if ($rigaArticolo["id_riga_imp"]=='') {
-              //riga sql di creazione
+              //NUOVO ARTICOLO DA INSERIRE
               $istruzione = "INSERT INTO `riga_imp` (`id_imp`, `id_art`, `qt_art`, `data_cons_art`)
                               VALUES ('".$idImp."', '".$id_art."', '".$QTart."', '".$dataCons."');";
-            }
-            else{
-              $istruzione = "UPDATE `riga_imp`
-                            SET  qt_art = '".$QTart."', data_cons_art ='".$dataCons."'
-                            WHERE id_riga_imp = '".$rigaArticolo["id_riga_imp"]."' ;";
-            }
-            //invio richiesta
-            if(mysqli_query($connessione,$istruzione)){
-              //ok
-              echo "<br>".$rigaArticolo["cod_art"].": ARTICOLO IMPEGNATO";
+              //eseguo connessione
+              mysqli_query($connessione,$istruzione);
+              echo "<br>".$rigaArticolo["cod_art"].": NUOVO ARTICOLO IMPEGNATO";
               //set produzione ARTICOLI
               $idRigaImp = $connessione->insert_id;
               $varDB->setProduzione($idRigaImp, $id_art, $rigaArticolo["qt_art"]);
             }
             else{
-              //non inserito riga imp
-              echo "<br>".$rigaArticolo["cod_art"].": ERRORE CREAZIONE ARTICOLO IN IMPEGNO";
+              //VECCHIO ARTICOLO DA AGGIORNARE
+              $istruzione = "UPDATE `riga_imp`
+                            SET  qt_art = '".$QTart."', data_cons_art ='".$dataCons."'
+                            WHERE id_riga_imp = '".$rigaArticolo["id_riga_imp"]."' ;";
+              //eseguo connessione
+              mysqli_query($connessione,$istruzione);
+              echo "<br>".$rigaArticolo["cod_art"].": AGGIORNO ARTICOLO IN PRODUZIONE";
+              //aggiorno le quantita in produzione
+              $idRigaImp = $rigaArticolo["id_riga_imp"];
+              $varDB->aggiornaProduzione($idRigaImp, $id_art, $rigaArticolo["qt_art"]);
             }
-
           }
           else{
             echo "<br>".$rigaArticolo["cod_art"].": CODICE ARTICOLO INESISTENTE";
@@ -409,33 +409,26 @@
           $id_comp = $varDB->getIDcomponente($rigaComponente["cod_comp"]);
           if($id_comp){
             //controllo se esiste id_riga_imp_comp -> modifica
+            echo "<br>".$rigaComponente["id_riga_imp_comp"]."<br>";
             if ($rigaComponente["id_riga_imp_comp"]=='') {
               //riga sql di creazione
               $istruzione = "INSERT INTO `riga_imp_comp` (`id_imp`, `id_comp`, `qt_comp`, `data_cons_comp`, `id_produzione`)
                              VALUES ('".$idImp."','".$id_comp."','".$rigaComponente["qt_comp"]."','".$rigaComponente["data_cons_comp"]."', '0'); ";
+              echo "<br> CODICE COMPONENTE INSERITO: ".$rigaComponente["cod_comp"];
             }
             else{
               $istruzione = "UPDATE `riga_imp_comp`
                             SET  qt_comp = '".$rigaComponente["qt_comp"]."', data_cons_comp ='".$rigaComponente["data_cons_comp"]."'
                             WHERE id_riga_imp_comp = '".$rigaComponente["id_riga_imp_comp"]."' ;";
+              echo "<br> CODICE COMPONENTE AGGIORNATO: ".$rigaComponente["cod_comp"];
             }
             //invio richiesta
-           if(mysqli_query($connessione,$istruzione)){
-             //ok
-             echo "<br>".$rigaComponente["cod_comp"].": COMPONENTE IMPEGNATO";
-           }
-           else{
-             //non inserito riga imp
-             echo "<br>".$rigaComponente["cod_comp"].": ERRORE CREAZIONE COMPONENTE IN IMPEGNO";
-           }
+            mysqli_query($connessione,$istruzione);
           }
-          else{
-           echo "<br>".$rigaComponente["cod_comp"].": CODICE COMPONENTE INESISTENTE";
-          }
-        }
-        //disconnessione
+          //disconnessione
         mysqli_close($connessione);
         return true;
+        }
       }
       else{
           return false;
@@ -443,10 +436,9 @@
     }
 
 
-    //COMPILO LA TABELLA PRODUZIONE PER LA MESSA IN PRODUZIONE  - inizio 03/12/19
+    //COMPILO LA TABELLA PRODUZIONE PER LA MESSA IN PRODUZIONE  - ok 12/12/19
     public function setProduzione($IDimp,$IDart,$QTcomp){
       if(isset($this->attiva)){
-        echo "<br> INIZIO PRODUZIONE <br>";
         //ricevo dalla tabella articolo_componenti le righe da mettere in produzione
         //connessione al DB
         $connessionePROD = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
@@ -456,17 +448,41 @@
         while($righePROD = mysqli_fetch_assoc($resultPROD)) {
           //riga COMPONENTE
           $QTcompTemp = $QTcomp * $righePROD["qt_comp"];
-          $istruzione = "INSERT INTO riga_dett (id_riga_imp, id_comp, qt_comp, id_produzione) VALUES ('".$IDimp."', '".$righePROD["id_comp"]."', '".$QTcompTemp."', '0');";
-          echo $istruzione."<br>";
+          $istruzione = "INSERT INTO `riga_dett`(`id_riga_imp`, `id_comp`, `qt_comp`, `id_produzione`)
+                        VALUES ('".$IDimp."', '".$righePROD["id_comp"]."', '".$QTcompTemp."', '0');";
           $inserimento = mysqli_query($connessionePROD,$istruzione);
         }
-        echo "<br> FINE PRODUZIONE <br>";
         //disconnessione
         mysqli_close($connessionePROD);
         return true;
       }
     }
 
+    //AGGIORNO LA TABELLA PRODUZIONE PER LA MESSA IN PRODUZIONE  - inizio 03/12/19
+    public function aggiornaProduzione($IDimp,$IDart,$QTcomp){
+      if(isset($this->attiva)){
+        //ricevo dalla tabella articolo_componenti le righe da mettere in produzione
+        //connessione al DB
+        $connessionePROD = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        $istruzionePROD = "SELECT * FROM articolo_componenti WHERE id_art = '".$IDart."';";
+        $resultPROD = mysqli_query($connessionePROD,$istruzionePROD);
+        //ricevo tutte le righe
+        while($righePROD = mysqli_fetch_assoc($resultPROD)) {
+          //riga COMPONENTE
+          $QTcompTemp = $QTcomp * $righePROD["qt_comp"];
+          $istruzione = "UPDATE `riga_dett`
+                        SET  qt_comp = '".$QTcompTemp."'
+                        WHERE id_riga_imp = '".$IDimp."' AND  id_comp = '".$righePROD["id_comp"]."' ;";
+
+          echo "<br>".$istruzione."<br>";
+          //invio la riga
+          $inserimento = mysqli_query($connessionePROD,$istruzione);
+        }
+        //disconnessione
+        mysqli_close($connessionePROD);
+        return true;
+      }
+    }
 
     //RICERCA RIGA IMPEGNO  - ok 05/12/19
     public function getImpegno($ricImp){
@@ -560,7 +576,7 @@
         }
         else {
           //nessuna riga salvata -> array vuoto
-          $arr_righeImpComp[$cont] = array("cod_comp"=>"", "desc_comp"=>"", "qt_comp"=>"","data_cons_comp"=>"");
+          $arr_righeImpComp[$cont] = array("id_riga_imp_comp"=>"", "cod_comp"=>"", "desc_comp"=>"", "qt_comp"=>"","data_cons_comp"=>"");
           //disconnessione
           mysqli_close($connessione);
           //non ancora inserito
@@ -720,7 +736,15 @@
     //righe componenti singoli in impegno
     $righe_imp_Comp = $varDB->getRigheImpComp($impegno[0]["id_imp"]);
     //concateno gli arrey da consegnare
-    $artConsegna = array("t_imp"=>$impegno, "t_art"=>$righe_imp, "t_comp"=>$righe_imp_Comp);
+    $artConsegna = array("t_imp"=>$impegno);
+    //invio solo se contengono qualcosa
+    if ($righe_imp[0]["id_riga_imp"] != "") {
+      $artConsegna = $artConsegna + array("t_art"=>$righe_imp);
+    }
+    if ($righe_imp_Comp[0]["id_riga_imp_comp"] != "") {
+      $artConsegna = $artConsegna + array("t_comp"=>$righe_imp_Comp);
+    }
+    //$artConsegna = array("t_imp"=>$impegno, "t_art"=>$righe_imp, "t_comp"=>$righe_imp_Comp);
     $risposta = array("newImpegno"=>$artConsegna);
     //consegno il pacco
     echo json_encode($risposta);
@@ -810,7 +834,6 @@
       //se l' impegno è stato inserito correttamente
       //vado ad inserire le righe articolo
       $varDB->setArticoloInImpegno($articoli, $id_imp);
-
       //vado ad inserire le righe componente
       $varDB->setComponenteInImpegno($componenti, $id_imp);
     }
