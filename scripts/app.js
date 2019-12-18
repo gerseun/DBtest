@@ -233,6 +233,10 @@ var header_art = {
   }
 };
 
+$.post('../connessioneDB.php', {'test':'suka'}, function(data, textStatus, xhr) {
+  $OUTPUT.html(data);
+});
+
 var list_art = [];
 var list_comp = [];
 var list_imp = [];
