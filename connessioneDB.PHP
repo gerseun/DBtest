@@ -512,13 +512,17 @@
       }
     }
 
-    //RICERCA GLI ARTICOLO IN UN DATO IMPEGNO - ID_IMP  - test 05/12/19
+    //RICERCA GLI ARTICOLO IN UN DATO IMPEGNO - ID_IMP  - ok 05/12/19
     public function getRigheImp($ric_id_impegno){
       if(isset($this->attiva)){
         //apro la connessione al DB
         $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
         //seleziono gli id_articolo dell' impegno ricercato
-        $istruzione = "SELECT * FROM riga_imp INNER JOIN articolo ON riga_imp.ID_art=articolo.ID_art  WHERE riga_imp.ID_imp = '".$ric_id_impegno."';";
+        $istruzione = "SELECT * FROM riga_imp INNER JOIN articolo
+                      ON riga_imp.ID_art=articolo.ID_art
+                      WHERE riga_imp.ID_imp = '".$ric_id_impegno."'
+                      ORDER BY riga_imp.ID_riga_imp ASC ;";
+
         $result=mysqli_query($connessione,$istruzione);
         //variabili array COMPONENTI
         $cont = 0;
@@ -528,7 +532,7 @@
           //ciclo tutti gli articoli
           while($row = mysqli_fetch_assoc($result)) {
             //impegno inserito -> salvo i dati degli articoli
-            $arr_righeImp[$cont] = array("id_riga_imp"=>$row["id_riga_imp"], "cod_art"=>$row["cod_art"], "desc_art"=>$row["desc_art"], "qt_art"=>$row["qt_art"],"data_cons_art"=>$row["data_cons_art"]);
+            $arr_righeImp[$cont] = array("id_riga_imp"=>$row["id_riga_imp"], "cod_art"=>$row["cod_art"],"id_art"=>$row["id_art"], "desc_art"=>$row["desc_art"], "qt_art"=>$row["qt_art"],"data_cons_art"=>$row["data_cons_art"]);
             $cont= $cont + 1;
           }
           //disconnessione
@@ -543,6 +547,48 @@
           mysqli_close($connessione);
           //non ancora inserito
           return $arr_righeImp;
+        }
+      }
+      else{
+        return false;
+      }
+    }
+
+    //RICERCA I COMPONENTI DI UN ARTICOLO IN UN DATO IMPEGNO - ID_RIGA_IMP  - test 18/12/19
+    public function getRigheDettaglio($ric_id_dett){
+      if(isset($this->attiva)){
+        //apro la connessione al DB
+        $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+        //seleziono gli id_componenti dell' articolo impegnato
+        $istruzione = "SELECT * FROM riga_dett INNER JOIN componente
+                      ON riga_dett.ID_comp=componente.ID_comp
+                      WHERE riga_dett.id_riga_imp = '".$ric_id_dett."'
+                      ORDER BY riga_dett.id_riga_dett ASC ;";
+
+        $result=mysqli_query($connessione,$istruzione);
+        //variabili array COMPONENTI
+        $cont = 0;
+        $arr_righeDett[] = array();
+        //controllo se impegno già salvato o contiene righe
+        if (mysqli_num_rows($result)>0) {
+          //ciclo tutti gli articoli
+          while($row = mysqli_fetch_assoc($result)) {
+            //impegno inserito -> salvo i dati degli articoli
+            $arr_righeDett[$cont] = array("id_riga_dett"=>$row["id_riga_dett"], "id_comp"=>$row["id_comp"],"cod_comp"=>$row["cod_comp"], "desc_comp"=>$row["desc_comp"],"dim_comp"=>$row["dim_comp"], "mat_comp"=>$row["mat_comp"], "qt_comp"=>$row["qt_comp"], "id_produzione"=>$row["id_produzione"]);
+            $cont= $cont + 1;
+          }
+          //disconnessione
+          mysqli_close($connessione);
+          //trasmetto i componenti
+          return $arr_righeDett;
+        }
+        else {
+          //nessuna riga inserita -> array vuoto
+          $arr_righeDett[$cont] = array("id_riga_dett"=>"", "id_comp"=>"","cod_comp"=>"", "desc_comp"=>"", "dim_comp"=>"", "mat_comp"=>"", "qt_comp"=>"");
+          //disconnessione
+          mysqli_close($connessione);
+          //non ancora inserito
+          return $arr_righeDett;
         }
       }
       else{
@@ -655,6 +701,16 @@
       //disconnessione
       mysqli_close($connessione);
       return $arr_Impegno;
+    }
+
+    //STAMPO LA PRODUZIONE DI UN DATO ARTICOLO IN UN DATO IMPEGNO
+    public function getCompInProd($IDartRic){
+      //apro la connessione al DB
+      $connessione = mysqli_connect($this->nomehost,$this->nomeuser,$this->password,$this->dbName);
+      //seleziono tutti i componenti da produrre
+      $istruzione = "SELECT * FROM riga_dett INNER JOIN componente ON riga_dett.ID_comp=componente.ID_comp  WHERE riga_dett.id_riga_imp = '".$IDartRic."';";
+      $result=mysqli_query($connessione,$istruzione);
+
     }
   //FINE CLASSE conn_DB
   }
@@ -839,4 +895,27 @@
     }
   }
 
+  //funzioni di test
+  elseif (isset($_POST['test'])) {
+    echo "<br> TEST: IMPEGNO 1/19 <br>";
+    //APERTURA PAGINA INSERIMENTO DATI
+    $varDB = new conn_DB();
+    //array impegni
+    $arrIMP = $varDB->getImpegno("1/19");
+    //righe articoli in impegno
+    $righe_imp = $varDB->getRigheImp($arrIMP[0]["id_imp"]);
+    //array ritornato
+    $artConsegna = array("impegno"=>$arrIMP, "articoli in impegno"=>$righe_imp);
+    echo '<pre>';
+    print_r($artConsegna);
+    echo '</pre>';
+    //SECONDA FUNZIONE
+    //righe componenti in articolo in impegno
+    echo "<br> ARTICOLO 46 - 1WAR00100 <br>";
+    $righe_dett = $varDB->getRigheDettaglio("46");
+    echo '<pre>';
+    print_r($righe_dett);
+    echo '</pre>';
+  }
+  
 ?>

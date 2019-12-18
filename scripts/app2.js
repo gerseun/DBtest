@@ -1,4 +1,4 @@
-
+/*
 var header_art = {
   'home': {
     titolo: '<p>News: On year 2020 vers: 2.0.1 for beta tester.</p>'
@@ -580,7 +580,7 @@ function make_editable($el, bool, istable) {
       $MODIFY.show();
     }
   }
-};
+};*/
 /*
 var test1 = '{"first_call":' +
   '{"list_imp":["123","321","145","167"],' +
@@ -616,11 +616,12 @@ var test6 = '{"newImpegno":' +
 var test7 = '{"newImpegno":' +
   '{"t_comp":[{"cod_comp":"1ABC00102","desc_comp":"camicia","qt_comp":"100","data_cons_comp":"2019-12-07","id_riga_imp_comp":"2"}]}}';
 */
-
+console.log('asdasdasda');
 $TEST.click(function(event) {
-
+  console.log('click');
+  /*$('#output_field2').html('click');
   $.post('../connessioneDB.php', {'test':'suka'}, function(data, textStatus, xhr) {
     console.log(data);
     $('#output_field2').html(data);
-  });
+  });*/
 });
