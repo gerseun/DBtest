@@ -19,18 +19,18 @@
     <h3>Vers: 2.0.0 pre alpha developers only
   </div>
   <div class="topnav" id="myTopnav">
-    <a class="home" class="active">Home</a>
+    <a id="home" class="active">Home</a>
     <div class="dropdown">
       <button class="dropbtn">Ufficio tecnico
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content">
-        <a class="newArticolo">Inserimento articolo</a>
-        <a class="newComponente">Inserimento componente</a>
-        <a class="newImpegno">Inserimento impegno</a>
+        <a id="newArticolo">Inserimento articolo</a>
+        <a id="newComponente">Inserimento componente</a>
+        <a id="newImpegno">Inserimento impegno</a>
       </div>
     </div>
-    <a class="about">About</a>
+    <a id="about">About</a>
     <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
     <div class="login-container">
     <div >
@@ -45,18 +45,17 @@
     <div id="title">
       <p>News: On year 2020 vers: 2.0.1 for beta tester.</p>
     </div>
-    <div class="container"></div>
+    <div id="page"></div>
     <br>
     <button id="export_btn" class="hide">Export Data</button>
     <button id="modify_btn" class="hide">Modifica</button>
-    <button id="test_btn">Database Test</button>
-    <p class="hide" id='output_field'></p>
-    <p id='output_field2'></p>
+    <button id="test_btn" class="hide">Database Test</button>
+    <p id='output_text' class="hide"></p>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="./scripts/app.js"></script>
+  <script src="./scripts/app2.js"></script>
   <script>
     function myFunction() {
       var x = document.getElementById("myTopnav");

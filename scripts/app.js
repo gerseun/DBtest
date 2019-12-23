@@ -247,7 +247,8 @@ var $EXPORT = $('#export_btn');
 var $MODIFY = $('#modify_btn');
 var $TEST = $('#test_btn');
 
-var $ADMIN = false;
+var $ADMIN = true;
+
 $('.login').click(function(event) {
   if ($('.login_name').val() == 'admin') {
     if ($('.login_password').val() == 'password') {
